@@ -31,11 +31,8 @@ Online help:
    :Helptags
    :help dubs-rest-fold
 
-Usage
-=====
-
-reST Fold Delimiters
---------------------
+Usage: Signify Fold Levels using Specific Punctuation
+=====================================================
 
 The reST language is flexible when it comes to delimiting sections,
 allowing you to choose generally any ASCII non-alphanum as a delimiter,
@@ -125,8 +122,8 @@ section headers used for folding:
     Foldable Level 4 Section
     ------------------------
 
-Manually Calculating reST Folds (Press ``<F5>``)
-------------------------------------------------
+Usage: Press ``<F5>`` to Manually Recalculate Folds
+===================================================
 
 By default, Vim enables reST folding.
 
@@ -137,16 +134,18 @@ To prevent performance issues, the user must explicitly generate folds.
 
 **Press <F5> to generate (and collapse all) folds.**
 
-Swap reST Sections (Transpose Folds) (Use ``<C-Up>`` and ``<C-Down>``)
-----------------------------------------------------------------------
+Usage: Use ``<C-Up>`` and ``<C-Down>`` to Transpose Folds
+=========================================================
 
 In normal mode, with the cursor over a folded reST section,
 press ``<C-Up>`` to swap the fold under the cursor with the
 fold under the line above the cursor; press ``<C-Down>`` to
 swap with the fold on the line following the current fold.
 
-Fold Title Trickery
--------------------
+**Swap reST Sections (Transpose Folds) using ``<C-Up>`` and ``<C-Down>``.**
+
+Tips: Make Titles Pretty When Collapsed
+=======================================
 
 The reST section title that's sandwiched between the section delimiter
 lines is used for the folded view title.
@@ -207,4 +206,20 @@ Once folded (e.g., using ``<F5>``), it'll look like this::
   29 +-- ┃ ┃ SECTION Z: Patati Patata                            ┃ ┃ ---- |  4 lines |--
   33 +-- ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ---- |  4 lines |--
   37 +-- ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ---- |  4 lines |--
+
+Tips: Change 'redrawtime' for Very Large Documents
+==================================================
+
+Vim's default "redrawtime" (``:echo &rdt``) is "2000", or 2 seconds.
+
+If Vim runs longer than this during syntax matching, it cancels the operation
+and logs the message, "'redrawtime' exceeded, syntax highlighting disabled".
+
+You can set this value larger to tell Vim to run the parser longer,
+e.g., ``:set redrawtime=10000``, or, better yet, you can add a modeline
+(such as one read by https://github.com/landonb/dubs_style_guard)
+to any reST document that needs extra parsing time. E.g., at the top
+of a reST document, you could add::
+
+  .. vim:rdt=10000
 
