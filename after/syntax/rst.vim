@@ -92,26 +92,41 @@ function! s:DubsClr_rstSections()
   syn clear rstSections
 endfunction
 
-" NOTE: `-` must come last so it is not interpreted as range.
-"
-" NOTE: `+` does not highlight when used both below and above,
-"             because it's interpreted as rstTableLines.
-"
-" This adds the missing punctuation: !@$%&()[]{}<>/\|,;?
-"
-" :h pattern-overview
-" |/\v|  \v  \v  the following chars in the pattern are "very magic"
-" \%(\)	A pattern enclosed by escaped parentheses.	*/\%(\)* */\%(* *E53*
-" 	Just like \(\), but without counting it as a sub-expression.  This
-" 	allows using more groups and it's a little bit faster.
-"
-"syn match rstSections "\v^%(([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\1+\n)?.{1,2}\n([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\2+$" contains=@Spell
-
-let s:expensiveSectionRegex = '\v^%(([=`:.''"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\1{2,}\n)?.{3,}\n([=`:.''"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\2{2,}$'
-" 2018-09-19: Without dash "-" in first word of reST section title, before any whitespace, not matching! WTF!!
-execute 'syn match rstSections "' . s:expensiveSectionRegex . '" contains=@Spell'
-" 2018-09-19: Without dash "-" in first word of reST section title, before any whitespace, not matching! WTF!!
-execute 'autocmd BufEnter,BufRead *.rst syn match rstSections "' . s:expensiveSectionRegex . '" contains=@Spell'
+function! s:DubsSyn_rstSections()
+  " Add the missing punctuation characters to reST header syntax matching:
+  "
+  "   !@$%&()[]{}<>/\|,;?
+  "
+  " [lb]: We use "very magic" regex to make non-counting groups.
+  "
+  "       See:
+  "
+  "         :h pattern-overview
+  "
+  "       Enable very magic regex:
+  "
+  "         /\v  \v  \v   the following chars in the pattern are "very magic"
+  "
+  "       Use a non-counting match group, %(...):
+  "
+  "         \%(\)	        A pattern enclosed by escaped parentheses.
+  " 	      Just like \(\), but without counting it as a sub-expression.
+  " 	      This allows using more groups and it's a little bit faster.
+  "
+  "       See also:
+  "
+  "         :h literal-string
+  "
+  "       which explains why we use double quotes and not single quotes,
+  "       because we want to use the escaped character, "\v", and
+  "       not the two characters, slash and v, '\v' (or "\\v").
+  "
+  " NOTE: `-` must come last so it is not interpreted as range.
+  "
+  " NOTE: `+` does not highlight when used both below and above,
+  "             because it's interpreted as rstTableLines.
+  syn match rstSections "\v^%(([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\1{2,}\n)?.{3,}\n([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\2{2,}$" contains=@Spell
+endfunction
 
 " +----------------------------------------------------------------------+
 
