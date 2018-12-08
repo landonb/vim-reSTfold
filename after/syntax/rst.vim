@@ -130,54 +130,69 @@ endfunction
 
 " +----------------------------------------------------------------------+
 
-" 2018-02-01: NOICE! Ignore spelling of URLs and ACRONYMs. And highlight PWDs?
+" *** SYNTAX GROUP: Passwords.
 
-" *** Passwords first, so URL and Email matches override.
+" 2018-12-07: Syntax Profiling: Top performance drag: Password15Good.
+"
+" [lb]: On a 7k-line file that takes 5.5 secs. to parse, Password15Good eats 1.75 s!
+" (To test: `:syntime clear`, `:syntime on`, open the reST document, read the results
+" using `:TabMessage syntime report`.)
+"
+function! s:DubsSyn_Password15Good()
+  " Match "passwords" (why would you have those in a text file??).
+  " Inspired by:
+  "   https://dzone.com/articles/use-regex-test-password
+  "   var strongRegex = new RegExp(
+  "     "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"
+  "   );
+  " But completely Vimified! E.g., Perl's look-ahead (?=) is Vim's \(\)\@=
+  " HINT: To test, run ``syn clear``, then try the new ``syn match``.
+  " NOTE: \@= is Vim look-ahead. I also tried \@<= look-behind but it didn't work for me.
+  " NOTE: Do this before EmailNoSpell, so that we don't think emails are passwords.
+  " NOTE: Trying {15,16} just to not match too much.
+  " CUTE: If I misspell a normal FIXME/YYYY-MM-DD comment, e.g.,
+  "       "FiXME/2018-03-21", then it gets highlighted as a password! So cute!!
+  syn match Password15Good '\([[:space:]\n]\)\@<=\([^[:space:]]*[a-z][^[:space:]]*\)\@=\([^[:space:]]*[A-Z][^[:space:]]*\)\@=\([^[:space:]]*[0-9][^[:space:]]*\)\@=\<[^[:space:]]\{15,16\}\([[:space:]\n]\)\@=' contains=@NoSpell
+  " NOTE: We don't need a Password15Best to include special characters unless
+  "       we wanted to color them differently; currently, such passwords will
+  "       match Password15Good.
+  hi def Password15Good term=reverse guibg=DarkRed guifg=Yellow ctermfg=1 ctermbg=6
+endfunction
 
-" Match "passwords" (why would you have those in a text file??).
-" Inspired by:
-"   https://dzone.com/articles/use-regex-test-password
-"   var strongRegex = new RegExp(
-"     "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"
-"   );
-" But completely Vimified! E.g., Perl's look-ahead (?=) is Vim's \(\)\@=
-" HINT: To test, run ``syn clear``, then try the new ``syn match``.
-" NOTE: \@= is Vim look-ahead. I also trie \@<= look-behind but it didn't work for me.
-" NOTE: Do this before EmailNoSpell, so that we don't think emails are passwords.
-" NOTE: Trying {15,16} just to not match too much.
-" CUTE: If I misspell a normal FIXME/YYYY-MM-DD comment, e.g.,
-"       "FiXME/2018-03-21", then it gets highlighted as a password! So cute!!
-syn match Password15Good '\([[:space:]\n]\)\@<=\([^[:space:]]*[a-z][^[:space:]]*\)\@=\([^[:space:]]*[A-Z][^[:space:]]*\)\@=\([^[:space:]]*[0-9][^[:space:]]*\)\@=\<[^[:space:]]\{15,16\}\([[:space:]\n]\)\@=' contains=@NoSpell
-" NOTE: We don't need a Password15Best to include special characters unless
-"       we wanted to color them differently; currently, such passwords will
-"       match Password15Good.
-hi def Password15Good term=reverse guibg=DarkRed guifg=Yellow ctermfg=1 ctermbg=6
+" *** SYNTAX GROUP: Acronyms.
 
-" *** URLs, Acronyms, Emails
+function! s:DubsSyn_AcronymNoSpell()
+  " Thanks!
+  "   http://www.panozzaj.com/blog/2016/03/21/
+  "     ignore-urls-and-acroynms-while-spell-checking-vim/
 
-" Thanks!
-"   http://www.panozzaj.com/blog/2016/03/21/
-"     ignore-urls-and-acroynms-while-spell-checking-vim/
+  " WEIRD: [lb]: Why did I make this filter? Oh! Because that new Vim syntax
+  "   code I tried (vim-restructuredtext) was not highlighting URLs? Or was
+  "   it working, but I just didn't notice? In any case, the Vim system
+  "   rst.vim syntax highlighter has a rstStandaloneHyperlink group, which
+  "   we don't want to override. Which means don't do this:
+  "     " `Don't mark URL-like things as spelling errors`
+  "     syn match UrlNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell
 
-" WEIRD: Why did I make this filter? Oh! Because that new Vim syntax code I
-"   tried (vim-restructuredtext) was not highlighting URLs? Or was it, and I
-"   just did notnotice? In any case, the Vim system rst.vim syntax
-"   highlighter hsa a rstStandaloneHyperlink group, which we don't want
-"   to override.
-" `Don't mark URL-like things as spelling errors`
-"syn match UrlNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell
+  " `Don't count acronyms / abbreviations as spelling errors
+  "  (all upper-case letters, at least three characters)
+  "  Also will not count acronym with 's' at the end a spelling error
+  "  Also will not count numbers that are part of this`
+  syn match AcronymNoSpell '\<\(\u\|\d\)\{3,}s\?\>' contains=@NoSpell
+endfunction
 
-" `Don't count acronyms / abbreviations as spelling errors
-"  (all upper-case letters, at least three characters)
-"  Also will not count acronym with 's' at the end a spelling error
-"  Also will not count numbers that are part of this`
-syn match AcronymNoSpell '\<\(\u\|\d\)\{3,}s\?\>' contains=@NoSpell
+" *** SYNTAX GROUP: Email Addys, Without Spelling Error Highlight.
 
-" (lb) added this one to ignore emails@somewhere.com.
-" NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
-" NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
-syn match EmailNoSpell '\([[:space:]\n]\)\@<=\<[^[:space:]]\+@[^[:space:]]\+\.com\([[:space:]\n]\)\@=' contains=@NoSpell
-hi def EmailNoSpell guifg=LightGreen
+" Syntax Profiling: EmailNoSpell takes second longest, behind DubsSyn_Password15Good.
+" (From a 7K line reST that takes 3.76 secs. to load, EmailNoSpell consumes 0.21 secs.)
+
+function! s:DubsSyn_EmailNoSpell()
+  " (lb) added this to ignore spelling errors on words such as `emails@somewhere.com`.
+  " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
+  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
+  syn match EmailNoSpell '\([[:space:]\n]\)\@<=\<[^[:space:]]\+@[^[:space:]]\+\.com\([[:space:]\n]\)\@=' contains=@NoSpell
+  hi def EmailNoSpell guifg=LightGreen
+endfunction
 
 " +----------------------------------------------------------------------+
 
