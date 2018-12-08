@@ -52,42 +52,45 @@ endfunction
 
 " +----------------------------------------------------------------------+
 
-" reST header syntax can use any of the 32 punctation keys found on a US keyboard:
-"
-"   ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
-"
-" The documentation recommends using a subset of those, because "some characters
-" are more suitable than others":
-"
-"   = - ` : . ' " ~ ^ _ * + #
-"
-" Omitted from included rst syntax runtime:
-"
-"   ! $ % & ( ) , / ; < > ? @ [ \ ] { | }
-"
-" Although I'd respond that that's really user preference, and that the syntax
-" plugin should honor what reST itself honors. (I'd concede this might not be
-" the case if certain punctuation is used in a way that's not for headerizing,
-" but that might be interpreted as such, e.g., a merge conflict uses angle
-" brackets in such a way:
-"
-"   <<<<<<<<<<<<<<
-"   some code
-"   ==============
-"   other code
-"   >>>>>>>>>>>>>>
-"
-" and we wouldn't want any of this to be interpreted as headerization.
-" (But such code would most likely be in a block quote, anyway.)
-"
-" I'm adding in the missing punctuation and we'll see how it goes.
-"
-" (What I really want is a few more 'Big' symbols that'll look good
-" as the main, top-level section. I currently use '#', which is the
-" character that uses the most ink of all available characters. But
-" I think '$', '@', and '&' could also work to convey main-sectionness.)
+" *** SYNTAX GROUP: reST section highlighting.
 
-syn clear rstSections
+function! s:DubsClr_rstSections()
+  " reST header syntax can use any of the 32 punctation keys found on a US keyboard:
+  "
+  "   ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
+  "
+  " The documentation recommends using a subset of those, because "some characters
+  " are more suitable than others":
+  "
+  "   = - ` : . ' " ~ ^ _ * + #
+  "
+  " Omitted from included rst syntax runtime:
+  "
+  "   ! $ % & ( ) , / ; < > ? @ [ \ ] { | }
+  "
+  " Although I'd respond that that's really user preference, and that the syntax
+  " plugin should honor what reST itself honors. (I'd concede this might not be
+  " the case if certain punctuation is used in a way that's not for headerizing,
+  " but that might be interpreted as such, e.g., a merge conflict uses angle
+  " brackets in such a way:
+  "
+  "   <<<<<<<<<<<<<<
+  "   some code
+  "   ==============
+  "   other code
+  "   >>>>>>>>>>>>>>
+  "
+  " and we wouldn't want any of this to be interpreted as headerization.
+  " (But such code would most likely be in a block quote, anyway.)
+  "
+  " I'm adding in the missing punctuation and we'll see how it goes.
+  "
+  " (What I really want is a few more 'Big' symbols that'll look good
+  " as the main, top-level section. I currently use '#', which is the
+  " character that uses the most ink of all available characters. But
+  " I think '$', '@', and '&' could also work to convey main-sectionness.)
+  syn clear rstSections
+endfunction
 
 " NOTE: `-` must come last so it is not interpreted as range.
 "
