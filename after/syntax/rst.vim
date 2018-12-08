@@ -1,18 +1,41 @@
-" Vim syntax file
-" Language: reStructuredText documentation format
-" Maintainer: Marshall Ward <marshall.ward@gmail.com>
-" Previous Maintainer: Nikolai Weibull <now@bitwi.se>
-" Website: https://github.com/marshallward/vim-restructuredtext
-" Latest Revision: 2017-02-18
+" File: dubs_rest_fold/after/ftplugin/rst.vim
+" Author: Landon Bouma (landonb &#x40; retrosoft &#x2E; com)
+" Project Page: https://github.com/landonb/dubs_rest_fold
+" Summary: Additional reST syntax highlighting
+" License: GPLv3
+" vim:tw=0:ts=2:sw=2:et:norl:
+" -------------------------------------------------------------------
+" Copyright © 2017-2018 Landon Bouma.
+"
+" This file is part of Dubs Vim.
+"
+" Dubs Vim is free software: you can redistribute it and/or
+" modify it under the terms of the GNU General Public License
+" as published by the Free Software Foundation, either version
+" 3 of the License, or (at your option) any later version.
+"
+" Dubs Vim is distributed in the hope that it will be useful,
+" but WITHOUT ANY WARRANTY; without even the implied warranty
+" of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+" the GNU General Public License for more details.
+"
+" You should have received a copy of the GNU General Public License
+" along with Dubs Vim. If not, see <http://www.gnu.org/licenses/>
+" or write Free Software Foundation, Inc., 51 Franklin Street,
+"                     Fifth Floor, Boston, MA 02110-1301, USA.
+" ===================================================================
 
-" 2017-12-08: See the reST syntax file included with Vim:
-"   /srv/opt/bin/share/vim/vim80/syntax/rst.vim
+" 2018-12-07: See the reST syntax file included with Vim:
+"   /srv/opt/bin/share/vim/vim81/syntax/rst.vim
 " And the more current upstream source of the same:
 "   https://github.com/marshallward/vim-restructuredtext
 
-if exists("b:current_syntaxXXX")
+if exists("b:did_dubs_rest_fold_after_syntax_rst")
   finish
 endif
+let b:did_dubs_rest_fold_after_syntax_rst = 1
+
+" +----------------------------------------------------------------------+
 
 " reST header syntax can use any of the 32 punctation keys found on a US keyboard:
 "
