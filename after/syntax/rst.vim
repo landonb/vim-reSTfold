@@ -282,3 +282,27 @@ endfunction
 map <F7> :syn enable<CR>
 " NOTE: A trick for reload syntax highlighting: ":e", to edit the file anew.
 
+" +----------------------------------------------------------------------+
+
+function! s:DubsRestWireBasic()
+  call s:DubsClr_rstSections()
+  call s:DubsSyn_rstSections()
+
+  let l:redrawtimeout = &rdt
+  if (l:redrawtimeout != 2000)
+    " Passwords first, so URL and Email matches override.
+    call s:DubsSyn_Password15Good()
+    call s:DubsSyn_AcronymNoSpell()
+    " Syntax Profiling: EmailNoSpell is costly.
+    call s:DubsSyn_EmailNoSpell()
+  else
+    silent! syn clear rstCitationReference
+    silent! syn clear rstFootnoteReference
+    silent! syn clear rstInlineInternalTargets
+    silent! syn clear rstSubstitutionReference
+  endif
+  call s:Presto_HRrules()
+endfunction
+
+call s:DubsRestWireBasic()
+
