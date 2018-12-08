@@ -37,6 +37,21 @@ let b:did_dubs_rest_fold_after_syntax_rst = 1
 
 " +----------------------------------------------------------------------+
 
+" *** DEV. UTIL. FCN.: Log message to file (b/c `echom` doesn't work from syntax).
+
+" 2018-12-07: Log to file, inspired by lervag@github: b/c cannot echom from syntax file?
+"   https://github.com/lervag/dotvim/blob/master/personal/plugin/log-autocmds.vim
+function! s:log(message)
+  silent execute '!echo "'
+    \ . strftime('%T', localtime()) . ' - ' . a:message . '"'
+    \ '>> /tmp/vim_log_dubs_after_syntax_rst'
+endfunction
+
+" NOTE: [lb]: I can `call s:log('...')` and `tail -F /tmp/vim_log_dubs_after_syntax_rst`
+"       successfully. But I cannot `echom '...'` anything. Not sure why.
+
+" +----------------------------------------------------------------------+
+
 " reST header syntax can use any of the 32 punctation keys found on a US keyboard:
 "
 "   ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
