@@ -78,7 +78,7 @@ section headers used for folding:
 
     This Section Will Not Be Folded
     ###############################
-  
+
 - Fold levels are assigned in a specific, static order.
 
   That is, as you use the command ``zr`` to collapse one level of folds,
