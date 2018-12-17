@@ -25,13 +25,6 @@
 "                     Fifth Floor, Boston, MA 02110-1301, USA.
 " ===================================================================
 
-" [lb]: Probably unnecessary for a syntax script, but source only once.
-
-if exists("b:did_dubs_rest_fold_after_ftplugin_rst")
-  finish
-endif
-let b:did_dubs_rest_fold_after_ftplugin_rst = 1
-
 " #########################################################################
 
 " [lb]: Disable continuous folding, because measuring folds is slow!

@@ -30,11 +30,6 @@
 " And the more current upstream source of the same:
 "   https://github.com/marshallward/vim-restructuredtext
 
-if exists("b:did_dubs_rest_fold_after_syntax_rst")
-  finish
-endif
-let b:did_dubs_rest_fold_after_syntax_rst = 1
-
 " +----------------------------------------------------------------------+
 
 " *** DEV. UTIL. FCN.: Log message to file (b/c `echom` doesn't work from syntax).
