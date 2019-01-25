@@ -138,7 +138,7 @@ function! GetFoldLevelIfNewReSTSection(lnum)
   let l:lnum_lowr = a:lnum + 2
   " We could just look for 1 or more repeating symbols:
   "   if getline(l:lnum_uppr) =~ '^@\+$' && getline(l:lnum_lowr) =~ '^@\+$'
-  " but dubsacks_ftype_mess/after/syntax/rst.vim checks 2+.
+  " but default /usr/share/vim/vim80/syntax/rst.vim checks 2+. Search file for:
   "   syn match rstSections
   let l:new_level = 0
   if getline(l:lnum_uppr) =~ '^@\{2,\}$' && getline(l:lnum_lowr) =~ '^@\{2,\}$'

@@ -1,5 +1,5 @@
-Dubsacks Vim — reST Document Folding
-####################################
+Dubs Vim — reST Document Folding
+################################
 
 About This Plugin
 =================
