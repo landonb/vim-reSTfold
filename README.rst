@@ -1,5 +1,8 @@
-Dubs Vim — reST Document Folding
-################################
+########################################
+Dubs Vim |em_dash| reST Document Folding
+########################################
+
+.. |em_dash| unicode:: 0x2014 .. em dash
 
 About This Plugin
 =================
