@@ -224,7 +224,7 @@ function! s:Presto_HRrules()
   "
   " Match lines with the same character repeating 8 or more times,
   " with optional preceding and trailing whitespace.
-  syn match rstFakeHRAll   '^\s*\(.\)\1\{8,}\s*\n$'
+  syn match rstFakeHRAll   '^\n\s*\(.\)\1\{8,}\s*\n$'
   " Match lines of repeating `|`s.
   syn match rstFakeHRPipes '^\s*|\{8,}\s*\n$'
   " Match lines of repeating `$`s.
