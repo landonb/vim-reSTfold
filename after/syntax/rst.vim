@@ -255,7 +255,6 @@ endfunction
 
 function! s:DubsRestWireBasic()
   call s:DubsClr_rstSections()
-  call s:DubsSyn_rstSections()
 
   let l:redrawtimeout = &rdt
   if (l:redrawtimeout != 2000)
@@ -270,7 +269,12 @@ function! s:DubsRestWireBasic()
     silent! syn clear rstInlineInternalTargets
     silent! syn clear rstSubstitutionReference
   endif
+
   call s:Presto_HRrules()
+
+  " Do real reST Section highlighting so it overrides, e.g., rstFakeHRAll.
+  call s:DubsSyn_rstSections()
+
 endfunction
 
 call s:DubsRestWireBasic()
