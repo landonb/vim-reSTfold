@@ -256,6 +256,8 @@ endfunction
 function! s:DubsRestWireBasic()
   call s:DubsClr_rstSections()
 
+  " (lb): When I first open a .rst file, rdt is 2000, even if file has vim-mode
+  " saying otherwise. Closing the file, and then reopening it, will correct issue.
   let l:redrawtimeout = &rdt
   if (l:redrawtimeout != 2000)
     " Passwords first, so URL and Email matches override.
