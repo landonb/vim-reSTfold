@@ -189,6 +189,17 @@ function! s:DubsSyn_EmailNoSpell()
   hi def EmailNoSpell guifg=LightGreen
 endfunction
 
+function! s:DubsSyn_AtHostNoSpell()
+  " (lb) added this to ignore spelling errors on words such as `@somehost`,
+  " which is a convention I've been using recently to identify what could
+  " also be referred to as ``host``, but @host is cleaner.
+  " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
+  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
+  syn match AtHostNoSpell '\([[:space:]\n]\)\@<=@[^[:space:]]\+\([[:space:]\n]\)\@=' contains=@NoSpell
+  " Both LightMagenta and LightRed look good here. Not so much any other Light's.
+  hi def AtHostNoSpell guifg=LightMagenta
+endfunction
+
 " +----------------------------------------------------------------------+
 
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
@@ -265,6 +276,7 @@ function! s:DubsRestWireBasic()
     call s:DubsSyn_AcronymNoSpell()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
+    call s:DubsSyn_AtHostNoSpell()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
