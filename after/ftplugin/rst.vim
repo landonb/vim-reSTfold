@@ -25,6 +25,15 @@
 "                     Fifth Floor, Boston, MA 02110-1301, USA.
 " ===================================================================
 
+" FIXME/2020-02-27 16:01: This (and perhaps other ftplugin/ files)
+" are missing:
+"
+"   if exists('b:did_ftplugin') | finish | endif
+"
+" though given my experience with ftplugin files one could probably
+" scream, "it just does't matter" (I've never seen an ftplugin sourced
+" twice in a row, where the b: value actually exists() already).
+
 " #########################################################################
 
 " [lb]: Disable continuous folding, because measuring folds is slow!
