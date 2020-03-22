@@ -185,7 +185,7 @@ function! s:DubsSyn_EmailNoSpell()
   " (lb) added this to ignore spelling errors on words such as `emails@somewhere.com`.
   " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
   " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
-  syn match EmailNoSpell '\([[:space:]\n]\)\@<=\<[^[:space:]]\+@[^[:space:]]\+\.\(com\|org\|edu\)\([[:space:]\n]\)\@=' contains=@NoSpell
+  syn match EmailNoSpell '\([[:space:]\n]\)\@<=\<[^[:space:]]\+@[^[:space:]]\+\.\(com\|org\|edu\)\([^[:alnum:]]\|\n\)\@=' contains=@NoSpell
   hi def EmailNoSpell guifg=LightGreen
 endfunction
 
