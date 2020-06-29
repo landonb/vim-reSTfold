@@ -78,11 +78,12 @@ function prepare_line() {
     # (Note that we include the "/NNNN" to not accidentally match an otherwise
     # capitalized five-letter word that's not meant to be a FIXME-verb. This means
     # that by convention, an EDICT will always be followed by a forward slash and
-    # a YYYY-MM-DD date (though we're a tad lenient, we don't check the whole y-m-d,
+    # a YYYY-MM-DD date or a NNNN ticket number (so don't check the whole y-m-d,
     # e.g., we could make the regex instead
     #     [[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}
     # but let's allow unknown digits, e.g., "2020-06-XX", or any separator, not
-    # just dash "-", or maybe no separator at all. And let's not make this regex
+    # just dash "-", or maybe no separator at all. Or maybe the user wants to use
+    # a 4-or-more-digit ticket number and not a date. So let's not make this regex
     # unnecessarily complicated; just this comment).
     if (edict == "XXXXX") {
       match_re = "(^|[[:space:]])([[:upper:]]{5})/[[:digit:]]{4}"
@@ -139,7 +140,14 @@ function prepare_line() {
 
 function rank_action_category(match_re) {
   category = extract_action_category(match_re)
-  rank = convert_action_category(category)
+  if (class && class == "number") {
+    # Use _fwd if `| sort`, for when `XXXX/NNNN` where NNNN is ticket number.
+    rank = convert_action_category_fwd(category)
+  }
+  else {
+    # Use _rwd if `| sort -r`, for when `XXXX/YYYY-MM-DD`.
+    rank = convert_action_category_rwd(category)
+  }
   return rank
 }
 
@@ -149,7 +157,26 @@ function extract_action_category(match_re) {
   return category
 }
 
-function convert_action_category(category) {
+function convert_action_category_fwd(category) {
+  cranks["FIXME"] = 100
+  cranks["SPIKE"] = 200
+  cranks["HIPRI"] = 220
+  cranks["HIBAR"] = 240
+  cranks["LATER"] = 333
+  cranks["MAYBE"] = 400
+  cranks["LOPRI"] = 420
+  cranks["LOBAR"] = 500
+  cranks["INERT"] = 555
+  cranks["DEFER"] = 633
+  cranks["DEBAR"] = 666
+  cranks["MEHHH"] = 777
+  if (cranks[category]) {
+    return cranks[category]
+  }
+  return 900
+}
+
+function convert_action_category_rwd(category) {
   cranks["FIXME"] = 900
   cranks["SPIKE"] = 777
   cranks["HIPRI"] = 666
@@ -172,7 +199,12 @@ function convert_action_category(category) {
 
 function rank_action_velocity(match_re) {
   velocity = extract_action_velocity(match_re)
-  rank = convert_action_velocity(velocity)
+  if (class && class == "number") {
+    rank = convert_action_velocity_fwd(velocity)
+  }
+  else {
+    rank = convert_action_velocity_rwd(velocity)
+  }
   return rank
 }
 
@@ -196,7 +228,7 @@ function extract_action_velocity(match_re) {
   return velocity
 }
 
-function convert_action_velocity(velocity) {
+function convert_action_velocity_rwd(velocity) {
   vranks["🔊"] = 50
   vranks["🔉"] = 40
   vranks["🔈"] = 30
@@ -216,6 +248,28 @@ function convert_action_velocity(velocity) {
     }
   }
   return "00"
+}
+
+function convert_action_velocity_fwd(velocity) {
+  vranks["🔊"] = 50
+  vranks["🔉"] = 60
+  vranks["🔈"] = 70
+  vranks["🔇"] = 80
+  if (vranks[velocity]) {
+    return vranks[velocity]
+  }
+  else if (velocity && velocity != "┃") {
+    # print "velocity", velocity
+    # (lb): HRMM: GAWK documents a typeof(x) function, but for me it's not defined.
+    #   if (typeof(velocity) == "number") { ... }
+    if (strtonum(velocity)) {
+      return strtonum(velocity)
+    }
+    else {
+      return 90
+    }
+  }
+  return "99"
 }
 
 # ***
