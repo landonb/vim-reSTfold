@@ -9,12 +9,12 @@
 # USAGE:
 #
 #   awk -f restfold-report.awk my-file.rst
-#   awk -f restfold-report.awk -v rules=XXXXX my-file.rst
-#   awk -f restfold-report.awk -v rules=FIXME my-file.rst
+#   awk -f restfold-report.awk -v edict=XXXXX my-file.rst
+#   awk -f restfold-report.awk -v edict=FIXME my-file.rst
 # But really:
-#   awk -f restfold-report.awk -v rules=XXXXX my-file.rst | sort -r | cut -d' ' -f2-
+#   awk -f restfold-report.awk -v edict=XXXXX my-file.rst | sort -r | cut -d' ' -f2-
 # And with line numbers:
-#   awk -f restfold-report.awk -v rules=XXXXX my-file.rst | sort -r | cut -d' ' -f2- | nl -ba
+#   awk -f restfold-report.awk -v edict=XXXXX my-file.rst | sort -r | cut -d' ' -f2- | nl -ba
 # Note the reverse sort not only works with the number used below
 # (higher is more important), the reverse sort also ensures that
 # for categories and velocities that match, the next value sorted
@@ -43,7 +43,7 @@ function process_section_border() {
     else {
       # Success! We've identified a section header!
       # But note that the string is empty if the header did not match
-      # according to the "rules" variable.
+      # according to the "edict" variable.
       if (section_header) {
         print section_header
       }
@@ -73,9 +73,9 @@ function process_line_always() {
 
 function prepare_line() {
   matching_line = ""
-  if (rules) {
-    # Look for "EDICT/YYYY" in line, at start of line or following a space.
-    # (Note that we include the "/YYYY" to not accidentally match an otherwise
+  if (edict) {
+    # Look for "EDICT/NNNN" in line, at start of line or following a space.
+    # (Note that we include the "/NNNN" to not accidentally match an otherwise
     # capitalized five-letter word that's not meant to be a FIXME-verb. This means
     # that by convention, an EDICT will always be followed by a forward slash and
     # a YYYY-MM-DD date (though we're a tad lenient, we don't check the whole y-m-d,
@@ -84,11 +84,11 @@ function prepare_line() {
     # but let's allow unknown digits, e.g., "2020-06-XX", or any separator, not
     # just dash "-", or maybe no separator at all. And let's not make this regex
     # unnecessarily complicated; just this comment).
-    if (rules == "XXXXX") {
+    if (edict == "XXXXX") {
       match_re = "(^|[[:space:]])([[:upper:]]{5})/[[:digit:]]{4}"
     }
     else {
-      match_re = "(^|[[:space:]])(" rules ")/[[:digit:]]{4}"
+      match_re = "(^|[[:space:]])(" edict ")/[[:digit:]]{4}"
     }
     if ($0 ~ match_re) {
       category_rank = rank_action_category(match_re)
