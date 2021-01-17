@@ -340,3 +340,11 @@ endfunction
 
 call s:DubsRestWireBasic()
 
+" 2021-01-16: Missing all these years!
+" - Ensure highlighting works on first file opened!
+"   (I.e., the file opened from the command line.
+"    Without this `syn on`, if you start Vim with a file specified from
+"    the command line, it will not be highlighted. But if you open another
+"    file within that instance of Vim, that file will have highlighting on.)
+autocmd VimEnter * syn enable
+
