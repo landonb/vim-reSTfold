@@ -311,38 +311,50 @@ endfunction
 "     " Also works:
 "     syn on
 
+" 2021-01-16: This syntax plugin had been opt-in per file: you'd have
+" to set redrawtimeout to something other than 2000 to enable these
+" highlights. I think I was doing this because of performance issues
+" with some of my reST files. But I'm no longer sure that's the case,
+" or, if it was, it was probably on large files, and I've been in the
+" habit recently of keeping files under 10,000 lines. Also, it's been
+" annoying me that new rst files don't have these highlights enabled
+" until I notice and remember to add a modeline.
+"   So let's require users to opt-out instead!
+"
+" - tl;dr I'd rather this work on new files and without requiring modeline.
+"
+" YOU: To opt-out, set redrawtimeout (rdt) to something less than 4999
+"      but not 2000 (the default).
+"
+"      - E.g., to disable these highlights (and their associated
+"        computational overhead), add a modeline like this atop
+"        each reST file you want to opt-out:
+"
+"          .. vim:rdt=2001
+"
+"      - Otherwise, to have syntax highlighting enabled, use either
+"        the default value:
+"
+"          .. vim:rdt=2000
+"
+"        or set it 5000 or larger:
+"
+"          .. vim:rdt=5000
+"          .. vim:rdt=9999
+"
+" MAGIC: The 4999 below is arbitrary. (2021-01-16: And I
+"        haven't had a reason to opt-out any files yet.)
+
 function! s:DubsRestWireBasic()
   call s:DubsClr_rstSections()
 
   let l:redrawtimeout = &rdt
+  " MAGIC: Vim's rdt default is 2000 (2 secs.).
+  let l:defaultRedrawTimeout = 2000
+  let l:syntaxEnableIfGreater = 4999
 
-  " 2021-01-16: This syntax highlight had been opt-in, I think because
-  " I had performance issues with some files, but that no longers seems
-  " to be the case. So make this plugin's highlights opt-out instead!
-  " - I'd rather this work on new files without my remembering to modeline.
-  "
-  " YOU: To opt-out, set redrawtimeout (rdt) to something less than 4999
-  "      but not 2000 (the default).
-  "
-  "      - E.g., to disable these highlights (and their associated
-  "        computational overhead), add a modeline like this atop
-  "        each reST file you want opted-out:
-  "
-  "          .. vim:rdt=2001
-  "
-  "      - Otherwide, to have syntax highlighting enabled, use either
-  "        the default value:
-  "
-  "          .. vim:rdt=2000
-  "
-  "        or set it 5000 or larger:
-  "
-  "          .. vim:rdt=5000
-  "          .. vim:rdt=9999
-  "
-  " MAGIC: The 4999 here is arbitrary. I've used rdt=9999 a lot to opt-in.
-  if (l:redrawtimeout == 2000) || (l:redrawtimeout > 4999)
-
+  if (l:redrawtimeout == l:defaultRedrawTimeout)
+     \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     " Passwords first, so URL and Email matches override.
     call s:DubsSyn_Password15Good()
     call s:DubsSyn_AcronymNoSpell()
