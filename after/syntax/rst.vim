@@ -104,9 +104,9 @@ function! s:DubsSyn_rstSections()
   "
   "       Use a non-counting match group, %(...):
   "
-  "         \%(\)	        A pattern enclosed by escaped parentheses.
-  " 	      Just like \(\), but without counting it as a sub-expression.
-  " 	      This allows using more groups and it's a little bit faster.
+  "         \%(\)         A pattern enclosed by escaped parentheses.
+  "         Just like \(\), but without counting it as a sub-expression.
+  "         This allows using more groups and it's a little bit faster.
   "
   "       See also:
   "
