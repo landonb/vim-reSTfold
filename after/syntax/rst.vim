@@ -200,6 +200,44 @@ function! s:DubsSyn_AtHostNoSpell()
   hi def AtHostNoSpell guifg=LightMagenta
 endfunction
 
+" HINT: You can `hi clear {group-name}` and `hi def...` in a reST file to live-test.
+"       But for `syn clear ...` and `syn match ...` you need to `:e` reload the file
+"       (or `do Syntax`/`doautocmd Syntax` (`syntax sync fromstart` did not work FM)).
+
+" 2021-01-16 17:39... just had this idea.
+" Ref:
+"   :h /character-classes
+"   :h gui-colors
+function! s:DubsSyn_UCATS_5CHAR_STAMP()
+  syn match UcatsFiveLetterStamp '\([[:space:]\n]\)\@<=[[:upper:]]\{5}\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def UcatsFiveLetterStamp guifg=Yellow gui=bold cterm=bold
+endfunction
+
+" MAYBE/2021-01-16 18:39: Consider available attrs:
+"
+"   bold, underline, undercurl, strikethrough, italic, reverse (inverse), standout
+"
+" The standout vs reverse (aka inverse) option is interesting.
+" - The same style can be done different ways,
+"   e.g., these three are similar:
+"     hi def foo guifg=Black guibg=Purple
+"     hi def foo guifg=Purple guibg=Black gui=reverse
+"     hi def foo guifg=Purple guibg=Black gui=inverse
+"     hi def foo guifg=Purple guibg=Black gui=standout
+"   but I think the text in standout is more readable (a little fatter).
+"
+" Useful? Maybe for testing?:
+"   nocombine   override attributes instead of combining them
+"   NONE
+
+function! s:DubsSyn_UCATS_FIXED()
+  syn match UcatsFixedStriken '\([[:space:]\n]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  " NOTE: GTK gVim uses `gui=`,
+  "       terminal Vim uses `cterm=`,
+  "       I'm not sure what uses `term=`.
+  hi def UcatsFixedStriken guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
 " +----------------------------------------------------------------------+
 
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
@@ -264,11 +302,18 @@ endfunction
 
 " +----------------------------------------------------------------------+
 
+" HINT: If syntax highlighting appears disabled, even if the file has
+" a Vim mode line saying otherwise, trying closing and reopening the
+" file, or saving the file and running the `:e` command, or try this:
+"
+"     set rdt=9999
+"     doautocmd Syntax
+"     " Also works:
+"     syn on
+
 function! s:DubsRestWireBasic()
   call s:DubsClr_rstSections()
 
-  " (lb): When I first open a .rst file, rdt is 2000, even if file has vim-mode
-  " saying otherwise. Closing the file, and then reopening it, will correct issue.
   let l:redrawtimeout = &rdt
   if (l:redrawtimeout != 2000)
     " Passwords first, so URL and Email matches override.
@@ -277,6 +322,8 @@ function! s:DubsRestWireBasic()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
     call s:DubsSyn_AtHostNoSpell()
+    call s:DubsSyn_UCATS_5CHAR_STAMP()
+    call s:DubsSyn_UCATS_FIXED()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
