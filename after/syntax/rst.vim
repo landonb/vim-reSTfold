@@ -220,7 +220,8 @@ function! s:DubsSyn_CincoWords_EVERY()
   syn match CincoWordsEVERY '\([[:space:]\n]\)\@<=[[:upper:]]\{5}\([/]\)\@=' contains=@NoSpell
   "                                                  The lone slash ^
 
-  hi def CincoWordsEVERY guifg=Yellow
+  " Not as bright a yellow, to be less noticeable than CincoWordsUPPER.
+  hi def CincoWordsEVERY guifg=#caf751
 endfunction
 
 function! s:DubsSyn_CincoWords_UPPER()
@@ -234,8 +235,9 @@ function! s:DubsSyn_CincoWords_UPPER()
   let l:cincos = []
 
   " *** Most used action CINCOs ((lb): that I use).
-  let l:cincos = add(l:cincos, 'FIXME')
-  let l:cincos = add(l:cincos, 'LATER')  " FIXME, but not as important.
+  let l:cincos = add(l:cincos, 'FIXME')  " Want to do 'now'.
+  let l:cincos = add(l:cincos, 'LATER')  " Want to do ... eventually.
+  let l:cincos = add(l:cincos, 'MAYBE')  " Not sure if you want to do.
 
   let l:cincos = add(l:cincos, 'SPIKE')  " Agile meaning
   let l:cincos = add(l:cincos, 'LEARN')  " Articles, books, technology
@@ -305,6 +307,11 @@ endfunction
 function! s:DubsSyn_CincoWords_TBLLC()
   syn match CincoWordsTBLLC '\([[:space:]\n]\)\@<=TBLLC\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsTBLLC guifg=#198CCF
+endfunction
+
+function! s:DubsSyn_CincoWords_TAXES()
+  syn match CincoWordsTAXES '\([[:space:]\n#]\)\@<=TAXES\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsTAXES guifg=#00a15b gui=bold cterm=bold
 endfunction
 
 " +----------------------------------------------------------------------+
@@ -434,6 +441,7 @@ function! s:DubsRestWireBasic()
     call s:DubsSyn_CincoWords_UPPER()
     call s:DubsSyn_CincoWords_FIXED()
     call s:DubsSyn_CincoWords_TBLLC()
+    call s:DubsSyn_CincoWords_TAXES()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
