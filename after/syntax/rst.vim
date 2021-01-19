@@ -217,7 +217,7 @@ function! s:DubsSyn_CincoWords_EVERY()
   "   context of something you want to emphasize, e.g.,
   "     'CINCO/2021-01-19 00:08: Some note'.
 
-  syn match CincoWordsEVERY '\([[:space:]\n]\)\@<=[[:upper:]]\{5}\([/]\)\@=' contains=@NoSpell
+  syn match CincoWordsEVERY '\([[:space:]\n\[(#]\)\@<=[[:upper:]]\{5}\([/]\)\@=' contains=@NoSpell
   "                                                  The lone slash ^
 
   " Not as bright a yellow, to be less noticeable than CincoWordsUPPER.
@@ -270,7 +270,7 @@ function! s:DubsSyn_CincoWords_UPPER()
   " END: Said list as you wish.
 
   let l:cinco_re = join(l:cincos, '\|')
-  let l:cinco_pat = '\([[:space:]\n]\)\@<=\(' . l:cinco_re . '\)\([,:/[:space:]\n]\)\@='
+  let l:cinco_pat = '\([[:space:]\n\[(#]\)\@<=\(' . l:cinco_re . '\)\([,:/[:space:]\n]\)\@='
   let l:syn_cmd = "syn match CincoWordsUPPER '" . l:cinco_pat . "' contains=@NoSpell"
   exec l:syn_cmd
 
@@ -297,7 +297,7 @@ endfunction
 "   NONE
 
 function! s:DubsSyn_CincoWords_FIXED()
-  syn match CincoWordsFIXED '\([[:space:]\n]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsFIXED '\([[:space:]\n\[(#]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   " NOTE: GTK gVim uses `gui=`,
   "       terminal Vim uses `cterm=`,
   "       I'm not sure what uses `term=`.
@@ -305,12 +305,12 @@ function! s:DubsSyn_CincoWords_FIXED()
 endfunction
 
 function! s:DubsSyn_CincoWords_TBLLC()
-  syn match CincoWordsTBLLC '\([[:space:]\n]\)\@<=TBLLC\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsTBLLC '\([[:space:]\n\[(#]\)\@<=TBLLC\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsTBLLC guifg=#198CCF
 endfunction
 
 function! s:DubsSyn_CincoWords_TAXES()
-  syn match CincoWordsTAXES '\([[:space:]\n#]\)\@<=TAXES\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsTAXES '\([[:space:]\n\[(#]\)\@<=TAXES\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsTAXES guifg=#00a15b gui=bold cterm=bold
 endfunction
 
