@@ -208,9 +208,73 @@ endfunction
 " Ref:
 "   :h /character-classes
 "   :h gui-colors
-function! s:DubsSyn_UCATS_5CHAR_STAMP()
-  syn match UcatsFiveLetterStamp '\([[:space:]\n]\)\@<=[[:upper:]]\{5}\([,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def UcatsFiveLetterStamp guifg=Yellow gui=bold cterm=bold
+function! s:DubsSyn_CincoWords_EVERY()
+  " Let's not highlight all CINCO words that appear alone (surrounded by
+  " whitespace), otherwise we'll highlight acronyms we don't intend to
+  " emphasize (such as STOCK symbols).
+  " - But let's highlight CINCO words followed by a forward slash. This
+  "   assumes that that format ('CINCO/') is generally only used in the
+  "   context of something you want to emphasize, e.g.,
+  "     'CINCO/2021-01-19 00:08: Some note'.
+
+  syn match CincoWordsEVERY '\([[:space:]\n]\)\@<=[[:upper:]]\{5}\([/]\)\@=' contains=@NoSpell
+  "                                                  The lone slash ^
+
+  hi def CincoWordsEVERY guifg=Yellow
+endfunction
+
+function! s:DubsSyn_CincoWords_UPPER()
+  " Highlight *actionable* CINCO words specially. CINCO CTAs. (Or CsTA?)
+  " - Use case: You want to visually scan a notes file quickly looking
+  "             for FIXME notes and other tasks you can work on.
+  "             *Calls to Action*
+
+  " YOU: Modify this list to your liking.
+
+  let l:cincos = []
+
+  " *** Most used action CINCOs ((lb): that I use).
+  let l:cincos = add(l:cincos, 'FIXME')
+  let l:cincos = add(l:cincos, 'LATER')  " FIXME, but not as important.
+
+  let l:cincos = add(l:cincos, 'SPIKE')  " Agile meaning
+  let l:cincos = add(l:cincos, 'LEARN')  " Articles, books, technology
+  let l:cincos = add(l:cincos, 'STUDY')  " Similar to LEARN
+
+  let l:cincos = add(l:cincos, 'WATCH')  " For tracking 'random' events
+  let l:cincos = add(l:cincos, 'TRACK')  " For tracking known events
+  let l:cincos = add(l:cincos, 'AWAIT')  " For future events
+
+  let l:cincos = add(l:cincos, 'ORDER')  " As in shopping.
+
+  let l:cincos = add(l:cincos, 'CHORE')  " Around the house, or code
+  let l:cincos = add(l:cincos, 'AUDIT')  " You need to review something
+  let l:cincos = add(l:cincos, 'CHECK')  " Similar to AUDIT
+  let l:cincos = add(l:cincos, 'REPLY')  " As in email or persons
+
+  " *** Less used action CINCOs.
+  let l:cincos = add(l:cincos, 'TODAY')
+  let l:cincos = add(l:cincos, 'DAILY')
+  let l:cincos = add(l:cincos, 'RECUR')
+  let l:cincos = add(l:cincos, 'TRYME')
+  let l:cincos = add(l:cincos, 'TWEAK')
+
+  " *** Not really actions...
+  let l:cincos = add(l:cincos, 'HRMMM')
+  let l:cincos = add(l:cincos, 'MEHHH')
+  let l:cincos = add(l:cincos, 'BONUS')
+  let l:cincos = add(l:cincos, 'OOOPS')
+
+  " END: Said list as you wish.
+
+  let l:cinco_re = join(l:cincos, '\|')
+  let l:cinco_pat = '\([[:space:]\n]\)\@<=\(' . l:cinco_re . '\)\([,:/[:space:]\n]\)\@='
+  let l:syn_cmd = "syn match CincoWordsUPPER '" . l:cinco_pat . "' contains=@NoSpell"
+  exec l:syn_cmd
+
+  " HRMMM/2021-01-19: Yellow without bold is almost more striking.
+  "  MAYBE: CincoWordsEVERY is Yellow but not bold; maybe change its color.
+  hi def CincoWordsUPPER guifg=Yellow gui=bold cterm=bold
 endfunction
 
 " MAYBE/2021-01-16 18:39: Consider available attrs:
@@ -230,12 +294,17 @@ endfunction
 "   nocombine   override attributes instead of combining them
 "   NONE
 
-function! s:DubsSyn_UCATS_FIXED()
-  syn match UcatsFixedStriken '\([[:space:]\n]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+function! s:DubsSyn_CincoWords_FIXED()
+  syn match CincoWordsFIXED '\([[:space:]\n]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   " NOTE: GTK gVim uses `gui=`,
   "       terminal Vim uses `cterm=`,
   "       I'm not sure what uses `term=`.
-  hi def UcatsFixedStriken guifg=Purple gui=strikethrough cterm=strikethrough
+  hi def CincoWordsFIXED guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
+function! s:DubsSyn_CincoWords_TBLLC()
+  syn match CincoWordsTBLLC '\([[:space:]\n]\)\@<=TBLLC\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsTBLLC guifg=#198CCF
 endfunction
 
 " +----------------------------------------------------------------------+
@@ -361,8 +430,10 @@ function! s:DubsRestWireBasic()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
     call s:DubsSyn_AtHostNoSpell()
-    call s:DubsSyn_UCATS_5CHAR_STAMP()
-    call s:DubsSyn_UCATS_FIXED()
+    call s:DubsSyn_CincoWords_EVERY()
+    call s:DubsSyn_CincoWords_UPPER()
+    call s:DubsSyn_CincoWords_FIXED()
+    call s:DubsSyn_CincoWords_TBLLC()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
