@@ -242,9 +242,11 @@ function! s:DubsSyn_CincoWords_UPPER()
   let l:cincos = add(l:cincos, 'SPIKE')  " Agile meaning
   let l:cincos = add(l:cincos, 'LEARN')  " Articles, books, technology
   let l:cincos = add(l:cincos, 'STUDY')  " Similar to LEARN
+  let l:cincos = add(l:cincos, 'WATCH')  " Videos to WATCH (or maybe
+                                         "  issues to keep an eye on,
+                                         "  like TRACK?)
 
-  let l:cincos = add(l:cincos, 'WATCH')  " For tracking 'random' events
-  let l:cincos = add(l:cincos, 'TRACK')  " For tracking known events
+  let l:cincos = add(l:cincos, 'TRACK')  " For keeping vigilant
   let l:cincos = add(l:cincos, 'AWAIT')  " For future events
 
   let l:cincos = add(l:cincos, 'ORDER')  " As in shopping.
