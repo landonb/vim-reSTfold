@@ -56,7 +56,8 @@ let s:DEBUG_TRACE = 0
 " [lb]: I tried defining a local function, e.g., s:Func, and using foldexpr=<SID>Func,
 " but it didn't stick. So using global function (and therefore name is capitalized).
 function! ReSTfoldFoldLevel(lnum)
-  let fold_level = IdentifyFoldLevelAtLine(a:lnum)
+  let l:fold_level = IdentifyFoldLevelAtLine(a:lnum)
+
   if s:DEBUG_TRACE && a:lnum < 30
     echom "a:lnum: " . a:lnum . " / l:fold_level: " . l:fold_level
   endif
@@ -220,13 +221,13 @@ autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTBuf
 
 " Move the entity under the cursor up a line.
 function! s:MoveUp()
-  let lineno = line('.')
-  if lineno == 1
+  let l:lineno = line('.')
+  if l:lineno == 1
     return
   endif
 
-  let fc = foldclosed('.')
-  if fc == -1
+  let l:fc = foldclosed('.')
+  if l:fc == -1
     " (lb): Note that we use bang! to tell Vim to skip our mappings
     " and use the original meaning of Ctrl-y; and we use execute to
     " be able to specify the key to execute as a literal.
@@ -234,21 +235,21 @@ function! s:MoveUp()
     return
   end
 
-  let a_reg = @a
+  let l:a_reg = @a
   " "a   Use register `a` for the next delete, yank or put.
   " dd   Delete [count=1] lines [into register `a`] *linewise*.
   " k    Move up
   " "a   Use register `a` for the next delete, yank or put.
   " P    Put the text [from register `a`] before the cursor.
   " Note that, *linewise*, dd will delete all lines in a fold. Sweet!
-  if lineno == line('$')
+  if l:lineno == line('$')
     normal! "add"aP
   else
     normal! "addk"aP
   endif
 
-  let @a = a_reg
-  if fc != -1
+  let @a = l:a_reg
+  if l:fc != -1
     call ReSTBufferUpdateFolds(2)
     normal! zc
   endif
@@ -256,17 +257,17 @@ endfunction
 
 " Move the entity under the cursor down a line.
 function! s:MoveDown()
-  let fc = foldclosed('.')
-  if fc == -1
+  let l:fc = foldclosed('.')
+  if l:fc == -1
     execute "normal! \<C-e>"
 
     return
   end
 
-  let a_reg = @a
+  let l:a_reg = @a
   normal! "add"ap
-  let @a = a_reg
-  if (fc != -1) && (foldclosed('.') == -1)
+  let @a = l:a_reg
+  if (l:fc != -1) && (foldclosed('.') == -1)
     call ReSTBufferUpdateFolds(2)
     normal! zc
   endif
@@ -285,9 +286,9 @@ function! ReSTSectionTitleFoldText()
     let l:lineno += 1
   end
 
-  let foldchar = matchstr(&fillchars, 'fold:\zs.')
+  let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
 
-  let textprefix = '+' . repeat(foldchar, v:foldlevel) . ' ' . getline(l:lineno)
+  let l:textprefix = '+' . repeat(l:foldchar, v:foldlevel) . ' ' . getline(l:lineno)
   " (lb): Code from which I copied reserved 1/3 of the window for the meta, e.g.,
   "   let textstartend = (winwidth(0) * 2) / 3
   " but that wastes precious space we could use on the title.
@@ -297,32 +298,32 @@ function! ReSTSectionTitleFoldText()
   "  3: Trailing '---'
   "  2: ' ' padding around interior '-*'
   "  5: Prefix '+-* '
-  let textstartend = winwidth(0) - 14 - 3 - 2 - 5
+  let l:textstartend = winwidth(0) - 14 - 3 - 2 - 5
   " NOTE: Use strcharpart, not strpart, to could display width, not bytes,
   " i.e., a Unicode character should count as 1 display character, not 3 bytes.
-  let foldtextstart = strcharpart(textprefix, 0, textstartend)
+  let l:foldtextstart = strcharpart(l:textprefix, 0, l:textstartend)
 
-  let lines_count = v:foldend - v:foldstart + 1
+  let l:lines_count = v:foldend - v:foldstart + 1
   " MAGIC_NUMBER: %10s pads text to 10 characters, including ' lines',
   "   which leaves 4 characters for the count, i.e., 1000s.
-  let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+  let l:lines_count_text = '| ' . printf("%10s", l:lines_count . ' lines') . ' |'
   " MAGIC_NUMBER: (lb): I think the 8 just really just be a 3, because the
   " var_length_hr is what ensures the width of the title line, and from usage,
-  " there are only 3 dashes (foldchar) after count, e.g.,
+  " there are only 3 dashes (l:foldchar) after count, e.g.,
   "   +---- FOLDTITLE -------------------------------------- | XX lines |---
   "                                                there are only 3 here ^^^
-  let foldtextend = lines_count_text . repeat(foldchar, 8)
+  let l:foldtextend = l:lines_count_text . repeat(l:foldchar, 8)
 
   " Substitute any character '.' for 'x' so that Unicode is counted as 1 each, e.g., not 3 each.
-  "let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+  "let l:foldtextlength = strlen(substitute(l:foldtextstart . l:foldtextend, '.', 'x', 'g')) + &foldcolumn
   " (lb): Or just use strwidth:
-  let foldtextlength = strwidth(foldtextstart) + strwidth(foldtextend) + &foldcolumn
+  let l:foldtextlength = strwidth(l:foldtextstart) + strwidth(l:foldtextend) + &foldcolumn
 
   " MAGIC_NUMBER: Subtract 2 for the 2 spaces added to pad the ------- sides.
-  let var_length_hr = repeat(foldchar, winwidth(0) - foldtextlength - 2)
-  let foldtitle = foldtextstart . ' ' . var_length_hr . ' ' . foldtextend
+  let l:var_length_hr = repeat(l:foldchar, winwidth(0) - l:foldtextlength - 2)
+  let l:foldtitle = l:foldtextstart . ' ' . l:var_length_hr . ' ' . l:foldtextend
 
-  return foldtitle
+  return l:foldtitle
 endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
