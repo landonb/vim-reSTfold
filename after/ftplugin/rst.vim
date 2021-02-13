@@ -52,11 +52,13 @@ let s:DEBUG_TRACE = 0
 
 " ################################################################# "
 
-" Folding based on specific sectioning.
-" [lb]: I tried defining a local function, e.g., s:Func, and using foldexpr=<SID>Func,
-" but it didn't stick. So using global function (and therefore name is capitalized).
+" Double-ruled reST header folding engine.
 function! ReSTfoldFoldLevel(lnum)
-  let l:fold_level = IdentifyFoldLevelAtLine(a:lnum)
+  if b:RESTFOLD_SCANNER_LOOKUP == v:none
+    call s:HydrateFoldLevelLookup()
+  endif
+
+  let l:fold_level = s:LookupFoldLevelAtLine(a:lnum)
 
   if s:DEBUG_TRACE && a:lnum < 30
     echom "a:lnum: " . a:lnum . " / l:fold_level: " . l:fold_level
@@ -67,39 +69,56 @@ endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-let b:RESTFOLD_SCANNER_LINENO = -1
+let b:RESTFOLD_SCANNER_LOOKUP = v:none
 
-if s:DEBUG_TRACE
-  echom "b:RESTFOLD_SCANNER_LINENO: " . b:RESTFOLD_SCANNER_LINENO
-endif
+function! s:HydrateFoldLevelLookup()
+  let l:file_length = line('$')
+
+  let b:RESTFOLD_SCANNER_LOOKUP = s:ArrayFill(l:file_length + 1, -1)
+
+  for lnum in range(l:file_length)
+    let l:lnum += 1
+    let b:RESTFOLD_SCANNER_LOOKUP[l:lnum] = s:IdentifyFoldLevelAtLine(l:lnum)
+  endfor
+endfunction
+
+" ***
+
+" Ref:
+"   https://vi.stackexchange.com/questions/8045/
+"     whats-the-best-way-to-initialize-a-list-of-a-predefined-length
+
+" See also:
+"   return repeat([a:value], a:length)
+" - (lb): I have no idea whether map-range or repeat is more performant.
+function! s:ArrayFill(length, value)
+  return map(range(a:length), a:value)
+endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-function! IdentifyFoldLevelAtLine(lnum)
-  " Is foldexpr called deterministically? (Is it first called with lnum=1,
-  " then lnum++ each call?) I know you can call :echo &foldlevel and trigger
-  " this function out of order, but on zx is it called in order?
-  if b:RESTFOLD_SCANNER_LINENO != -1
-    if a:lnum != (b:RESTFOLD_SCANNER_LINENO + 1)
-      if s:DEBUG_TRACE
-        echom "Folding: a:lnum: " . a:lnum .  " / prev: " . b:RESTFOLD_SCANNER_LINENO
-      endif
-      let b:RESTFOLD_SCANNER_LINENO = a:lnum
-      return -1
-    endif
+function! s:LookupFoldLevelAtLine(lnum)
+  return b:RESTFOLD_SCANNER_LOOKUP[a:lnum]
+endfunction
+
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
+
+let b:RESTFOLD_SCANNER_LINENO = 0
+
+function! s:IdentifyFoldLevelAtLine(lnum)
+  if a:lnum != b:RESTFOLD_SCANNER_LINENO + 1
+    echom "ERROR: reSTfold: Unexpected line number: " . a:lnum
+      \ . " / Expected: " . b:RESTFOLD_SCANNER_LINENO + 1
   endif
 
   let b:RESTFOLD_SCANNER_LINENO = a:lnum
-  if b:RESTFOLD_SCANNER_LINENO == line('$')
-    let b:RESTFOLD_SCANNER_LINENO = -1
-  endif
 
   if a:lnum == 1
     let b:cur_level_fold = 0
     let b:cur_level_lnum = 0
   endif
 
-  " Skip 2 lines following a new level.
+  " Skip 2 lines following a new level (or beginning of file).
   if (b:cur_level_fold == 0) || (a:lnum > (b:cur_level_lnum + 2))
     let l:new_level = GetFoldLevelIfNewReSTSection(a:lnum)
     if l:new_level > 0
@@ -169,7 +188,8 @@ function! ReSTBufferUpdateFolds(reset_folding)
       mkview 8
     endif
 
-    let b:RESTFOLD_SCANNER_LINENO = -1
+    let b:RESTFOLD_SCANNER_LINENO = 0
+    let b:RESTFOLD_SCANNER_LOOKUP = v:none
 
     setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
     setlocal foldmethod=expr
