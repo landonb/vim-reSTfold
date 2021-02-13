@@ -98,7 +98,22 @@ endfunction
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
 function! s:LookupFoldLevelAtLine(lnum)
+  if a:lnum < 1 || a:lnum >= len(b:RESTFOLD_SCANNER_LOOKUP)
+    return -1
+  endif
+
   return b:RESTFOLD_SCANNER_LOOKUP[a:lnum]
+endfunction
+
+function! s:LookupFoldLevelNumber(lnum)
+  let l:fold_level = s:LookupFoldLevelAtLine(a:lnum)
+
+  " Remove '>' starts-at-this-line delimiter.
+  if type(l:fold_level) == type('') && stridx(l:fold_level, '>') != -1
+    let l:fold_level = strcharpart(l:fold_level, 1)
+  endif
+
+  return str2nr(l:fold_level)
 endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
@@ -121,13 +136,18 @@ function! s:IdentifyFoldLevelAtLine(lnum)
   " Skip 2 lines following a new level (or beginning of file).
   if (b:cur_level_fold == 0) || (a:lnum > (b:cur_level_lnum + 2))
     let l:new_level = GetFoldLevelIfNewReSTSection(a:lnum)
+
     if l:new_level > 0
       let b:cur_level_lnum = a:lnum
       let b:cur_level_fold = l:new_level
+      " Indicate that a new fold '>' starts at this line.
+      " MAYBE/2021-02-13: Any reason to also specify '<' ends at this line?
       let l:start_level = '>' . str2nr(l:new_level)
+
       if s:DEBUG_TRACE && a:lnum < 60
         echom "Folding: a:lnum: " . a:lnum . " / l:start_level: " . l:start_level
       endif
+
       return l:start_level
     endif
   endif
@@ -301,30 +321,77 @@ autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent cal
 " With a little help from:
 "   http://dhruvasagar.com/2013/03/28/vim-better-foldtext
 
+" 2021-02-13: This plugin formerly extracted the single fold character for fillchars,
+" e.g., given fillchars="vert:|,fold:-", this matchstr extracts the '-' dash:
+"   let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
+" But that doesn't allow for custom └─piping─┘.
+
 function! ReSTSectionTitleFoldText()
-  " The reSTfold format is horizontal rules above and below title, where the
-  " fold starts on the first rule; so the title is next line. Unless EOF.
+  " The reSTfold format specifies horizontal rules above and below the title (a
+  " section title sandwich). So the fold starts on the first horizontal rule (at
+  " v:foldstart), and the title is the first line after v:foldstart. Unless EOF.
   let l:lineno_title = v:foldstart
   if l:lineno_title != line('$')
     " Not the last line.
     let l:lineno_title += 1
   end
 
-  " Extract the single fold character, e.g., if fillchars="vert:|,fold:-",
-  " this matchstr extracts the '-' dash.
-  let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
+  let l:fold_closed_line = foldclosed(v:foldstart)
+  let l:fold_closed_endl = foldclosedend(v:foldstart)
 
-  let l:textprefix = '+' . repeat(l:foldchar, v:foldlevel) . ' ' . getline(l:lineno_title)
+  let l:fold_start_prev = foldclosed(v:foldstart - 1)
+  "let l:fold_level_prev = s:LookupFoldLevelNumber(v:foldstart - 1)
+  let l:fold_level_prev = s:LookupFoldLevelNumber(l:fold_start_prev)
+  "
+  let l:fold_start_next = foldclosed(foldclosedend(v:foldstart) + 1)
+  "let l:fold_level_next = s:LookupFoldLevelNumber(v:foldend + 1)
+  let l:fold_level_next = s:LookupFoldLevelNumber(l:fold_start_next)
+  "
+  let l:prefix_pipe = ''
+  if v:foldlevel == l:fold_level_next
+    if v:foldlevel == l:fold_level_prev
+      let l:prefix_pipe = '├'
+    else
+      let l:prefix_pipe = '┌'
+    endif
+  elseif v:foldlevel == l:fold_level_prev
+    " But v:foldlevel != l:fold_level_next
+    let l:prefix_pipe = '└'
+  else
+    let l:prefix_pipe = '─'
+  endif
+  if s:DEBUG_TRACE
+    echom "=== v:foldlvl: " . v:foldlevel
+          \ . " / v:fldstrt: " . v:foldstart
+          \ . " / v:foldend: " . v:foldend
+          \ . " / prev: " . l:fold_level_prev
+          \ . " / next: " . l:fold_level_next
+          \ . " / cllin: " . l:fold_closed_line
+          \ . " / clend: " . l:fold_closed_endl
+  endif
+
+  let l:foldchar = '─'
+
+  let l:lvl_prefix = ''
+  if v:foldlevel == 1
+    let l:lvl_prefix = l:prefix_pipe . '─'
+  elseif v:foldlevel == 2
+    let l:lvl_prefix = ' ' . l:prefix_pipe . '──'
+  else
+    let l:lvl_prefix = '   ' . l:prefix_pipe . repeat(l:foldchar . l:foldchar, v:foldlevel - 1)
+  endif
+  let l:textprefix = l:lvl_prefix . ' ' . getline(l:lineno_title)
+
   " (lb): Code from which I copied reserved 1/3 of the window for the meta, e.g.,
   "   let textstartend = (winwidth(0) * 2) / 3
   " but that wastes precious space we could use on the title.
   " MAGIC_NUMBERS:
-  " 14: Per the %10s below, we assume folds will be less than 10K lines, so the
+  "  4: Per the %10s below, we assume folds will be less than 10K lines, so the
   "     longest meta text will be, e.g., "| 9999 lines |", or 14 characters.
-  "  3: Trailing '---'
-  "  2: ' ' padding around interior '-*'
+  "  0: Trailing '---'
+  "  0: ' ' padding around interior '-*'
   "  5: Prefix '+-* '
-  let l:textstartend = winwidth(0) - 14 - 3 - 2 - 5
+  let l:textstartend = winwidth(0) - 4 - 0 - 0 - 5
   " NOTE: Use strcharpart, not strpart, to calculate display width, not bytes,
   " i.e., Unicode characters should count as 1 display character, not 3 bytes.
   let l:foldtextstart = strcharpart(l:textprefix, 0, l:textstartend)
@@ -332,21 +399,21 @@ function! ReSTSectionTitleFoldText()
   let l:lines_count = v:foldend - v:foldstart + 1
   " MAGIC_NUMBER: %10s pads text to 10 characters, including ' lines',
   "   which leaves 4 characters for the count, i.e., 1000s.
-  let l:lines_count_text = '| ' . printf("%10s", l:lines_count . ' lines') . ' |'
+  let l:lines_count_text = '| ' . printf("%4", l:lines_count) . ' |'
   " MAGIC_NUMBER: (lb): I think the 8 just really just be a 3, because the
   " var_length_hr is what ensures the width of the title line, and from usage,
   " there are only 3 dashes (l:foldchar) after count, e.g.,
   "   +---- FOLDTITLE -------------------------------------- | XX lines |---
   "                                                there are only 3 here ^^^
-  let l:foldtextend = l:lines_count_text . repeat(l:foldchar, 8)
+  let l:foldtextend = ''
 
   " Substitute any character '.' for 'x' so that Unicode is counted as 1 each, e.g., not 3 each.
-  "let l:foldtextlength = strlen(substitute(l:foldtextstart . l:foldtextend, '.', 'x', 'g')) + &foldcolumn
+  "let foldtextlength = strlen(substitute(l:foldtextstart . l:foldtextend, '.', 'x', 'g')) + &foldcolumn
   " (lb): Or just use strwidth:
   let l:foldtextlength = strwidth(l:foldtextstart) + strwidth(l:foldtextend) + &foldcolumn
 
   " MAGIC_NUMBER: Subtract 2 for the 2 spaces added to pad the ------- sides.
-  let l:var_length_hr = repeat(l:foldchar, winwidth(0) - l:foldtextlength - 2)
+  let l:var_length_hr = ''
   let l:foldtitle = l:foldtextstart . ' ' . l:var_length_hr . ' ' . l:foldtextend
 
   return l:foldtitle
