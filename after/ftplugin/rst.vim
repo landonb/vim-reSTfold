@@ -60,13 +60,13 @@ setlocal foldexpr="0"
 
 " #########################################################################
 
-" Set DEBUG_TRACE to 1 for :message blather.
-"  let s:DEBUG_TRACE = 1
 " MAYBE: [lb]: Remove this leftover development cruft.
 " Or leave it, in case you need to fix any bugs later.
 " (ALSO/2018-12-07: You might enjoy logging to a file to trace the runtime
 "  rather than echoing to the :messages buffer. Search Dubs Vim for s:log.)
 let s:DEBUG_TRACE = 0
+" Set DEBUG_TRACE to 1 for :message blather.
+"  let s:DEBUG_TRACE = 1
 
 " #########################################################################
 
