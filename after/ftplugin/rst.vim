@@ -1,29 +1,11 @@
-" File: dubs_rest_fold/after/ftplugin/rst.vim
-" Author: Landon Bouma (landonb &#x40; retrosoft &#x2E; com)
-" Project Page: https://github.com/landonb/dubs_rest_fold
-" Summary: Performant reST section folding
-" License: GPLv3
-" vim:tw=0:ts=2:sw=2:et:norl:
-" -------------------------------------------------------------------
-" Copyright © 2018 Landon Bouma.
-"
-" This file is part of Dubs Vim.
-"
-" Dubs Vim is free software: you can redistribute it and/or
-" modify it under the terms of the GNU General Public License
-" as published by the Free Software Foundation, either version
-" 3 of the License, or (at your option) any later version.
-"
-" Dubs Vim is distributed in the hope that it will be useful,
-" but WITHOUT ANY WARRANTY; without even the implied warranty
-" of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
-" the GNU General Public License for more details.
-"
-" You should have received a copy of the GNU General Public License
-" along with Dubs Vim. If not, see <http://www.gnu.org/licenses/>
-" or write Free Software Foundation, Inc., 51 Franklin Street,
-"                     Fifth Floor, Boston, MA 02110-1301, USA.
-" ===================================================================
+" Innovative reST section folding
+" Author: Landon Bouma <https://tallybark.com/>
+" Online: https://github.com/landonb/dubs_rest_fold
+" License: https://creativecommons.org/publicdomain/zero/1.0/
+"  vim:tw=0:ts=2:sw=2:et:norl:ft=vim
+" Copyright © 2018-21 Landon Bouma.
+
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
 " FIXME/2020-02-27 16:01: This (and perhaps other ftplugin/ files)
 " are missing:
@@ -34,7 +16,7 @@
 " scream, "it just does't matter" (I've never seen an ftplugin sourced
 " twice in a row, where the b: value actually exists() already).
 
-" #########################################################################
+" ################################################################# "
 
 " [lb]: Disable continuous folding, because measuring folds is slow!
 
@@ -58,7 +40,7 @@
 setlocal foldmethod=manual
 setlocal foldexpr="0"
 
-" #########################################################################
+" ################################################################# "
 
 " MAYBE: [lb]: Remove this leftover development cruft.
 " Or leave it, in case you need to fix any bugs later.
@@ -68,7 +50,7 @@ let s:DEBUG_TRACE = 0
 " Set DEBUG_TRACE to 1 for :message blather.
 "  let s:DEBUG_TRACE = 1
 
-" #########################################################################
+" ################################################################# "
 
 " Folding based on specific sectioning.
 " [lb]: I tried defining a local function, e.g., s:Func, and using foldexpr=<SID>Func,
@@ -78,13 +60,19 @@ function! ReSTfoldFoldLevel(lnum)
   if s:DEBUG_TRACE && a:lnum < 30
     echom "a:lnum: " . a:lnum . " / l:fold_level: " . l:fold_level
   endif
+
   return l:fold_level
 endfunction
 
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
+
 let s:PREV_FOLD_EXPR_LNUM = -1
+
 if s:DEBUG_TRACE
   echom "s:PREV_FOLD_EXPR_LNUM: " . s:PREV_FOLD_EXPR_LNUM
 endif
+
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
 function! IdentifyFoldLevelAtLine(lnum)
   " Is foldexpr called deterministically? (Is it first called with lnum=1,
@@ -99,6 +87,7 @@ function! IdentifyFoldLevelAtLine(lnum)
       return -1
     endif
   endif
+
   let s:PREV_FOLD_EXPR_LNUM = a:lnum
   if s:PREV_FOLD_EXPR_LNUM == line('$')
     let s:PREV_FOLD_EXPR_LNUM = -1
@@ -126,8 +115,11 @@ function! IdentifyFoldLevelAtLine(lnum)
   if s:DEBUG_TRACE && a:lnum < 30
     echom "Folding: a:lnum: " . a:lnum . " / b:cur_level_fold: " . b:cur_level_fold
   endif
+
   return b:cur_level_fold
 endfunction
+
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
 function! GetFoldLevelIfNewReSTSection(lnum)
   " 2018-09-16: (lb): Before I added ReSTSectionTitleFoldText to deliberately
@@ -145,11 +137,13 @@ function! GetFoldLevelIfNewReSTSection(lnum)
   " current line, and the line two lines ahead:
   let l:lnum_uppr = a:lnum
   let l:lnum_lowr = a:lnum + 2
+
   " We could just look for 1 or more repeating symbols:
   "   if getline(l:lnum_uppr) =~ '^@\+$' && getline(l:lnum_lowr) =~ '^@\+$'
   " but default /usr/share/vim/vim80/syntax/rst.vim checks 2+. Search file for:
   "   syn match rstSections
   let l:new_level = 0
+
   if getline(l:lnum_uppr) =~ '^@\{2,\}$' && getline(l:lnum_lowr) =~ '^@\{2,\}$'
     let l:new_level = 1
   elseif getline(l:lnum_uppr) =~ '^#\{2,\}$' && getline(l:lnum_lowr) =~ '^#\{2,\}$'
@@ -159,10 +153,11 @@ function! GetFoldLevelIfNewReSTSection(lnum)
   elseif getline(l:lnum_uppr) =~ '^-\{2,\}$' && getline(l:lnum_lowr) =~ '^-\{2,\}$'
     let l:new_level = 4
   endif
+
   return l:new_level
 endfunction
 
-" #########################################################################
+" ################################################################# "
 
 function! ReSTBufferUpdateFolds(reset_folding)
   " For some reason if I use mkview ... silent loadview here, folding doesn't work at all.
@@ -172,13 +167,16 @@ function! ReSTBufferUpdateFolds(reset_folding)
       " later, because `zx` will "Undo manually opened and closed folds".
       mkview 8
     endif
+
     let s:PREV_FOLD_EXPR_LNUM = -1
+
     setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
     setlocal foldmethod=expr
     normal! zx
     setlocal foldmethod=manual
     setlocal foldexpr="0"
     setlocal foldtext=ReSTSectionTitleFoldText()
+
     if a:reset_folding == 1
       " Close all folds (set foldlevel to 0).
       normal! zM
@@ -192,6 +190,7 @@ function! ReSTBufferUpdateFolds(reset_folding)
     elseif a:reset_folding == 0
       silent loadview 8
     endif
+
   elseif a:reset_folding == 1
     echom "Run 'zi' to foldenable!"
   end
@@ -201,7 +200,7 @@ endfunction
 autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTBufferUpdateFolds(1)<CR>
 autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTBufferUpdateFolds(1)<CR>
 
-" #########################################################################
+" ################################################################# "
 
 " Transpose folds (reposition/move folds "up" and "down")
 "
@@ -225,6 +224,7 @@ function! s:MoveUp()
   if lineno == 1
     return
   endif
+
   let fc = foldclosed('.')
   if fc == -1
     " (lb): Note that we use bang! to tell Vim to skip our mappings
@@ -233,6 +233,7 @@ function! s:MoveUp()
     execute "normal! \<C-y>"
     return
   end
+
   let a_reg = @a
   " "a   Use register `a` for the next delete, yank or put.
   " dd   Delete [count=1] lines [into register `a`] *linewise*.
@@ -245,6 +246,7 @@ function! s:MoveUp()
   else
     normal! "addk"aP
   endif
+
   let @a = a_reg
   if fc != -1
     call ReSTBufferUpdateFolds(2)
@@ -257,8 +259,10 @@ function! s:MoveDown()
   let fc = foldclosed('.')
   if fc == -1
     execute "normal! \<C-e>"
+
     return
   end
+
   let a_reg = @a
   normal! "add"ap
   let @a = a_reg
@@ -271,7 +275,7 @@ endfunction
 autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Up>   \|:silent call <SID>MoveUp()<CR>
 autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent call <SID>MoveDown()<CR>
 
-" #########################################################################
+" ################################################################# "
 
 " http://dhruvasagar.com/2013/03/28/vim-better-foldtext
 function! ReSTSectionTitleFoldText()
@@ -317,6 +321,9 @@ function! ReSTSectionTitleFoldText()
   " MAGIC_NUMBER: Subtract 2 for the 2 spaces added to pad the ------- sides.
   let var_length_hr = repeat(foldchar, winwidth(0) - foldtextlength - 2)
   let foldtitle = foldtextstart . ' ' . var_length_hr . ' ' . foldtextend
+
   return foldtitle
 endfunction
+
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
