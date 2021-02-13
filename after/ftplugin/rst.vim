@@ -278,17 +278,23 @@ autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent cal
 
 " ################################################################# "
 
-" http://dhruvasagar.com/2013/03/28/vim-better-foldtext
+" With a little help from:
+"   http://dhruvasagar.com/2013/03/28/vim-better-foldtext
+
 function! ReSTSectionTitleFoldText()
-  let l:lineno = v:foldstart
-  if l:lineno != line('$')
+  " The reSTfold format is horizontal rules above and below title, where the
+  " fold starts on the first rule; so the title is next line. Unless EOF.
+  let l:lineno_title = v:foldstart
+  if l:lineno_title != line('$')
     " Not the last line.
-    let l:lineno += 1
+    let l:lineno_title += 1
   end
 
+  " Extract the single fold character, e.g., if fillchars="vert:|,fold:-",
+  " this matchstr extracts the '-' dash.
   let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
 
-  let l:textprefix = '+' . repeat(l:foldchar, v:foldlevel) . ' ' . getline(l:lineno)
+  let l:textprefix = '+' . repeat(l:foldchar, v:foldlevel) . ' ' . getline(l:lineno_title)
   " (lb): Code from which I copied reserved 1/3 of the window for the meta, e.g.,
   "   let textstartend = (winwidth(0) * 2) / 3
   " but that wastes precious space we could use on the title.
@@ -299,8 +305,8 @@ function! ReSTSectionTitleFoldText()
   "  2: ' ' padding around interior '-*'
   "  5: Prefix '+-* '
   let l:textstartend = winwidth(0) - 14 - 3 - 2 - 5
-  " NOTE: Use strcharpart, not strpart, to could display width, not bytes,
-  " i.e., a Unicode character should count as 1 display character, not 3 bytes.
+  " NOTE: Use strcharpart, not strpart, to calculate display width, not bytes,
+  " i.e., Unicode characters should count as 1 display character, not 3 bytes.
   let l:foldtextstart = strcharpart(l:textprefix, 0, l:textstartend)
 
   let l:lines_count = v:foldend - v:foldstart + 1
