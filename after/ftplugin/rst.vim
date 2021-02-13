@@ -67,10 +67,10 @@ endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-let s:PREV_FOLD_EXPR_LNUM = -1
+let b:RESTFOLD_SCANNER_LINENO = -1
 
 if s:DEBUG_TRACE
-  echom "s:PREV_FOLD_EXPR_LNUM: " . s:PREV_FOLD_EXPR_LNUM
+  echom "b:RESTFOLD_SCANNER_LINENO: " . b:RESTFOLD_SCANNER_LINENO
 endif
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
@@ -79,19 +79,19 @@ function! IdentifyFoldLevelAtLine(lnum)
   " Is foldexpr called deterministically? (Is it first called with lnum=1,
   " then lnum++ each call?) I know you can call :echo &foldlevel and trigger
   " this function out of order, but on zx is it called in order?
-  if s:PREV_FOLD_EXPR_LNUM != -1
-    if a:lnum != (s:PREV_FOLD_EXPR_LNUM + 1)
+  if b:RESTFOLD_SCANNER_LINENO != -1
+    if a:lnum != (b:RESTFOLD_SCANNER_LINENO + 1)
       if s:DEBUG_TRACE
-        echom "Folding: a:lnum: " . a:lnum .  " / prev: " . s:PREV_FOLD_EXPR_LNUM
+        echom "Folding: a:lnum: " . a:lnum .  " / prev: " . b:RESTFOLD_SCANNER_LINENO
       endif
-      let s:PREV_FOLD_EXPR_LNUM = a:lnum
+      let b:RESTFOLD_SCANNER_LINENO = a:lnum
       return -1
     endif
   endif
 
-  let s:PREV_FOLD_EXPR_LNUM = a:lnum
-  if s:PREV_FOLD_EXPR_LNUM == line('$')
-    let s:PREV_FOLD_EXPR_LNUM = -1
+  let b:RESTFOLD_SCANNER_LINENO = a:lnum
+  if b:RESTFOLD_SCANNER_LINENO == line('$')
+    let b:RESTFOLD_SCANNER_LINENO = -1
   endif
 
   if a:lnum == 1
@@ -169,7 +169,7 @@ function! ReSTBufferUpdateFolds(reset_folding)
       mkview 8
     endif
 
-    let s:PREV_FOLD_EXPR_LNUM = -1
+    let b:RESTFOLD_SCANNER_LINENO = -1
 
     setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
     setlocal foldmethod=expr
