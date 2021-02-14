@@ -375,9 +375,32 @@ function! ReSTFolderUpdateFolds(reset_folding)
 
     setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
     setlocal foldmethod=expr
-    normal! zx
-    setlocal foldmethod=manual
-    setlocal foldexpr="0"
+
+    " Update folds (zx) after MoveUp/MoveDown.
+    " - But do not Update folds on <S-F5>, only recalculate fold levels.
+    " - And it's no longer necessary for <F5>, either, now with caching.
+    " - For MoveUp/MoveDown, this re-closes the fold that was opened by
+    "   the move.
+    " - For <F5>, Update folds is not necessary anymore, now with caching.
+    "   - Before caching was added, calculating fold levels on foldexpr was
+    "     expensive, so this plugin would set foldexpr, execute `zx` to
+    "     generate fold levels, and then set foldexpr="0" to disable it
+    "     (and then Vim would use the values that it retrieved on `zx`
+    "     but never update fold levels until the used pressed <F5> again).
+    "   - But now with caching, we can leave foldexpr set, and there's no
+    "     need for the `zx` prefetch.
+    if a:reset_folding == 2
+      normal! zx
+    endif
+    " Before caching was implemented, this plugin would disable the foldmethod
+    " after calculating fold levels, because the old fold level function was a
+    " drag on performance. But now that the fold levels are cached, there's no
+    " drag. But rather, now we *need* to keep foldexpr set to support <S-F5>
+    " recalculating folds without starting over (collapsing all folds).
+    " - No longer necessary, and not desirable; but here for remembrance:
+    "    setlocal foldmethod=manual
+    "    setlocal foldexpr="0"
+
     setlocal foldtext=ReSTSectionTitleFoldText()
 
     if a:reset_folding == 1
@@ -815,11 +838,26 @@ function! s:CreateMaps()
   augroup restfold_default_mappings
     au!
 
-    " Wire <F5> to recalculating folds.
+    " Wire <F5> to recalculating and collapsing folds.
     autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTFolderUpdateFolds(1)<CR>
     autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTFolderUpdateFolds(1)<CR>
 
+    " Wire <S-F5> to recalculating only.
+    " - Note that I tried two 'simpler' approaches:
+    "     ... <S-F5> :let b:RESTFOLD_SCANNER_LOOKUP = v:none<CR>
+    "   and
+    "     ... <S-F5> :call <SID>HydrateFoldLevelLookup()<CR>
+    "   but I think Vim needs us to set foldexpr again (or
+    "   maybe foldmethod or foldtext) so that it bothers
+    "   calling ReSTfoldFoldLevel for the recomputed levels.
+    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <S-F5> :call ReSTFolderUpdateFolds(0)<CR>
+    autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <S-F5> <C-O>:call ReSTFolderUpdateFolds(0)<CR>
+
     " Wire <Ctrl-Up> and <Ctrl-Down> to transposing fold with the fold above and the fold below.
+    " - Note that fold levels will be recomputed after <Ctrl-Up> or <Ctrl-Down>,
+    "   but not after an Undo.
+    "   - MAYBE/2021-02-14: FTREQ: Recompute fold levels after Undo,
+    "     or after undoing Ctrl-Up or Ctrl-Down, if easy to determine.
     autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Up>   \|:silent call ReSTFolderMoveUp()<CR>
     autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent call ReSTFolderMoveFoldDown()<CR>
   augroup END
