@@ -282,16 +282,7 @@ endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-let b:RESTFOLD_SCANNER_LINENO = 0
-
 function! s:IdentifyFoldLevelAtLine(lnum)
-  if a:lnum != b:RESTFOLD_SCANNER_LINENO + 1
-    echom "ERROR: reSTfold: Unexpected line number: " . a:lnum
-      \ . " / Expected: " . b:RESTFOLD_SCANNER_LINENO + 1
-  endif
-
-  let b:RESTFOLD_SCANNER_LINENO = a:lnum
-
   if a:lnum == 1
     let b:cur_level_fold = 0
     let b:cur_level_lnum = 0
@@ -374,7 +365,6 @@ function! ReSTFolderUpdateFolds(reset_folding)
       mkview 8
     endif
 
-    let b:RESTFOLD_SCANNER_LINENO = 0
     let b:RESTFOLD_SCANNER_LOOKUP = v:none
 
     setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
