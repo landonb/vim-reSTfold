@@ -370,14 +370,7 @@ endfunction
 function! ReSTFolderUpdateFolds(reset_folding)
   call s:SetDefaultConfig()
 
-  " For some reason if I use mkview ... silent loadview here, folding doesn't work at all.
   if &foldenable
-    if a:reset_folding == 0
-      " When user is just saving file, remember view, so we can restore it
-      " later, because `zx` will "Undo manually opened and closed folds".
-      mkview 8
-    endif
-
     let b:RESTFOLD_SCANNER_LOOKUP = v:none
 
     setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
@@ -396,9 +389,7 @@ function! ReSTFolderUpdateFolds(reset_folding)
       " start of the next (first) fold.
       normal! gg
       normal! zj
-      "echom "Updated folds!"
-    elseif a:reset_folding == 0
-      silent loadview 8
+      "  echom "Updated folds!"
     endif
 
   elseif a:reset_folding == 1
