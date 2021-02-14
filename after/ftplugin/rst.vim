@@ -7,22 +7,76 @@
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-" FIXME/2020-02-27 16:01: This (and perhaps other ftplugin/ files)
-" are missing:
+" USAGE: Open a reST file, and press <F5> to fold sections.
 "
-"   if exists('b:did_ftplugin') | finish | endif
+" - Sections should be formatted with two horizontal rulers.
 "
-" though given my experience with ftplugin files one could probably
-" scream, "it just does't matter" (I've never seen an ftplugin sourced
-" twice in a row, where the b: value actually exists() already).
+"   Use '@', '#', '=', or '-' to make the rulers.
+"
+"   E.g.,
+"
+"     @@@@@@@@@@@@
+"     Level 1 FOLD
+"     @@@@@@@@@@@@
+"
+"     ############
+"     Level 2 FOLD
+"     ############
+"
+"     ============
+"     Level 3 FOLD
+"     ============
+"
+"     ------------
+"     Level 4 FOLD
+"     ------------
+"
+" - There are a number of configurable options.
+"
+"   See the function:
+"
+"     s:SetDefaultConfig()
+"
+"   to see all the options you can set.
+
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
+
+" YOU: Uncomment next 'unlet', then <F9> to reload this file.
+"      (Iff: https://github.com/landonb/vim-source-reloader)
+"
+" - Also disable the guard clause return in s:ApplyDefault if
+"   you want to test changing any g:vars.
+"
+" silent! unlet g:loaded_restfold_after_ftplugin_rst
+
+if exists("g:loaded_restfold_after_ftplugin_rst") || &cp
+  finish
+endif
+
+let g:loaded_restfold_after_ftplugin_rst = 1
 
 " ################################################################# "
 
-" [lb]: Disable continuous folding, because measuring folds is slow!
+let s:DEBUG_TRACE = 0
+" Set DEBUG_TRACE to 1 for :message blather.
+"  let s:DEBUG_TRACE = 1
 
-" Use <F5> instead to manually trigger a re-fold.
+" ################################################################# "
 
-" E.g., on a 7K-line reST file I have (normal for me!), typing is slow.
+" Disable continuous folding, because measuring folds is slow!
+"
+" - Use <F5> instead to manually trigger a re-fold.
+
+" (lb): E.g., Editing a 7K-line reST file (normal for me!),
+"             is slow when foldmethod=expr.
+"
+" - [2021-02-13: At least when I wrote this comment, 2018-12-08. I have not
+"    retested foldmethod=expr since implementing the b:RESTFOLD_SCANNER_LOOKUP
+"    cache lookup. But I doubt we want to recalculate the cache automatically
+"    while editing; and the cache is certain to become invalid as soon as
+"    lines are added or removed. So my guess is that using foldmethod=expr
+"    would still be slow (and we'd have to figure out how to clear the cache,
+"    too, e.g., bind to TextChanged/TextChangedI/TextChangedP).]
 "
 " - For instance, deleting a block of text takes a few seconds, at which
 "   time Vim is seemingly unresponsive (you can Ctrl-C to kill parsing).
@@ -42,18 +96,132 @@ setlocal foldexpr="0"
 
 " ################################################################# "
 
-" MAYBE: [lb]: Remove this leftover development cruft.
-" Or leave it, in case you need to fix any bugs later.
-" (ALSO/2018-12-07: You might enjoy logging to a file to trace the runtime
-"  rather than echoing to the :messages buffer. Search Dubs Vim for s:log.)
-let s:DEBUG_TRACE = 0
-" Set DEBUG_TRACE to 1 for :message blather.
-"  let s:DEBUG_TRACE = 1
+" Be lazy about setting defaults, so user won't have to use an
+" after/ script to override these.
+let s:SetDefaultConfigOnFirstRun = 1
+
+function! s:SetDefaultConfig()
+  if ! s:SetDefaultConfigOnFirstRun
+    return
+  endif
+
+  " YOU: Set this global zero to set up your own bindings.
+  "
+  "   If the global is unset or truthy, this plugin will bind <F5> in
+  "   each reST buffer to folding it according to restfold rules. It'll
+  "   also map <C-Up> and <C-Down> to moving (transposing) reST sections
+  "   within each reST buffer.
+  "
+  " E.g., if your private ~/.vimrc or private Vim plugin, such as
+  " ~/.vim/pack/yourname/start/yourplug/plugin/my.vim, you'd set:
+  "
+  "   let g:restfold_create_default_mappings = 0
+  "
+  " You could then copy the nmap, etc., from the bottom of this file to
+  " your own ~/.vimrc or plugin and edit to your taste.
+
+  call s:ApplyDefault('g:restfold_disable_piping', 0)
+
+  " 2021-02-13: Note that &fillchars is ignored.
+  " - This plugin formerly extracted the single fold character for fillchars,
+  "   e.g., given Vim's default fillchars="vert:|,fold:-", the following
+  "   matchstr would extract the '-' dash character:
+  "
+  "     let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
+  "
+  "   But using &fillchars does not allow for custom └─piping─┘.
+
+  call s:ApplyDefault('g:restfold_fold_piping', "'─'")
+
+  " Whether or not to use ┌ ┐ └ ┘ to connect folds at the same level.
+  " Set this nonzero to skip corners (always use g:restfold_fold_piping).
+  call s:ApplyDefault('g:restfold_no_corners', 0)
+
+  " The icon to use to indicate that a fold has sub-sections
+  " (folds w/in the fold). Set to the empty string to disable
+  " (which is the same as setting to g:restfold_fold_piping).
+  "
+  "  call s:ApplyDefault('g:restfold_subfolds_marker', "'┬'")
+  "  call s:ApplyDefault('g:restfold_subfolds_marker', "'∇'")
+  call s:ApplyDefault('g:restfold_subfolds_marker', "'▽'")
+
+  " Whether to magically connect section headers that start with the pipe
+  " character (g:restfold_fold_piping) without separating with whitespace.
+  " Set this nonzero to always use a space between the piping and the title.
+  call s:ApplyDefault('g:restfold_no_pipe_welding', 0)
+
+  " If nonzero, pad the title with whitespace to this width, which has the
+  " effect of lining up the tail piping (otherwise, if this is 0, the title
+  " is followed by a single space and then the tail piping starts).
+  " This feature is disabled by default because it's depends on one's taste
+  " or at least one's display's width.
+  call s:ApplyDefault('g:restfold_min_title_width', 0)
+  " (lb): I like setting a minimum width, so that the tail piping
+  " starts at the same column, but this value is display-dependent.
+  " - E.g., on my 1920x1080 monitor with two side-by-side file buffer
+  "   panes and the project tray open, a width of 93 is perfect: I see
+  "   two leading fold_piping characters, and also two trailing pipings.
+  "   - So in my private Vim plugin, e.g., at
+  "       ~/.vim/pack/myname/start/my_private_vim/plugin/my.vim
+  "    I've got the following specified:
+  "       let g:restfold_min_title_width = 93
+
+  " This setting determines the minimum width of the lines count column,
+  " so that it looks and aligns nicely.
+  " - MAGIC_NUMBER: Use 4 characters for the lines count width.
+  "   This ensures columns align for counts into the 1000s.
+  "   - E.g.,
+  "       ── FIRST FOLD TITLE ───┨  123 ll. ├──
+  "       ── SECOND FOLD TITLE ──┨ 4567 ll. ├──
+  "       ── THIRD FOLD TITLE ───┨    8 ll. ├──
+  "                                ^^^^ 4 column-wide lines count value.
+  "   - Note that, in this author's experience, users probably won't want
+  "     to work on reST files larger than 10K lines, because syntax
+  "     highlighting on BufEnter takes noticeable time. (You'll want to
+  "     consider splitting your reST files when they grow larger than 8K
+  "     lines, if you're like me and take copious notes in reST files.)
+  "     So this value -- 4 -- should be sufficient, as you'd neither want
+  "     a file longer, nor any fold therein longer, than 10k lines. So
+  "     this width of four accommodates line counts up to '9999'.
+  call s:ApplyDefault('g:restfold_lines_count_width', 4)
+
+  " What to label the lines count unit.
+  " - (lb): I used to use a longer units string:
+  "     call s:ApplyDefault('g:restfold_lines_count_units', "' lines'")
+  "   but I like the (possibly not very well known) 'll.' abbreviation,
+  "   to afford the fold title that much more width-room.
+  " - Note that the minimum fold length is 3 lines, so this label will
+  "   never be used on a single value, e.g., '1 ll.' will never happen.
+  call s:ApplyDefault('g:restfold_lines_count_units', "' ll.'")
+
+  " This value specifies how many trailing pipe characters to show after
+  " the lines count column. This defaults to 2, to match the prefix format,
+  " which is 0-3 spaces followed by two leading pipe characters. (And we
+  " could/should make the prefix count configurable, for parity with this
+  " setting... but, mehhhhhhhhhh. =)
+  call s:ApplyDefault('g:restfold_tail_width', 2)
+
+  let s:SetDefaultConfigOnFirstRun = 0
+endfunction
+
+" ***
+
+function! s:ApplyDefault(varname, value)
+  if exists(a:varname)
+    return
+  endif
+
+  let l:let_cmd = "let " . a:varname . " = " . a:value
+
+  execute l:let_cmd
+endfunction
 
 " ################################################################# "
 
 " Double-ruled reST header folding engine.
 function! ReSTfoldFoldLevel(lnum)
+  call s:SetDefaultConfig()
+
   if b:RESTFOLD_SCANNER_LOOKUP == v:none
     call s:HydrateFoldLevelLookup()
   endif
@@ -83,10 +251,6 @@ function! s:HydrateFoldLevelLookup()
 endfunction
 
 " ***
-
-" Ref:
-"   https://vi.stackexchange.com/questions/8045/
-"     whats-the-best-way-to-initialize-a-list-of-a-predefined-length
 
 " See also:
 "   return repeat([a:value], a:length)
@@ -133,7 +297,7 @@ function! s:IdentifyFoldLevelAtLine(lnum)
     let b:cur_level_lnum = 0
   endif
 
-  " Skip 2 lines following a new level (or beginning of file).
+  " MAGIC_NUMBER: Skip 2 lines following a new level (or beginning of file).
   if (b:cur_level_fold == 0) || (a:lnum > (b:cur_level_lnum + 2))
     let l:new_level = GetFoldLevelIfNewReSTSection(a:lnum)
 
@@ -141,7 +305,7 @@ function! s:IdentifyFoldLevelAtLine(lnum)
       let b:cur_level_lnum = a:lnum
       let b:cur_level_fold = l:new_level
       " Indicate that a new fold '>' starts at this line.
-      " MAYBE/2021-02-13: Any reason to also specify '<' ends at this line?
+      " NOTE: There's also '<' *ends at this line* but does not seem useful.
       let l:start_level = '>' . str2nr(l:new_level)
 
       if s:DEBUG_TRACE && a:lnum < 60
@@ -168,7 +332,7 @@ function! GetFoldLevelIfNewReSTSection(lnum)
   " for the leading delimiter, and look ahead for the trailing delimiter, e.g.,
   "     let l:lnum_uppr = a:lnum - 1
   "     let l:lnum_lowr = a:lnum + 1
-  " but then folds would be off my one, e.g., consider a section title like this:
+  " but then folds would be off by one, e.g., consider a section title like this:
   "      #############
   "      Section Title    <==== Where the fold used to start.
   "      #############
@@ -199,7 +363,9 @@ endfunction
 
 " ################################################################# "
 
-function! ReSTBufferUpdateFolds(reset_folding)
+function! ReSTFolderUpdateFolds(reset_folding)
+  call s:SetDefaultConfig()
+
   " For some reason if I use mkview ... silent loadview here, folding doesn't work at all.
   if &foldenable
     if a:reset_folding == 0
@@ -237,10 +403,6 @@ function! ReSTBufferUpdateFolds(reset_folding)
   end
 endfunction
 
-" Wire <F5> to recalculating folds.
-autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTBufferUpdateFolds(1)<CR>
-autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTBufferUpdateFolds(1)<CR>
-
 " ################################################################# "
 
 " Transpose folds (reposition/move folds "up" and "down")
@@ -260,7 +422,7 @@ autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTBuf
 "   https://github.com/tommcdo/vim-exchange
 
 " Move the entity under the cursor up a line.
-function! s:MoveUp()
+function! ReSTFolderMoveUp()
   let l:lineno = line('.')
   if l:lineno == 1
     return
@@ -290,13 +452,13 @@ function! s:MoveUp()
 
   let @a = l:a_reg
   if l:fc != -1
-    call ReSTBufferUpdateFolds(2)
+    call ReSTFolderUpdateFolds(2)
     normal! zc
   endif
 endfunction
 
 " Move the entity under the cursor down a line.
-function! s:MoveDown()
+function! ReSTFolderMoveFoldDown()
   let l:fc = foldclosed('.')
   if l:fc == -1
     execute "normal! \<C-e>"
@@ -308,23 +470,12 @@ function! s:MoveDown()
   normal! "add"ap
   let @a = l:a_reg
   if (l:fc != -1) && (foldclosed('.') == -1)
-    call ReSTBufferUpdateFolds(2)
+    call ReSTFolderUpdateFolds(2)
     normal! zc
   endif
 endfunction
 
-autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Up>   \|:silent call <SID>MoveUp()<CR>
-autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent call <SID>MoveDown()<CR>
-
 " ################################################################# "
-
-" With a little help from:
-"   http://dhruvasagar.com/2013/03/28/vim-better-foldtext
-
-" 2021-02-13: This plugin formerly extracted the single fold character for fillchars,
-" e.g., given fillchars="vert:|,fold:-", this matchstr extracts the '-' dash:
-"   let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
-" But that doesn't allow for custom └─piping─┘.
 
 function! ReSTSectionTitleFoldText()
   " The reSTfold format specifies horizontal rules above and below the title (a
@@ -336,88 +487,353 @@ function! ReSTSectionTitleFoldText()
     let l:lineno_title += 1
   end
 
-  let l:fold_closed_line = foldclosed(v:foldstart)
-  let l:fold_closed_endl = foldclosedend(v:foldstart)
-
-  let l:fold_start_prev = foldclosed(v:foldstart - 1)
-  "let l:fold_level_prev = s:LookupFoldLevelNumber(v:foldstart - 1)
-  let l:fold_level_prev = s:LookupFoldLevelNumber(l:fold_start_prev)
-  "
-  let l:fold_start_next = foldclosed(foldclosedend(v:foldstart) + 1)
-  "let l:fold_level_next = s:LookupFoldLevelNumber(v:foldend + 1)
-  let l:fold_level_next = s:LookupFoldLevelNumber(l:fold_start_next)
-  "
-  let l:prefix_pipe = ''
-  if v:foldlevel == l:fold_level_next
-    if v:foldlevel == l:fold_level_prev
-      let l:prefix_pipe = '├'
-    else
-      let l:prefix_pipe = '┌'
-    endif
-  elseif v:foldlevel == l:fold_level_prev
-    " But v:foldlevel != l:fold_level_next
-    let l:prefix_pipe = '└'
-  else
-    let l:prefix_pipe = '─'
+  let l:fold_piping = ''
+  if ! g:restfold_disable_piping
+    let l:fold_piping = g:restfold_fold_piping
   endif
+
+  let l:pipe_ends = s:DeterminePipeEnds()
+  let l:lead_piping = l:pipe_ends[0]
+  let l:tail_piping = l:pipe_ends[1]
+
+  let l:second_pipe = s:DeterminePipeTwo()
+  let l:first_pipes = l:lead_piping . l:second_pipe
+
+  let l:line_prefix_and_has_welds = s:PreparePrefixedLine(l:lineno_title, l:first_pipes)
+  let l:level_prefix_and_line = l:line_prefix_and_has_welds[0]
+  let l:has_welded_pipes = l:line_prefix_and_has_welds[1]
+
+  let l:tail_and_count = s:PrepareTailPipeAndLinesCount(l:tail_piping)
+
+  let l:fold_line_lhs = s:TruncatePrefixedLine(
+    \ l:level_prefix_and_line, l:tail_and_count)
+
+  let l:fold_line_rhs = s:AppendPipingSoilStack(l:tail_and_count)
+
+  let l:entire_fold_line = s:AssembleFoldLine(
+    \ l:fold_line_lhs, l:fold_line_rhs, l:has_welded_pipes)
+
+  return l:entire_fold_line
+endfunction
+
+" ***
+
+" Determines lead and tail piping by examining visibly adjacent folds.
+function! s:DeterminePipeEnds()
+  if g:restfold_disable_piping
+    return [ '', '' ]
+  endif
+
+  let l:lead_piping = '─'
+  let l:tail_piping = '─'
+
+  if g:restfold_no_corners
+    return [ l:lead_piping, l:tail_piping ]
+  endif
+
+  let l:visible_fold_start_prev = foldclosed(v:foldstart - 1)
+  let l:visible_fold_level_prev = s:LookupFoldLevelNumber(l:visible_fold_start_prev)
+
+  let l:visible_fold_start_next = foldclosed(foldclosedend(v:foldstart) + 1)
+  let l:visible_fold_level_next = s:LookupFoldLevelNumber(l:visible_fold_start_next)
+
+  if v:foldlevel == l:visible_fold_level_next
+    if v:foldlevel == l:visible_fold_level_prev
+      let l:lead_piping = '├'
+      let l:tail_piping = '┤'
+    else
+      let l:lead_piping = '┌'
+      let l:tail_piping = '┐'
+    endif
+  elseif v:foldlevel == l:visible_fold_level_prev
+    " Where v:foldlevel != l:visible_fold_level_next.
+    let l:lead_piping = '└'
+    let l:tail_piping = '┘'
+  endif
+
   if s:DEBUG_TRACE
     echom "=== v:foldlvl: " . v:foldlevel
           \ . " / v:fldstrt: " . v:foldstart
           \ . " / v:foldend: " . v:foldend
-          \ . " / prev: " . l:fold_level_prev
-          \ . " / next: " . l:fold_level_next
-          \ . " / cllin: " . l:fold_closed_line
-          \ . " / clend: " . l:fold_closed_endl
+          \ . " / vis-ln-prev: " . l:visible_fold_start_prev
+          \ . " / vis-ln-next: " . l:visible_fold_start_next
+          \ . " / vis-lvl-prev: " . l:visible_fold_level_prev
+          \ . " / vis-lvl-next: " . l:visible_fold_level_next
   endif
 
-  let l:foldchar = '─'
+  return [ l:lead_piping, l:tail_piping ]
+endfunction
+
+" ***
+
+function! s:DeterminePipeTwo()
+  if g:restfold_disable_piping
+    return ''
+  endif
+
+  let l:second_pipe = g:restfold_fold_piping
+
+  if ! g:restfold_subfolds_marker
+    " Could affect runtime (though would only double it).
+    for l:foldline in range(v:foldstart, v:foldend)
+      if v:foldlevel < s:LookupFoldLevelNumber(l:foldline)
+        let l:second_pipe = g:restfold_subfolds_marker
+        break
+      endif
+    endfor
+  endif
+
+  return l:second_pipe
+endfunction
+
+" ***
+
+" Attached the title line to the piping prefix, usually with a space
+" between the piping and the title, but sometimes -- if the title
+" line itself is piping -- weld the piping to the title (no space).
+function! s:PreparePrefixedLine(lineno_title, first_pipes)
+  let l:curr_line = getline(a:lineno_title)
+
+  let l:has_welded_pipes = 0
+  if 1
+    \ && ! g:restfold_disable_piping
+    \ && ! g:restfold_no_pipe_welding
+    \ && stridx(l:curr_line, g:restfold_fold_piping) == 0
+
+    " The fold title starts with the fold_piping character. Weld it.
+    let l:has_welded_pipes = 1
+  endif
 
   let l:lvl_prefix = ''
-  if v:foldlevel == 1
-    let l:lvl_prefix = l:prefix_pipe . '─'
-  elseif v:foldlevel == 2
-    let l:lvl_prefix = ' ' . l:prefix_pipe . '──'
-  else
-    let l:lvl_prefix = '   ' . l:prefix_pipe . repeat(l:foldchar . l:foldchar, v:foldlevel - 1)
+  if ! g:restfold_disable_piping
+    " Create the piping prefix, indented with spaces per its level.
+    let l:lvl_prefix = a:first_pipes
+
+    if v:foldlevel > 1
+      " The maximum fold level reSTfold identifies is 4, so this will add
+      " 0-3 spaces to the prefix (which itself, by default, is 2 characters).
+      let l:lvl_prefix = repeat(' ', v:foldlevel - 1) . l:lvl_prefix
+    endif
   endif
-  let l:textprefix = l:lvl_prefix . ' ' . getline(l:lineno_title)
 
-  " (lb): Code from which I copied reserved 1/3 of the window for the meta, e.g.,
-  "   let textstartend = (winwidth(0) * 2) / 3
-  " but that wastes precious space we could use on the title.
-  " MAGIC_NUMBERS:
-  "  4: Per the %10s below, we assume folds will be less than 10K lines, so the
-  "     longest meta text will be, e.g., "| 9999 lines |", or 14 characters.
-  "  0: Trailing '---'
-  "  0: ' ' padding around interior '-*'
-  "  5: Prefix '+-* '
-  let l:textstartend = winwidth(0) - 4 - 0 - 0 - 5
-  " NOTE: Use strcharpart, not strpart, to calculate display width, not bytes,
-  " i.e., Unicode characters should count as 1 display character, not 3 bytes.
-  let l:foldtextstart = strcharpart(l:textprefix, 0, l:textstartend)
+  if g:restfold_min_title_width > 0 && ! l:has_welded_pipes
+    let l:pad_width = g:restfold_min_title_width - strwidth(l:curr_line)
+    if l:pad_width > 0
+      let l:curr_line = l:curr_line . repeat(' ', l:pad_width)
+    endif
+  endif
 
-  let l:lines_count = v:foldend - v:foldstart + 1
-  " MAGIC_NUMBER: %10s pads text to 10 characters, including ' lines',
-  "   which leaves 4 characters for the count, i.e., 1000s.
-  let l:lines_count_text = '| ' . printf("%4", l:lines_count) . ' |'
-  " MAGIC_NUMBER: (lb): I think the 8 just really just be a 3, because the
-  " var_length_hr is what ensures the width of the title line, and from usage,
-  " there are only 3 dashes (l:foldchar) after count, e.g.,
-  "   +---- FOLDTITLE -------------------------------------- | XX lines |---
-  "                                                there are only 3 here ^^^
-  let l:foldtextend = ''
+  let l:prefixed_line = l:curr_line
 
-  " Substitute any character '.' for 'x' so that Unicode is counted as 1 each, e.g., not 3 each.
-  "let foldtextlength = strlen(substitute(l:foldtextstart . l:foldtextend, '.', 'x', 'g')) + &foldcolumn
-  " (lb): Or just use strwidth:
-  let l:foldtextlength = strwidth(l:foldtextstart) + strwidth(l:foldtextend) + &foldcolumn
+  if ! g:restfold_disable_piping
+    if ! g:restfold_no_pipe_welding && stridx(l:curr_line, g:restfold_fold_piping) == 0
+      " Magic line: If line starts with piping, connect to the fold piping.
+      let l:prefixed_line = g:restfold_fold_piping . l:curr_line
+      " Same path as above:
+      "   let l:has_welded_pipes = 1
+    else
+      let l:whitespace_prefix = repeat(' ', strwidth(g:restfold_fold_piping))
 
-  " MAGIC_NUMBER: Subtract 2 for the 2 spaces added to pad the ------- sides.
-  let l:var_length_hr = ''
-  let l:foldtitle = l:foldtextstart . ' ' . l:var_length_hr . ' ' . l:foldtextend
+      if ! g:restfold_no_pipe_welding && stridx(l:curr_line, ' ' . g:restfold_fold_piping) == 0
+        " Because of magic line, if line starts with space and then piping,
+        " remove the space, so user can have piping line with a space between
+        " fold piping and title piping.
+        let l:prefixed_line = l:whitespace_prefix . strcharpart(l:curr_line, 1)
+      else
+        let l:prefixed_line = l:whitespace_prefix . l:curr_line
+      endif
+    endif
+  endif
 
-  return l:foldtitle
+  let l:level_prefix_and_line = l:lvl_prefix . l:prefixed_line
+
+  return [ l:level_prefix_and_line, l:has_welded_pipes ]
 endfunction
+
+" ***
+
+function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count)
+  if g:restfold_disable_piping
+    return a:level_prefix_and_line
+  endif
+
+  let l:num_col_width = s:CalculateNumberColumnWidth()
+
+  " Calculate the start of the trailing piping, and truncate the title.
+  " See comment after: use strwidth() and not strlen() or strdisplaywidth().
+  let l:lhs_width_avail = winwidth(0)
+    \ - l:num_col_width
+    \ - strwidth(g:restfold_fold_piping)
+    \ - strwidth(a:tail_and_count)
+    \ - g:restfold_tail_width
+
+  if l:lhs_width_avail < 1
+    " Unlikely path.
+    return ''
+  endif
+
+  " NOTE: Use strcharpart, not strpart, to truncate at a display width,
+  " and not at a byte count. The latter is dangerous and could chop a
+  " Unicode in half, leaving phantom control bytes. E.g., consider the
+  " 3-character string 'X' followed by a Tab followed by a 4-byte Unicode:
+  "   echo strlen('X	🦅')            " 6
+  "   echo strpart('X	🦅', 0, 4)      " 'X	<f0><9f>'  -- 4 is middle of 🦅
+  "   echo strdisplaywidth('X	🦅')    " 6  -- 6 when tabstop=4 (Tab counts as 3)
+  "   echo strwidth('X	🦅')          " 4  -- Counts tab as 1 (tabstop ignored)
+  "   echo strchars('X	🦅')          " 3  -- Number of characters
+  "   echo strcharpart('X	🦅', 0, 3)  " 'X	🦅'
+  "   echo strcharpart('X	🦅', 0, 2)  " 'X	'
+  " Note also difference between the strdisplaywidth/strwidth/strchars,
+  " and that the target width is akin to strwidth(), but that strcharpart()
+  " operates on strchars()-esque character indices. This means that the call
+  " to strcharpart might not truncate to the desired width, and, in fact,
+  " the call might not affect the string at all! E.g., consider again our
+  " feathered friend as the title, but two of them, e.g., '🦅🦅'. The display
+  " width is 4 (what strwidth/strdisplaywidth says), but strchars is 2. If
+  " the user narrowed the window pane so that 3 characters were available,
+  " we'd call strcharpart('🦅🦅', 0, 3), which does not affect the string,
+  " which is only 2 characters long. Even adding one more does nothing, as
+  " strcharpart('🦅🦅', 0, 2) is still the length of the string!
+  " - Because we don't know the positions of the extra wide characters,
+  "   I don't think there's a deterministic approach to calculating the
+  "   character to truncate at. So we'll have to take an iterative approach.
+  " - I suppose we can at least say that there are only 1- and 2-character
+  "   wide characters.
+
+  " Try first as though each character is also one width, the most generous cut.
+  let l:fold_line_lhs = strcharpart(a:level_prefix_and_line, 0, l:lhs_width_avail)
+
+  " Check the result to see if that worked. If not, iterate until we find a value
+  " that works.
+  let l:result_width = strwidth(l:fold_line_lhs)
+
+  while l:result_width > l:lhs_width_avail
+    let l:line_chars = strchars(l:fold_line_lhs)
+    let l:fold_line_lhs = strcharpart(l:fold_line_lhs, 0, l:line_chars - 1)
+    let l:result_width = strwidth(l:fold_line_lhs)
+  endwhile
+
+  return l:fold_line_lhs
+endfunction
+
+" ***
+
+" Because winwidth(0) includes the number column, we need to subtract its
+" width to determine how many columns wide the fold line can occupy.
+function! s:CalculateNumberColumnWidth()
+  " In practice, because Vim defaults numberwidth=4 and most files you'll
+  " work on are less than 10k lines, l:num_col_width will resolve to 5.
+  let l:num_col_width = 0
+
+  if &number
+    " The number column is showing, which is included in winwidth(0).
+    let l:num_col_width = strlen(string(line('$')))
+    " - MAGIC_NUMBER: There's one space always between the number and the text.
+    let l:num_col_width += 1
+    if l:num_col_width < &numberwidth
+      l:num_col_width = &numberwidth
+    endif
+  endif
+
+  return l:num_col_width
+endfunction
+
+" ***
+
+function! s:PrepareTailPipeAndLinesCount(tail_piping)
+  if g:restfold_disable_piping
+    return ''
+  endif
+
+  let l:llcnt_width = g:restfold_lines_count_width + strwidth(g:restfold_lines_count_units)
+  let l:lines_count = v:foldend - v:foldstart + 1
+  let l:tail_and_count = ''
+    \ . g:restfold_fold_piping
+    \ . a:tail_piping
+    \ . ' '
+    \ . printf("%" . l:llcnt_width . "s", l:lines_count . g:restfold_lines_count_units)
+    \ . ' ├'
+
+  return l:tail_and_count
+endfunction
+
+" ***
+
+function! s:AppendPipingSoilStack(tail_and_count)
+  if g:restfold_disable_piping
+    return ''
+  endif
+
+  let l:soil_stack_width = s:CalculatePipeTailWidth()
+
+  let l:fold_line_rhs =
+    \ a:tail_and_count . repeat(g:restfold_fold_piping, g:restfold_tail_width)
+
+  return l:fold_line_rhs
+endfunction
+
+" ***
+
+function! s:CalculateFoldLineWidth(fold_line_lhs, fold_line_rhs)
+  " Calculate the width used by the title, the piping, and the lines count.
+  " Note that &foldcolumn is probably 0 (our line conveys the same info.).
+  let l:fold_line_len = 0
+    \ + strwidth(a:fold_line_lhs)
+    \ + strwidth(a:fold_line_rhs)
+    \ + &foldcolumn
+
+  return l:fold_line_len
+endfunction
+
+" ***
+
+function! s:AssembleFoldLine(fold_line_lhs, fold_line_rhs, has_welded_pipes)
+  let l:fold_line_len = s:CalculateFoldLineWidth(a:fold_line_lhs, a:fold_line_rhs)
+
+  let l:hr_sep = ' '
+  if a:has_welded_pipes
+    let l:hr_sep = g:restfold_fold_piping
+  endif
+
+  let l:num_col_width = s:CalculateNumberColumnWidth()
+
+  let l:tail_len = winwidth(0)
+    \ - l:num_col_width
+    \ - l:fold_line_len
+    \ - strwidth(l:hr_sep)
+
+  if ! g:restfold_disable_piping
+    let l:var_length_hr = l:hr_sep . repeat(g:restfold_fold_piping, l:tail_len)
+  else
+    " Interestingly, without this, Vim falls back to using '-' dashes.
+    " But when piping is disabled, a whitespace tail looks nice.
+    let l:var_length_hr = l:hr_sep . repeat(' ', l:tail_len)
+  endif
+
+  let l:entire_fold_line = a:fold_line_lhs . l:var_length_hr . a:fold_line_rhs
+
+  return l:entire_fold_line
+endfunction
+
+" ################################################################# "
+
+function! s:CreateMaps()
+  augroup restfold_default_mappings
+    au!
+
+    " Wire <F5> to recalculating folds.
+    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTFolderUpdateFolds(1)<CR>
+    autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTFolderUpdateFolds(1)<CR>
+
+    " Wire <Ctrl-Up> and <Ctrl-Down> to transposing fold with the fold above and the fold below.
+    autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Up>   \|:silent call ReSTFolderMoveUp()<CR>
+    autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent call ReSTFolderMoveFoldDown()<CR>
+  augroup END
+endfunction
+
+if !exists("g:restfold_create_default_mappings") || g:restfold_create_default_mappings
+  call s:CreateMaps()
+endif
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
