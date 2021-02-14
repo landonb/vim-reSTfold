@@ -63,26 +63,37 @@ let s:DEBUG_TRACE = 0
 
 " ################################################################# "
 
-" Disable continuous folding, because measuring folds is slow!
-"
-" - Use <F5> instead to manually trigger a re-fold.
+" Disable folding until user presses <F5> to engage.
 
-" (lb): E.g., Editing a 7K-line reST file (normal for me!),
-"             is slow when foldmethod=expr.
+" Otherwise, the user is likely to be annoyed at how long it takes to
+" open a new buffer.
 "
-" - [2021-02-13: At least when I wrote this comment, 2018-12-08. I have not
-"    retested foldmethod=expr since implementing the b:RESTFOLD_SCANNER_LOOKUP
-"    cache lookup. But I doubt we want to recalculate the cache automatically
-"    while editing; and the cache is certain to become invalid as soon as
-"    lines are added or removed. So my guess is that using foldmethod=expr
-"    would still be slow (and we'd have to figure out how to clear the cache,
-"    too, e.g., bind to TextChanged/TextChangedI/TextChangedP).]
+" And the user won't always care about folding (or they won't care about
+" folding until they care about folding; so lazy-enable folding when the
+" user decides to care).
+
+" HINT: Press <F5> to engage the restfolder.
+"       And then press <S-F5> to refresh.
+"       (See bindings at the bottom.)
+
+" Note that, once engaged, the plugin will not automatically update
+" fold levels as the user edits. The values calculated on <F5> remain
+" cached until the next full <F5> reload; or until a soft <S-F5> refresh.
 "
-" - For instance, deleting a block of text takes a few seconds, at which
-"   time Vim is seemingly unresponsive (you can Ctrl-C to kill parsing).
+" If the plugin did recalculate folds automatically, you'd likely see a
+" degradation in performance (especially on reST files w/ 1000s of lines).
 "
-" - Note that syntax highlighting can also affect performance while editing,
-"   which you'll want to account for when profiling. See :help syntime.
+" - For instance, deleting a block of text might block Vim for a few seconds
+"   while this plugin rescans all lines in the buffer and rebuilds the cache.
+"
+"   (And although Vim might appear unresponsive during scanning, the user
+"    is still able to Ctrl-C to interrupt parsing. But they cannot edit.)
+"
+" - Note, too, that syntax highlighting can also affect performance when
+"   opening a buffer, entering a buffer, and editing, which makes gleaning
+"   useful data from profiling a little trickier (i.e., trying to determine
+"   what impact calculating folding has versus highlighting).
+"   - See :help syntime for some hints on profiling syntax and folding.
 
 " For reference, here's what Vim does by default in its ftplugin/rst.vim
 " (which is from https://github.com/marshallward/vim-restructuredtext):
@@ -90,6 +101,8 @@ let s:DEBUG_TRACE = 0
 "   setlocal foldmethod=expr
 "   setlocal foldexpr=RstFold#GetRstFold()
 "   setlocal foldtext=RstFold#GetRstFoldText()
+"
+" Here we essentially disable folding until the user enables it (<F5>).
 
 setlocal foldmethod=manual
 setlocal foldexpr="0"
