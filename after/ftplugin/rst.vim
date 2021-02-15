@@ -235,7 +235,7 @@ endfunction
 function! ReSTfoldFoldLevel(lnum)
   call s:SetDefaultConfig()
 
-  if len(b:RESTFOLD_SCANNER_LOOKUP) == 0
+  if ! s:IsFoldLevelLookupPopulated()
     call s:HydrateFoldLevelLookup()
   endif
 
@@ -250,7 +250,9 @@ endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-let b:RESTFOLD_SCANNER_LOOKUP = []
+function! s:IsFoldLevelLookupPopulated()
+  return exists("b:RESTFOLD_SCANNER_LOOKUP") && len(b:RESTFOLD_SCANNER_LOOKUP) > 0
+endfunction
 
 function! s:HydrateFoldLevelLookup()
   let l:file_length = line('$')
@@ -378,7 +380,7 @@ function! ReSTFolderUpdateFolds(reset_folding)
 
   call s:SetDefaultConfig()
 
-  let l:was_folding_already = len(b:RESTFOLD_SCANNER_LOOKUP) > 0
+  let l:was_folding_already = s:IsFoldLevelLookupPopulated()
 
   let b:RESTFOLD_SCANNER_LOOKUP = []
 
