@@ -368,56 +368,59 @@ endfunction
 " ################################################################# "
 
 function! ReSTFolderUpdateFolds(reset_folding)
+  if ! &foldenable
+    if a:reset_folding == 1
+      echom "Run 'zi' to foldenable!"
+    end
+
+    return
+  endif
+
   call s:SetDefaultConfig()
 
-  if &foldenable
-    let b:RESTFOLD_SCANNER_LOOKUP = v:none
+  let b:RESTFOLD_SCANNER_LOOKUP = v:none
 
-    setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
-    setlocal foldmethod=expr
+  setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
+  setlocal foldmethod=expr
 
-    " Update folds (zx) after MoveUp/MoveDown.
-    " - But do not Update folds on <S-F5>, only recalculate fold levels.
-    " - And it's no longer necessary for <F5>, either, now with caching.
-    " - For MoveUp/MoveDown, this re-closes the fold that was opened by
-    "   the move.
-    " - For <F5>, Update folds is not necessary anymore, now with caching.
-    "   - Before caching was added, calculating fold levels on foldexpr was
-    "     expensive, so this plugin would set foldexpr, execute `zx` to
-    "     generate fold levels, and then set foldexpr="0" to disable it
-    "     (and then Vim would use the values that it retrieved on `zx`
-    "     but never update fold levels until the used pressed <F5> again).
-    "   - But now with caching, we can leave foldexpr set, and there's no
-    "     need for the `zx` prefetch.
-    if a:reset_folding == 2
-      normal! zx
-    endif
-    " Before caching was implemented, this plugin would disable the foldmethod
-    " after calculating fold levels, because the old fold level function was a
-    " drag on performance. But now that the fold levels are cached, there's no
-    " drag. But rather, now we *need* to keep foldexpr set to support <S-F5>
-    " recalculating folds without starting over (collapsing all folds).
-    " - No longer necessary, and not desirable; but here for remembrance:
-    "    setlocal foldmethod=manual
-    "    setlocal foldexpr="0"
+  " Update folds (zx) after MoveUp/MoveDown.
+  " - But do not Update folds on <S-F5>, only recalculate fold levels.
+  " - And it's no longer necessary for <F5>, either, now with caching.
+  " - For MoveUp/MoveDown, this re-closes the fold that was opened by
+  "   the move.
+  " - For <F5>, Update folds is not necessary anymore, now with caching.
+  "   - Before caching was added, calculating fold levels on foldexpr was
+  "     expensive, so this plugin would set foldexpr, execute `zx` to
+  "     generate fold levels, and then set foldexpr="0" to disable it
+  "     (and then Vim would use the values that it retrieved on `zx`
+  "     but never update fold levels until the used pressed <F5> again).
+  "   - But now with caching, we can leave foldexpr set, and there's no
+  "     need for the `zx` prefetch.
+  if a:reset_folding == 2
+    normal! zx
+  endif
+  " Before caching was implemented, this plugin would disable the foldmethod
+  " after calculating fold levels, because the old fold level function was a
+  " drag on performance. But now that the fold levels are cached, there's no
+  " drag. But rather, now we *need* to keep foldexpr set to support <S-F5>
+  " recalculating folds without starting over (collapsing all folds).
+  " - No longer necessary, and not desirable; but here for remembrance:
+  "    setlocal foldmethod=manual
+  "    setlocal foldexpr="0"
 
-    setlocal foldtext=ReSTSectionTitleFoldText()
+  setlocal foldtext=ReSTSectionTitleFoldText()
 
-    if a:reset_folding == 1
-      " Close all folds (set foldlevel to 0).
-      normal! zM
-      " Reduce folding (set foldlevel to 1, opening top-level folds).
-      normal! zr
-      " Move to the top of the file, and then move downwards to the
-      " start of the next (first) fold.
-      normal! gg
-      normal! zj
-      "  echom "Updated folds!"
-    endif
-
-  elseif a:reset_folding == 1
-    echom "Run 'zi' to foldenable!"
-  end
+  if a:reset_folding == 1
+    " Close all folds (set foldlevel to 0).
+    normal! zM
+    " Reduce folding (set foldlevel to 1, opening top-level folds).
+    normal! zr
+    " Move to the top of the file, and then move downwards to the
+    " start of the next (first) fold.
+    normal! gg
+    normal! zj
+    "  echom "Updated folds!"
+  endif
 endfunction
 
 " ################################################################# "
