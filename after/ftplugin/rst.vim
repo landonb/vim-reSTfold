@@ -841,20 +841,23 @@ function! s:CreateMaps()
   augroup restfold_default_mappings
     au!
 
-    " Wire <F5> to recalculating and collapsing folds.
-    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTFolderUpdateFolds(1)<CR>
-    autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTFolderUpdateFolds(1)<CR>
+    " Wire <S-F5> to recalculating and collapsing folds,
+    " and scrolling buffer window to the top. Aka *reload*.
+    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <S-F5> :call ReSTFolderUpdateFolds(1)<CR>
+    autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <S-F5> <C-O>:call ReSTFolderUpdateFolds(1)<CR>
 
-    " Wire <S-F5> to recalculating only.
+    " Wire <F5> to recalculating folds (aka *refresh*), without
+    " expanding or collapsing folds, and without scrolling. If
+    " called before <S-F5>, behaves like <S-F5> the first time.
     " - Note that I tried two 'simpler' approaches:
-    "     ... <S-F5> :let b:RESTFOLD_SCANNER_LOOKUP = v:none<CR>
+    "     ... <F5> :let b:RESTFOLD_SCANNER_LOOKUP = v:none<CR>
     "   and
-    "     ... <S-F5> :call <SID>HydrateFoldLevelLookup()<CR>
+    "     ... <F5> :call <SID>HydrateFoldLevelLookup()<CR>
     "   but I think Vim needs us to set foldexpr again (or
     "   maybe foldmethod or foldtext) so that it bothers
     "   calling ReSTfoldFoldLevel for the recomputed levels.
-    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <S-F5> :call ReSTFolderUpdateFolds(0)<CR>
-    autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <S-F5> <C-O>:call ReSTFolderUpdateFolds(0)<CR>
+    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTFolderUpdateFolds(0)<CR>
+    autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTFolderUpdateFolds(0)<CR>
 
     " Wire <Ctrl-Up> and <Ctrl-Down> to transposing fold with the fold above and the fold below.
     " - Note that fold levels will be recomputed after <Ctrl-Up> or <Ctrl-Down>,
