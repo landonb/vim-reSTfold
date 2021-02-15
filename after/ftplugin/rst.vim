@@ -369,7 +369,7 @@ endfunction
 
 function! ReSTFolderUpdateFolds(reset_folding)
   if ! &foldenable
-    if a:reset_folding == 1
+    if a:reset_folding == 0 || a:reset_folding == 1
       echom "Run 'zi' to foldenable!"
     end
 
