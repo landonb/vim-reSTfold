@@ -618,11 +618,13 @@ endfunction
 function! s:PreparePrefixedLine(lineno_title, first_pipes)
   let l:curr_line = getline(a:lineno_title)
 
+  let l:line_char_0 = strcharpart(l:curr_line, 0, 1)
+
   let l:has_welded_pipes = 0
   if 1
     \ && ! g:restfold_disable_piping
     \ && ! g:restfold_no_pipe_welding
-    \ && stridx(l:curr_line, g:restfold_fold_piping) == 0
+    \ && s:IsWeldablePiping(l:line_char_0)
 
     " The fold title starts with the fold_piping character. Weld it.
     let l:has_welded_pipes = 1
@@ -650,7 +652,9 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes)
   let l:prefixed_line = l:curr_line
 
   if ! g:restfold_disable_piping
-    if ! g:restfold_no_pipe_welding && stridx(l:curr_line, g:restfold_fold_piping) == 0
+    if l:has_welded_pipes
+      " I.e., previously tested and determined:
+      "   ! g:restfold_no_pipe_welding && s:IsWeldablePiping(l:line_char_0)
       " Magic line: If line starts with piping, connect to the fold piping.
       let l:prefixed_line = g:restfold_fold_piping . l:curr_line
       " Same path as above:
@@ -658,10 +662,12 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes)
     else
       let l:whitespace_prefix = repeat(' ', strwidth(g:restfold_fold_piping))
 
-      if ! g:restfold_no_pipe_welding && stridx(l:curr_line, ' ' . g:restfold_fold_piping) == 0
+      if ! g:restfold_no_pipe_welding
+        \ && l:line_char_0 == ' '
+        \ && s:IsWeldablePiping(strcharpart(l:curr_line, 1, 1))
         " Because of magic line, if line starts with space and then piping,
         " remove the space, so user can have piping line with a space between
-        " fold piping and title piping.
+        " fold piping and title piping (i.e., and not two spaces minimum).
         let l:prefixed_line = l:whitespace_prefix . strcharpart(l:curr_line, 1)
       else
         let l:prefixed_line = l:whitespace_prefix . l:curr_line
@@ -672,6 +678,33 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes)
   let l:level_prefix_and_line = l:lvl_prefix . l:prefixed_line
 
   return [ l:level_prefix_and_line, l:has_welded_pipes ]
+endfunction
+
+" ***
+
+function! s:IsWeldablePiping(test_char)
+  if g:restfold_fold_piping != '─'
+    " If user uses non-standard piping, only magic off that pipe character.
+    return a:test_char == g:restfold_fold_piping
+  endif
+
+  " If user sticks to standard (thin) piping, magic off anything that
+  " similarly connects to horizontal thin piping (Vim's `hh` digraph,
+  " which connects to: lu, lU, hu, hU, ld, lD, hd, hD, hv, and hV).
+
+  " Check first if '─', aka g:restfold_fold_piping, then the others.
+  return 0
+    \ || a:test_char == '─'
+    \ || a:test_char == '┘'
+    \ || a:test_char == '┚'
+    \ || a:test_char == '┴'
+    \ || a:test_char == '┸'
+    \ || a:test_char == '┐'
+    \ || a:test_char == '┒'
+    \ || a:test_char == '┬'
+    \ || a:test_char == '┰'
+    \ || a:test_char == '┼'
+    \ || a:test_char == '╂'
 endfunction
 
 " ***
