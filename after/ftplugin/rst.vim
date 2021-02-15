@@ -235,7 +235,7 @@ endfunction
 function! ReSTfoldFoldLevel(lnum)
   call s:SetDefaultConfig()
 
-  if b:RESTFOLD_SCANNER_LOOKUP == v:none
+  if len(b:RESTFOLD_SCANNER_LOOKUP) == 0
     call s:HydrateFoldLevelLookup()
   endif
 
@@ -250,7 +250,7 @@ endfunction
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-let b:RESTFOLD_SCANNER_LOOKUP = v:none
+let b:RESTFOLD_SCANNER_LOOKUP = []
 
 function! s:HydrateFoldLevelLookup()
   let l:file_length = line('$')
@@ -378,7 +378,9 @@ function! ReSTFolderUpdateFolds(reset_folding)
 
   call s:SetDefaultConfig()
 
-  let b:RESTFOLD_SCANNER_LOOKUP = v:none
+  let l:was_folding_already = len(b:RESTFOLD_SCANNER_LOOKUP) > 0
+
+  let b:RESTFOLD_SCANNER_LOOKUP = []
 
   setlocal foldexpr=ReSTfoldFoldLevel(v:lnum)
   setlocal foldmethod=expr
@@ -410,7 +412,7 @@ function! ReSTFolderUpdateFolds(reset_folding)
 
   setlocal foldtext=ReSTSectionTitleFoldText()
 
-  if a:reset_folding == 1
+  if ! l:was_folding_already || a:reset_folding == 1
     " Close all folds (set foldlevel to 0).
     normal! zM
     " Reduce folding (set foldlevel to 1, opening top-level folds).
@@ -850,7 +852,7 @@ function! s:CreateMaps()
     " expanding or collapsing folds, and without scrolling. If
     " called before <S-F5>, behaves like <S-F5> the first time.
     " - Note that I tried two 'simpler' approaches:
-    "     ... <F5> :let b:RESTFOLD_SCANNER_LOOKUP = v:none<CR>
+    "     ... <F5> :let b:RESTFOLD_SCANNER_LOOKUP = []<CR>
     "   and
     "     ... <F5> :call <SID>HydrateFoldLevelLookup()<CR>
     "   but I think Vim needs us to set foldexpr again (or
