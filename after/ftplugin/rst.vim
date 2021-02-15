@@ -788,8 +788,6 @@ function! s:AppendPipingSoilStack(tail_and_count)
     return ''
   endif
 
-  let l:soil_stack_width = s:CalculatePipeTailWidth()
-
   let l:fold_line_rhs =
     \ a:tail_and_count . repeat(g:restfold_fold_piping, g:restfold_tail_width)
 
