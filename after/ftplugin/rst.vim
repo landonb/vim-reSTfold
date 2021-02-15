@@ -869,7 +869,7 @@ function! s:CreateMaps()
   augroup END
 endfunction
 
-if !exists("g:restfold_create_default_mappings") || g:restfold_create_default_mappings
+if ! exists("g:restfold_create_default_mappings") || g:restfold_create_default_mappings
   call s:CreateMaps()
 endif
 
