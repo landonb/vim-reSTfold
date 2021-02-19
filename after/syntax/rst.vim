@@ -306,6 +306,12 @@ function! s:DubsSyn_CincoWords_FIXED()
   hi def CincoWordsFIXED guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
+" SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
+function! s:DubsSyn_CincoWords_SPOKE()
+  syn match CincoWordsSPOKE '\([[:space:]\n\[(#]\)\@<=SPOKE\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
 function! s:DubsSyn_CincoWords_TBLLC()
   syn match CincoWordsTBLLC '\([[:space:]\n\[(#]\)\@<=TBLLC\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsTBLLC guifg=#198CCF
@@ -442,6 +448,7 @@ function! s:DubsRestWireBasic()
     call s:DubsSyn_CincoWords_EVERY()
     call s:DubsSyn_CincoWords_UPPER()
     call s:DubsSyn_CincoWords_FIXED()
+    call s:DubsSyn_CincoWords_SPOKE()
     call s:DubsSyn_CincoWords_TBLLC()
     call s:DubsSyn_CincoWords_TAXES()
   else
