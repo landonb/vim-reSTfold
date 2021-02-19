@@ -703,6 +703,8 @@ function! s:IsWeldablePiping(test_char)
     \ || a:test_char == '┒'
     \ || a:test_char == '┬'
     \ || a:test_char == '┰'
+    \ || a:test_char == '┤'
+    \ || a:test_char == '┨'
     \ || a:test_char == '┼'
     \ || a:test_char == '╂'
 endfunction
