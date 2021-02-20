@@ -133,6 +133,7 @@ function! s:SetDefaultConfig()
   "
   " You could then copy the nmap, etc., from the bottom of this file to
   " your own ~/.vimrc or plugin and edit to your taste.
+  call s:ApplyDefault('g:restfold_create_default_mappings', 1)
 
   " ***
 
