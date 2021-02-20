@@ -630,7 +630,8 @@ function! ReSTSectionTitleFoldText()
   let l:level_prefix_and_line = l:line_prefix_and_has_welds[0]
   let l:has_welded_pipes = l:line_prefix_and_has_welds[1]
 
-  let l:tail_and_count = s:PrepareTailPipeAndLinesCount(l:tail_piping, l:line_piping)
+  let l:tail_and_count = s:PrepareTailPipeAndLinesCount(
+    \ l:lead_piping, l:tail_piping, l:line_piping)
 
   let l:fold_line_lhs = s:TruncatePrefixedLine(
     \ l:level_prefix_and_line, l:tail_and_count, l:line_piping)
@@ -1020,19 +1021,26 @@ endfunction
 
 " ***
 
-function! s:PrepareTailPipeAndLinesCount(tail_piping, line_piping)
+function! s:PrepareTailPipeAndLinesCount(lead_piping, tail_piping, line_piping)
   if g:restfold_lines_count_hide
     return ''
   endif
 
   let l:llcnt_width = g:restfold_lines_count_width + strwidth(g:restfold_lines_count_units)
+
   let l:lines_count = v:foldend - v:foldstart + 1
+
+  let l:line_ending = ' ' . a:lead_piping
+  if g:restfold_disable_piping
+    let l:line_ending = ' '
+  endif
+
   let l:tail_and_count = ''
     \ . a:line_piping
     \ . a:tail_piping
     \ . ' '
     \ . printf("%" . l:llcnt_width . "s", l:lines_count . g:restfold_lines_count_units)
-    \ . ' ├'
+    \ . l:line_ending
 
   return l:tail_and_count
 endfunction
