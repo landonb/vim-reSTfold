@@ -210,7 +210,7 @@ function! s:SetDefaultConfig()
   " ornamentative lines. Another way to think of this is that the lead
   " piping is meant to signify folds with content, and not border folds.)
   call s:ApplyDefault('g:restfold_weldable_unicode_allow_list',
-    \ "'🔇🔈🔉🔊❕❔❓📢'")
+    \ "'🔇🔈🔉🔊❕❔❓📢⭕'")
 
   " Or set g:restfold_weldable_unicode_enable_all truthy to always connect to Unicode.
   call s:ApplyDefault('g:restfold_weldable_unicode_enable_all', 0)
