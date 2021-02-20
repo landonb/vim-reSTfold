@@ -265,6 +265,9 @@ function! s:SetDefaultConfig()
 
   " ***
 
+  " Set this option truthy to disable the line count column.
+  call s:ApplyDefault('g:restfold_lines_count_hide', 0)
+
   " This setting determines the minimum width of the lines count column,
   " so that it looks and aligns nicely.
   " - MAGIC_NUMBER: Use 4 characters for the lines count width.
@@ -999,7 +1002,7 @@ endfunction
 " ***
 
 function! s:PrepareTailPipeAndLinesCount(tail_piping, line_piping)
-  if g:restfold_disable_piping
+  if g:restfold_lines_count_hide
     return ''
   endif
 
@@ -1018,10 +1021,6 @@ endfunction
 " ***
 
 function! s:AppendPipingSoilStack(tail_and_count, line_piping)
-  if g:restfold_disable_piping
-    return ''
-  endif
-
   let l:fold_line_rhs =
     \ a:tail_and_count . repeat(a:line_piping, g:restfold_tail_width)
 
