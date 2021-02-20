@@ -414,16 +414,29 @@ function! ReSTFolderUpdateFolds(reset_folding)
 
   setlocal foldtext=ReSTSectionTitleFoldText()
 
+  " Close all folds (set foldlevel to 0).
+  normal! zM
+  " Reduce folding (set foldlevel to 1, opening top-level folds).
+  normal! zr
+
   if ! l:was_folding_already || a:reset_folding == 1
-    " Close all folds (set foldlevel to 0).
-    normal! zM
-    " Reduce folding (set foldlevel to 1, opening top-level folds).
-    normal! zr
-    " Move to the top of the file, and then move downwards to the
-    " start of the next (first) fold.
+    " Move cursor to the top of the file (gg); then
+    " move it down to the start of the next (first) fold (zj); then
+    " move that line to the top of the screen (`zt`; or `z<CR>` to
+    " send to first non-blank column, which won't matter for folds).
+    " - [Or, if you just want the fold to scroll into view but not
+    "    to obscure what's above the first fold, replace `zt` with
+    "    `zz` to center the first fold instead.].
+    " Ref: :help scroll-cursor
     normal! gg
     normal! zj
+    normal! zt
     "  echom "Updated folds!"
+  else
+    " Move current line to center (to help user relocate themselves).
+    normal! zz
+    " Expand only the current fold.
+    normal! zv
   endif
 endfunction
 
