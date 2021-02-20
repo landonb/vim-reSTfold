@@ -524,31 +524,28 @@ function! ReSTSectionTitleFoldText()
     let l:lineno_title += 1
   end
 
-  let l:fold_piping = ''
-  if ! g:restfold_disable_piping
-    let l:fold_piping = g:restfold_fold_piping
-  endif
+  let l:pipe_chars = s:DeterminePipeChars(l:lineno_title)
+  let l:lead_piping = l:pipe_chars[0]
+  let l:tail_piping = l:pipe_chars[1]
+  let l:line_piping = l:pipe_chars[2]
 
-  let l:pipe_ends = s:DeterminePipeEnds()
-  let l:lead_piping = l:pipe_ends[0]
-  let l:tail_piping = l:pipe_ends[1]
-
-  let l:second_pipe = s:DeterminePipeTwo()
+  let l:second_pipe = s:DeterminePipeTwo(l:line_piping)
   let l:first_pipes = l:lead_piping . l:second_pipe
 
-  let l:line_prefix_and_has_welds = s:PreparePrefixedLine(l:lineno_title, l:first_pipes)
+  let l:line_prefix_and_has_welds = s:PreparePrefixedLine(
+    \ l:lineno_title, l:first_pipes, l:line_piping)
   let l:level_prefix_and_line = l:line_prefix_and_has_welds[0]
   let l:has_welded_pipes = l:line_prefix_and_has_welds[1]
 
-  let l:tail_and_count = s:PrepareTailPipeAndLinesCount(l:tail_piping)
+  let l:tail_and_count = s:PrepareTailPipeAndLinesCount(l:tail_piping, l:line_piping)
 
   let l:fold_line_lhs = s:TruncatePrefixedLine(
-    \ l:level_prefix_and_line, l:tail_and_count)
+    \ l:level_prefix_and_line, l:tail_and_count, l:line_piping)
 
-  let l:fold_line_rhs = s:AppendPipingSoilStack(l:tail_and_count)
+  let l:fold_line_rhs = s:AppendPipingSoilStack(l:tail_and_count, l:line_piping)
 
   let l:entire_fold_line = s:AssembleFoldLine(
-    \ l:fold_line_lhs, l:fold_line_rhs, l:has_welded_pipes)
+    \ l:fold_line_lhs, l:fold_line_rhs, l:has_welded_pipes, line_piping)
 
   return l:entire_fold_line
 endfunction
@@ -556,16 +553,32 @@ endfunction
 " ***
 
 " Determines lead and tail piping by examining visibly adjacent folds.
-function! s:DeterminePipeEnds()
+function! s:DeterminePipeChars(lineno_title)
+  let l:lead_piping = ''
+  let l:tail_piping = ''
+  let l:line_piping = g:restfold_fold_piping
+
   if g:restfold_disable_piping
-    return [ '', '' ]
+    return [ l:lead_piping, l:tail_piping, l:line_piping ]
   endif
 
   let l:lead_piping = '─'
   let l:tail_piping = '─'
 
+  " Check if line is whitespace-only, unless welding disabled.
+  if ! g:restfold_no_pipe_welding
+    let l:curr_line = getline(a:lineno_title)
+
+    if match(l:curr_line, '^\s\+$') == 0
+      " Section title is one or more whitespace, so don't connect pipes to it.
+      let l:lead_piping = ' '
+      let l:tail_piping = ' '
+      let l:line_piping = ' '
+    endif
+  endif
+
   if g:restfold_no_corners
-    return [ l:lead_piping, l:tail_piping ]
+    return [ l:lead_piping, l:tail_piping, l:line_piping ]
   endif
 
   let l:visible_fold_start_prev = foldclosed(v:foldstart - 1)
@@ -574,19 +587,27 @@ function! s:DeterminePipeEnds()
   let l:visible_fold_start_next = foldclosed(foldclosedend(v:foldstart) + 1)
   let l:visible_fold_level_next = s:LookupFoldLevelNumber(l:visible_fold_start_next)
 
-  if v:foldlevel == l:visible_fold_level_next
+  if l:line_piping != '─'
+    " Our pipe welding only knows the one fitting. This isn't it.
+    " So we can only plumb a vertical stack.
+    let l:lead_piping = '│'
+    let l:tail_piping = '│'
+  elseif v:foldlevel == l:visible_fold_level_next
     if v:foldlevel == l:visible_fold_level_prev
+      " Between Two Folds, all three at the same level.
       let l:lead_piping = '├'
       let l:tail_piping = '┤'
     else
+      " Previous fold is a different level, so this one starts the fold group.
       let l:lead_piping = '┌'
       let l:tail_piping = '┐'
     endif
   elseif v:foldlevel == l:visible_fold_level_prev
-    " Where v:foldlevel != l:visible_fold_level_next.
+    " Where v:foldlevel != l:visible_fold_level_next. Last one in fold group.
     let l:lead_piping = '└'
     let l:tail_piping = '┘'
   endif
+  " else, if none of the above, lead/tail remain '─', aka a one-fold group.
 
   if s:DEBUG_TRACE
     echom "=== v:foldlvl: " . v:foldlevel
@@ -598,17 +619,17 @@ function! s:DeterminePipeEnds()
           \ . " / vis-lvl-next: " . l:visible_fold_level_next
   endif
 
-  return [ l:lead_piping, l:tail_piping ]
+  return [ l:lead_piping, l:tail_piping, l:line_piping ]
 endfunction
 
 " ***
 
-function! s:DeterminePipeTwo()
+function! s:DeterminePipeTwo(line_piping)
   if g:restfold_disable_piping
     return ''
   endif
 
-  let l:second_pipe = g:restfold_fold_piping
+  let l:second_pipe = a:line_piping
 
   if ! g:restfold_subfolds_marker
     " Could affect runtime (though would only double it).
@@ -628,7 +649,7 @@ endfunction
 " Attached the title line to the piping prefix, usually with a space
 " between the piping and the title, but sometimes -- if the title
 " line itself is piping -- weld the piping to the title (no space).
-function! s:PreparePrefixedLine(lineno_title, first_pipes)
+function! s:PreparePrefixedLine(lineno_title, first_pipes, line_piping)
   let l:curr_line = getline(a:lineno_title)
 
   let l:line_char_0 = strcharpart(l:curr_line, 0, 1)
@@ -637,7 +658,7 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes)
   if 1
     \ && ! g:restfold_disable_piping
     \ && ! g:restfold_no_pipe_welding
-    \ && s:IsWeldablePiping(l:line_char_0)
+    \ && s:IsWeldablePiping(l:line_char_0, a:line_piping)
 
     " The fold title starts with the fold_piping character. Weld it.
     let l:has_welded_pipes = 1
@@ -667,17 +688,18 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes)
   if ! g:restfold_disable_piping
     if l:has_welded_pipes
       " I.e., previously tested and determined:
-      "   ! g:restfold_no_pipe_welding && s:IsWeldablePiping(l:line_char_0)
+      "     ! g:restfold_no_pipe_welding
+      "     \ && s:IsWeldablePiping(l:line_char_0, a:line_piping)
       " Magic line: If line starts with piping, connect to the fold piping.
-      let l:prefixed_line = g:restfold_fold_piping . l:curr_line
+      let l:prefixed_line = a:line_piping . l:curr_line
       " Same path as above:
       "   let l:has_welded_pipes = 1
     else
-      let l:whitespace_prefix = repeat(' ', strwidth(g:restfold_fold_piping))
+      let l:whitespace_prefix = repeat(' ', strwidth(a:line_piping))
 
       if ! g:restfold_no_pipe_welding
         \ && l:line_char_0 == ' '
-        \ && s:IsWeldablePiping(strcharpart(l:curr_line, 1, 1))
+        \ && s:IsWeldablePiping(strcharpart(l:curr_line, 1, 1), a:line_piping)
         " Because of magic line, if line starts with space and then piping,
         " remove the space, so user can have piping line with a space between
         " fold piping and title piping (i.e., and not two spaces minimum).
@@ -695,10 +717,11 @@ endfunction
 
 " ***
 
-function! s:IsWeldablePiping(test_char)
-  if g:restfold_fold_piping != '─'
-    " If user uses non-standard piping, only magic off that pipe character.
-    return a:test_char == g:restfold_fold_piping
+function! s:IsWeldablePiping(test_char, line_piping)
+  if a:line_piping != '─'
+    " If not using standard piping, only magic off that pipe character
+    " (as none of the fancy pipes below will be known to be a good fit).
+    return a:test_char == a:line_piping
   endif
 
   " If user sticks to standard (thin) piping, magic off anything that
@@ -724,7 +747,7 @@ endfunction
 
 " ***
 
-function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count)
+function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count, line_piping)
   if g:restfold_disable_piping
     return a:level_prefix_and_line
   endif
@@ -735,7 +758,7 @@ function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count)
   " See comment after: use strwidth() and not strlen() or strdisplaywidth().
   let l:lhs_width_avail = winwidth(0)
     \ - l:num_col_width
-    \ - strwidth(g:restfold_fold_piping)
+    \ - strwidth(a:line_piping)
     \ - strwidth(a:tail_and_count)
     \ - g:restfold_tail_width
 
@@ -812,7 +835,7 @@ endfunction
 
 " ***
 
-function! s:PrepareTailPipeAndLinesCount(tail_piping)
+function! s:PrepareTailPipeAndLinesCount(tail_piping, line_piping)
   if g:restfold_disable_piping
     return ''
   endif
@@ -820,7 +843,7 @@ function! s:PrepareTailPipeAndLinesCount(tail_piping)
   let l:llcnt_width = g:restfold_lines_count_width + strwidth(g:restfold_lines_count_units)
   let l:lines_count = v:foldend - v:foldstart + 1
   let l:tail_and_count = ''
-    \ . g:restfold_fold_piping
+    \ . a:line_piping
     \ . a:tail_piping
     \ . ' '
     \ . printf("%" . l:llcnt_width . "s", l:lines_count . g:restfold_lines_count_units)
@@ -831,13 +854,13 @@ endfunction
 
 " ***
 
-function! s:AppendPipingSoilStack(tail_and_count)
+function! s:AppendPipingSoilStack(tail_and_count, line_piping)
   if g:restfold_disable_piping
     return ''
   endif
 
   let l:fold_line_rhs =
-    \ a:tail_and_count . repeat(g:restfold_fold_piping, g:restfold_tail_width)
+    \ a:tail_and_count . repeat(a:line_piping, g:restfold_tail_width)
 
   return l:fold_line_rhs
 endfunction
@@ -857,12 +880,12 @@ endfunction
 
 " ***
 
-function! s:AssembleFoldLine(fold_line_lhs, fold_line_rhs, has_welded_pipes)
+function! s:AssembleFoldLine(fold_line_lhs, fold_line_rhs, has_welded_pipes, line_piping)
   let l:fold_line_len = s:CalculateFoldLineWidth(a:fold_line_lhs, a:fold_line_rhs)
 
   let l:hr_sep = ' '
   if a:has_welded_pipes
-    let l:hr_sep = g:restfold_fold_piping
+    let l:hr_sep = a:line_piping
   endif
 
   let l:num_col_width = s:CalculateNumberColumnWidth()
@@ -873,7 +896,7 @@ function! s:AssembleFoldLine(fold_line_lhs, fold_line_rhs, has_welded_pipes)
     \ - strwidth(l:hr_sep)
 
   if ! g:restfold_disable_piping
-    let l:var_length_hr = l:hr_sep . repeat(g:restfold_fold_piping, l:tail_len)
+    let l:var_length_hr = l:hr_sep . repeat(a:line_piping, l:tail_len)
   else
     " Interestingly, without this, Vim falls back to using '-' dashes.
     " But when piping is disabled, a whitespace tail looks nice.
