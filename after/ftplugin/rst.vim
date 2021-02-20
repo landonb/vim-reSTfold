@@ -147,8 +147,8 @@ function! s:SetDefaultConfig()
   "   and shows fold titles), enable this option as well as the lines
   "   count hide, e.g.,
   "
-  "     set g:restfold_disable_piping = 1
-  "     set g:restfold_lines_count_hide = 1
+  "     let g:restfold_disable_piping = 1
+  "     let g:restfold_lines_count_hide = 1
   "
   call s:ApplyDefault('g:restfold_disable_piping', 0)
 
@@ -178,7 +178,7 @@ function! s:SetDefaultConfig()
   "   but still showing the vertical bars and has-subfolds markers ▽ (i.e.,
   "   not completely disabling piping via g:restfold_disable_piping), try:
   "
-  "     set g:restfold_fold_piping = ''
+  "     let g:restfold_fold_piping = ''
   "
   call s:ApplyDefault('g:restfold_fold_piping', "'─'")
 
