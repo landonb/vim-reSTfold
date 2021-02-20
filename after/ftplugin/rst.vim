@@ -44,8 +44,9 @@
 " YOU: Uncomment next 'unlet', then <F9> to reload this file.
 "      (Iff: https://github.com/landonb/vim-source-reloader)
 "
-" - Also disable the guard clause return in s:ApplyDefault if
-"   you want to test changing any g:vars.
+" ALSO: Disable the guard clause `return` below, in
+"         s:ApplyDefault()
+"       if you also want to update the g:vars on <F9>.
 "
 " silent! unlet g:loaded_restfold_after_ftplugin_rst
 
@@ -118,7 +119,7 @@ function! s:SetDefaultConfig()
     return
   endif
 
-  " YOU: Set this global zero to set up your own bindings.
+  " YOU: Set this global variable zero to set up your own bindings.
   "
   "   If the global is unset or truthy, this plugin will bind <F5> in
   "   each reST buffer to folding it according to restfold rules. It'll
@@ -133,29 +134,61 @@ function! s:SetDefaultConfig()
   " You could then copy the nmap, etc., from the bottom of this file to
   " your own ~/.vimrc or plugin and edit to your taste.
 
+  " ***
+
+  " Set this variable truthy to disable piping ornamentation.
+  "
+  " - Note that piping is separate from the lines count, so if you want
+  "   to disable all fold style (so this plugin only calculates folds
+  "   and shows fold titles), enable this option as well as the lines
+  "   count hide, e.g.,
+  "
+  "     set g:restfold_disable_piping = 1
+  "     set g:restfold_lines_count_hide = 1
+  "
   call s:ApplyDefault('g:restfold_disable_piping', 0)
 
-  " 2021-02-13: Note that &fillchars is ignored.
-  " - This plugin formerly extracted the single fold character for fillchars,
-  "   e.g., given Vim's default fillchars="vert:|,fold:-", the following
-  "   matchstr would extract the '-' dash character:
-  "
-  "     let l:foldchar = matchstr(&fillchars, 'fold:\zs.')
-  "
-  "   But using &fillchars does not allow for custom └─piping─┘.
+  " ***
 
+  " Note: The &fillchars setting is completely ignored.
+  "
+  " - By default, Vim sets fillchars="vert:|,fold:-". This plugin
+  "   could (and used to! before piping) extract the 'fold' character,
+  "   e.g., the dash. But this plugin makes folds looks best with a
+  "   thin horizontal line, e.g., '-------' vs '───────' (try folding
+  "   a document, and you'll see). So rather than require everyone to
+  "   set &fillchars specially for this plugin, this plugin instead
+  "   ignores that variable and uses its own.
+  "
+  " Use the fold-piping variable to set the default piping character to
+  " use. This is essentially similar to how Vim uses the dash character
+  " '-' from &fillchars, except this plugin is lots more magical with it.
+  "
+  " - The default fold (fill) character is a thin horizontal line, '─'.
+  "
+  " Disabling: Set this to the empty string to use whitespace instead
+  " of the pipe character (or you could set this to a space character,
+  " but that adds an additional prefix space before the title).
+  "
+  " - E.g., if you want to see folds without horizontal pipe characters,
+  "   but still showing the vertical bars and has-subfolds markers ▽ (i.e.,
+  "   not completely disabling piping via g:restfold_disable_piping), try:
+  "
+  "     set g:restfold_fold_piping = ''
+  "
   call s:ApplyDefault('g:restfold_fold_piping', "'─'")
 
-  " Whether or not to use ┌ ┐ └ ┘ to connect folds at the same level.
-  " Set this nonzero to skip corners (always use g:restfold_fold_piping).
+  " Whether or not to use ┌ ┐ └ ┘ to connect folds at the same level. Set
+  " this nonzero to skip corners (and to always use the fold character,
+  " g:restfold_fold_piping).
   call s:ApplyDefault('g:restfold_no_corners', 0)
 
   " The icon to use to indicate that a fold has sub-sections
   " (folds w/in the fold). Set to the empty string to disable
   " (which is the same as setting to g:restfold_fold_piping).
-  "
-  "  call s:ApplyDefault('g:restfold_subfolds_marker', "'┬'")
-  "  call s:ApplyDefault('g:restfold_subfolds_marker', "'∇'")
+  " - Some other characters I demoed, similar to the one I chose:
+  "     call s:ApplyDefault('g:restfold_subfolds_marker', "'┬'")
+  "     call s:ApplyDefault('g:restfold_subfolds_marker', "'∇'")
   call s:ApplyDefault('g:restfold_subfolds_marker', "'▽'")
 
   " Whether to magically connect section headers that start with the pipe
@@ -172,7 +205,6 @@ function! s:SetDefaultConfig()
   " distraction by having dangling horizontal piping leading into these
   " ornamentative lines. Another way to think of this is that the lead
   " piping is meant to signify folds with content, and not border folds.)
-  " - Note the single-quotes inside the doubles, because this is exec'ed.
   call s:ApplyDefault('g:restfold_weldable_unicode_allow_list', "'🔇🔈🔉🔊'")
 
   " Or set g:restfold_weldable_unicode_enable_all truthy to always connect to Unicode.
@@ -227,6 +259,10 @@ function! s:SetDefaultConfig()
   "       ~/.vim/pack/myname/start/my_private_vim/plugin/my.vim
   "    I've got the following specified:
   "       let g:restfold_min_title_width = 93
+  " - In fact, this is the only setting the author customizes in their
+  "   private Vim plugin (that's used for such things).
+
+  " ***
 
   " This setting determines the minimum width of the lines count column,
   " so that it looks and aligns nicely.
@@ -256,12 +292,16 @@ function! s:SetDefaultConfig()
   "   never be used on a single value, e.g., '1 ll.' will never happen.
   call s:ApplyDefault('g:restfold_lines_count_units', "' ll.'")
 
+  " ***
+
   " This value specifies how many trailing pipe characters to show after
   " the lines count column. This defaults to 2, to match the prefix format,
   " which is 0-3 spaces followed by two leading pipe characters. (And we
   " could/should make the prefix count configurable, for parity with this
   " setting... but, mehhhhhhhhhh. =)
   call s:ApplyDefault('g:restfold_tail_width', 2)
+
+  " ***
 
   let s:SetDefaultConfigOnFirstRun = 0
 endfunction
@@ -728,7 +768,7 @@ function! s:IsOrnamentationFold(lineno_title, line_piping)
 
   " Unless the user allows welding to any/all Unicode characters, check
   " if the first byte (strpart) is not the same as the first character
-  " (strcharpart), which indicates a two-byte Unicode character; then
+  " (strcharpart), which indicates a two-byte Unicode character; then,
   " check if the Unicode character is not itself a pipe character (which
   " the plugin prefers to pipe into); and then check that the user has
   " not made an exception for the character (e.g., '🔉').
