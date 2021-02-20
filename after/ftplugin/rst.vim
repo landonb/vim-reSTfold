@@ -929,8 +929,12 @@ endfunction
 " ***
 
 function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count, line_piping)
+  let l:tail_width = g:restfold_tail_width
   if g:restfold_disable_piping
-    return a:level_prefix_and_line
+    " (lb): I'd assume this should be zero, but then making the window
+    " narrower shifts some of the line counts rightward as the title
+    " lines get squished. But 1 works great, not sure why, no shifting.
+    let l:tail_width = 1
   endif
 
   let l:num_col_width = s:CalculateNumberColumnWidth()
@@ -941,7 +945,7 @@ function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count, line_pip
     \ - l:num_col_width
     \ - strwidth(a:line_piping)
     \ - strwidth(a:tail_and_count)
-    \ - g:restfold_tail_width
+    \ - l:tail_width
 
   if l:lhs_width_avail < 1
     " Unlikely path.
