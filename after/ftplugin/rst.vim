@@ -47,6 +47,9 @@
 " ALSO: Disable the guard clause `return` below, in
 "         s:ApplyDefault()
 "       if you also want to update the g:vars on <F9>.
+"       Look for:
+"         " DEV: Comment this if using vim-source-reloader to reset globals.
+"         "return
 "
 " silent! unlet g:loaded_restfold_after_ftplugin_rst
 
@@ -314,6 +317,7 @@ endfunction
 
 function! s:ApplyDefault(varname, value)
   if exists(a:varname)
+    " DEV: Comment this if using vim-source-reloader to reset globals.
     return
   endif
 
