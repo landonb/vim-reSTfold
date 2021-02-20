@@ -114,7 +114,7 @@ setlocal foldexpr="0"
 let s:SetDefaultConfigOnFirstRun = 1
 
 function! s:SetDefaultConfig()
-  if ! s:SetDefaultConfigOnFirstRun
+  if !s:SetDefaultConfigOnFirstRun
     return
   endif
 
@@ -284,7 +284,7 @@ endfunction
 function! ReSTfoldFoldLevel(lnum)
   call s:SetDefaultConfig()
 
-  if ! s:IsFoldLevelLookupPopulated()
+  if !s:IsFoldLevelLookupPopulated()
     call s:HydrateFoldLevelLookup()
   endif
 
@@ -419,7 +419,7 @@ endfunction
 " ################################################################# "
 
 function! ReSTFolderUpdateFolds(reset_folding)
-  if ! &foldenable
+  if !&foldenable
     if a:reset_folding == 0 || a:reset_folding == 1
       echom "Run 'zi' to foldenable!"
     end
@@ -468,7 +468,7 @@ function! ReSTFolderUpdateFolds(reset_folding)
   " Reduce folding (set foldlevel to 1, opening top-level folds).
   normal! zr
 
-  if ! l:was_folding_already || a:reset_folding == 1
+  if !l:was_folding_already || a:reset_folding == 1
     " Move cursor to the top of the file (gg); then
     " move it down to the start of the next (first) fold (zj); then
     " move that line to the top of the screen (`zt`; or `z<CR>` to
@@ -620,7 +620,7 @@ function! s:DeterminePipeChars(lineno_title)
 
   " Check if line is whitespace-only, or ornamental, i.e., likely does not
   " contain any content, so don't draw attention to it with horizontal piping.
-  if ! g:restfold_no_pipe_welding
+  if !g:restfold_no_pipe_welding
     \ && s:IsOrnamentationFold(a:lineno_title, l:line_piping)
 
     let l:lead_piping = ' '
@@ -753,7 +753,7 @@ function! s:DeterminePipeTwo(line_piping)
 
   let l:second_pipe = a:line_piping
 
-  if ! g:restfold_subfolds_marker
+  if !g:restfold_subfolds_marker
     " Could affect runtime (though would only double it).
     for l:foldline in range(v:foldstart, v:foldend)
       if v:foldlevel < s:LookupFoldLevelNumber(l:foldline)
@@ -778,8 +778,8 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes, line_piping)
 
   let l:has_welded_pipes = 0
   if 1
-    \ && ! g:restfold_disable_piping
-    \ && ! g:restfold_no_pipe_welding
+    \ && !g:restfold_disable_piping
+    \ && !g:restfold_no_pipe_welding
     \ && s:IsWeldablePiping(l:line_char_0, a:line_piping)
 
     " The fold title starts with the fold_piping character. Weld it.
@@ -787,7 +787,7 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes, line_piping)
   endif
 
   let l:lvl_prefix = ''
-  if ! g:restfold_disable_piping
+  if !g:restfold_disable_piping
     " Create the piping prefix, indented with spaces per its level.
     let l:lvl_prefix = a:first_pipes
 
@@ -798,7 +798,7 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes, line_piping)
     endif
   endif
 
-  if g:restfold_min_title_width > 0 && ! l:has_welded_pipes
+  if g:restfold_min_title_width > 0 && !l:has_welded_pipes
     let l:pad_width = g:restfold_min_title_width - strwidth(l:curr_line)
     if l:pad_width > 0
       let l:curr_line = l:curr_line . repeat(' ', l:pad_width)
@@ -807,10 +807,10 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes, line_piping)
 
   let l:prefixed_line = l:curr_line
 
-  if ! g:restfold_disable_piping
+  if !g:restfold_disable_piping
     if l:has_welded_pipes
       " I.e., previously tested and determined:
-      "     ! g:restfold_no_pipe_welding
+      "     !g:restfold_no_pipe_welding
       "     \ && s:IsWeldablePiping(l:line_char_0, a:line_piping)
       " Magic line: If line starts with piping, connect to the fold piping.
       let l:prefixed_line = a:line_piping . l:curr_line
@@ -819,7 +819,7 @@ function! s:PreparePrefixedLine(lineno_title, first_pipes, line_piping)
     else
       let l:whitespace_prefix = repeat(' ', strwidth(a:line_piping))
 
-      if ! g:restfold_no_pipe_welding
+      if !g:restfold_no_pipe_welding
         \ && l:line_char_0 == ' '
         \ && s:IsWeldablePiping(strcharpart(l:curr_line, 1, 1), a:line_piping)
         " Because of magic line, if line starts with space and then piping,
@@ -1017,7 +1017,7 @@ function! s:AssembleFoldLine(fold_line_lhs, fold_line_rhs, has_welded_pipes, lin
     \ - l:fold_line_len
     \ - strwidth(l:hr_sep)
 
-  if ! g:restfold_disable_piping
+  if !g:restfold_disable_piping
     let l:var_length_hr = l:hr_sep . repeat(a:line_piping, l:tail_len)
   else
     " Interestingly, without this, Vim falls back to using '-' dashes.
@@ -1064,7 +1064,7 @@ function! s:CreateMaps()
   augroup END
 endfunction
 
-if ! exists("g:restfold_create_default_mappings") || g:restfold_create_default_mappings
+if !exists("g:restfold_create_default_mappings") || g:restfold_create_default_mappings
   call s:CreateMaps()
 endif
 
