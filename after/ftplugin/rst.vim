@@ -661,6 +661,14 @@ function! s:DeterminePipeChars(lineno_title)
   let l:tail_piping = g:restfold_fold_piping
   let l:line_piping = g:restfold_fold_piping
 
+  " See similar check in s:DeterminePipeTwo: When user opts-out of piping,
+  " without setting line_piping = ' ', the plugin would not fill in the
+  " line suffix to the window width, and Vim would step in and fill the
+  " void with primitive dashes (e.g., '---------'). So ensure that lines
+  " are padded with whitespace in the absence of fold piping.
+  if g:restfold_fold_piping == ''
+    let l:line_piping = ' '
+  endif
 
   " Check if line is whitespace-only, or ornamental, i.e., likely does not
   " contain any content, so don't draw attention to it with horizontal piping.
@@ -792,6 +800,13 @@ endfunction
 
 function! s:DeterminePipeTwo(line_piping)
   if g:restfold_disable_piping
+    return ''
+  endif
+
+  " Allow user to set g:restfold_fold_piping = '' without causing
+  " Vim to add the '------' suffix in the absense of being explicit;
+  " and also only only using 1 line between left-hand vertical line.
+  if g:restfold_fold_piping == ''
     return ''
   endif
 
