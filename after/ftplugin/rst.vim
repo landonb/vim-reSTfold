@@ -163,6 +163,55 @@ function! s:SetDefaultConfig()
   " Set this nonzero to always use a space between the piping and the title.
   call s:ApplyDefault('g:restfold_no_pipe_welding', 0)
 
+  " *** Rules for identifying content folds vs. ornamental.
+
+  " By default, reSTfold will not add horizontal piping into a title unless
+  " it starts with an ASCII (one-byte) character, or if it starts with any
+  " of the unicode characters specified in this string. (The idea is to let
+  " you use Unicode to beautify your documents without also creating a
+  " distraction by having dangling horizontal piping leading into these
+  " ornamentative lines. Another way to think of this is that the lead
+  " piping is meant to signify folds with content, and not border folds.)
+  " - Note the single-quotes inside the doubles, because this is exec'ed.
+  call s:ApplyDefault('g:restfold_weldable_unicode_allow_list', "'🔇🔈🔉🔊'")
+
+  " Or set g:restfold_weldable_unicode_enable_all truthy to always connect to Unicode.
+  call s:ApplyDefault('g:restfold_weldable_unicode_enable_all', 0)
+
+  " Set g:restfold_weldable_blank_lines truthy to always weld to blank titles.
+  call s:ApplyDefault('g:restfold_weldable_blank_lines', 0)
+
+  " Set g:restfold_weldable_max_lead_spaces to number of leading spaces to
+  " allow and still consider that a title line is weldable. To put it the
+  " other way, set this value one less than how many spaces you'd like to
+  " use to indicate a fold is ornamentation. E.g., if you want to start
+  " ornamenation folds with 2+ spaces, than a value of '1' here means that
+  " the title, '  ⭐ ⭐ ⭐', would be identified as ornamentation, but then
+  " the title, ' My Fold Title', would be identified as weldable. The
+  " default value of 0 means that any title that starts with a space is
+  " considered an ornamental line (max leading spaces to be weldable is 0),
+  " and such a line will not be connected to pipe welding. Set to -1 to
+  " disable completely (assume weldable unless another condition applies).
+  call s:ApplyDefault('g:restfold_weldable_max_lead_spaces', 0)
+
+  " Set g:restfold_weldable_min_content_lines to the minimum number of
+  " content lines (lines in the fold not including the first 3 lines
+  " that are used for the reSTfold header) that a fold must have to be
+  " considered weldable. The default value, 2, means that a fold must
+  " have two lines of content to be weldable. E.g., if the fold is just
+  " its 3 header lines and 1 content line (in practice, the first line
+  " after the header is blank, but it does not have to be), then assume
+  " the fold is for ornamentation. (Another way to think about this is
+  " that horizontal piping (welding) should only occur to fold titles
+  " whose folds contain content -- the piping draws your eye to the
+  " fold and tells you to open the fold to find more. (Also, the author
+  " uses a lot of 4-line folds for beautifying my documents, and I like
+  " the cleaner look of not having horizontal piping at the start of all
+  " the design folds.))
+  call s:ApplyDefault('g:restfold_weldable_min_content_lines', 2)
+
+  " ***
+
   " If nonzero, pad the title with whitespace to this width, which has the
   " effect of lining up the tail piping (otherwise, if this is 0, the title
   " is followed by a single space and then the tail piping starts).
@@ -556,34 +605,36 @@ endfunction
 function! s:DeterminePipeChars(lineno_title)
   let l:lead_piping = ''
   let l:tail_piping = ''
-  let l:line_piping = g:restfold_fold_piping
+  let l:line_piping = ''
 
+  " Check if user has disabled piping.
   if g:restfold_disable_piping
     return [ l:lead_piping, l:tail_piping, l:line_piping ]
   endif
 
-  let l:lead_piping = '─'
-  let l:tail_piping = '─'
+  " Default lead, tail, and line piping to simple, thin horizontal pipe, '─'.
+  let l:lead_piping = g:restfold_fold_piping
+  let l:tail_piping = g:restfold_fold_piping
+  let l:line_piping = g:restfold_fold_piping
 
-  " Check if line is whitespace-only, unless welding disabled.
+
+  " Check if line is whitespace-only, or ornamental, i.e., likely does not
+  " contain any content, so don't draw attention to it with horizontal piping.
   if ! g:restfold_no_pipe_welding
-    let l:curr_line = getline(a:lineno_title)
+    \ && s:IsOrnamentationFold(a:lineno_title, l:line_piping)
 
-    if match(l:curr_line, '^\s\+$') == 0
-      " Section title is one or more whitespace, so don't connect pipes to it.
-      let l:lead_piping = ' '
-      let l:tail_piping = ' '
-      let l:line_piping = ' '
-    endif
+    let l:lead_piping = ' '
+    let l:tail_piping = ' '
+    let l:line_piping = ' '
   endif
 
   if g:restfold_no_corners
     return [ l:lead_piping, l:tail_piping, l:line_piping ]
   endif
 
+  " We'll use data about the previous and next fold to determine pipe connections.
   let l:visible_fold_start_prev = foldclosed(v:foldstart - 1)
   let l:visible_fold_level_prev = s:LookupFoldLevelNumber(l:visible_fold_start_prev)
-
   let l:visible_fold_start_next = foldclosed(foldclosedend(v:foldstart) + 1)
   let l:visible_fold_level_next = s:LookupFoldLevelNumber(l:visible_fold_start_next)
 
@@ -620,6 +671,77 @@ function! s:DeterminePipeChars(lineno_title)
   endif
 
   return [ l:lead_piping, l:tail_piping, l:line_piping ]
+endfunction
+
+" ***
+
+" We try to reserve horizontal lead piping for folds that we assume contain
+" content, and not for so-called 'border' folds, which are used for styling
+" the document when folded (or 'ornamentation' folds, 'design' folds, etc.).
+" - One assumption we make is that a leading space (or spaces, as configured
+"   by the user, or disabled completely) indicates a style fold.
+" - Another is that a blank title (all whitespace) is a design fold.
+" - Or we can assume that a fold of 4 or fewer lines likely has no content
+"   -- 3 lines for the fold title and sandwich buns, and 1 line after
+"   (which is most often blank in practice).
+" - Or that a leading Unicode character usually means the fold title is being
+"   used for style, and not for content -- unless the Unicode character is
+"   exempt from this rule by way of the g:restfold_weldable_unicode_allow_list
+"   lookup. E.g., the plugin author sometimes uses a volume icon to indicate
+"   the priority of Backlog item folds, e.g., '🔉 FTREQ: Don't pipe me, bruh'.
+function! s:IsOrnamentationFold(lineno_title, line_piping)
+  " Get the fold title and first character.
+  let l:curr_line = getline(a:lineno_title)
+  let l:line_char_0 = strcharpart(l:curr_line, 0, 1)
+
+  " Easy way out: If first character is identifiably weldable, return early.
+  if s:IsWeldablePiping(l:line_char_0, a:line_piping)
+    return 0
+  endif
+
+  " Check if the line starts with some number of whitespace characters.
+  if g:restfold_weldable_max_lead_spaces > -1
+    let l:sp_lim = g:restfold_weldable_max_lead_spaces + 1
+
+    if strcharpart(l:curr_line, 0, l:sp_lim) == repeat(' ', l:sp_lim)
+      return 1
+    endif
+  endif
+
+  " Check if the line is solely one or more whitespace characters.
+  if !g:restfold_weldable_blank_lines
+    \ && match(l:curr_line, '^\s\+$') == 0
+
+    return 1
+  endif
+
+  " Check if the fold if less than some minimum number of lines.
+  " - Get the start of the next fold, for counting lines.
+  let l:visible_fold_start_next = foldclosed(foldclosedend(v:foldstart) + 1)
+  " - MAGIC-NUMBER: 3 for the 3 header lines that start the fold section.
+  let l:minimum_fold_lines = g:restfold_weldable_min_content_lines + 3
+  if l:visible_fold_start_next > v:foldstart
+     \ && (l:visible_fold_start_next - v:foldstart) < l:minimum_fold_lines
+
+    return 1
+  endif
+
+  " Unless the user allows welding to any/all Unicode characters, check
+  " if the first byte (strpart) is not the same as the first character
+  " (strcharpart), which indicates a two-byte Unicode character; then
+  " check if the Unicode character is not itself a pipe character (which
+  " the plugin prefers to pipe into); and then check that the user has
+  " not made an exception for the character (e.g., '🔉').
+  let l:starts_with_unweldable_two_byte_character = 1
+    \ && !g:restfold_weldable_unicode_enable_all
+    \ && l:line_char_0 != strpart(l:curr_line, 0, 1)
+    \ && stridx(g:restfold_weldable_unicode_allow_list, l:line_char_0) == -1
+
+  if l:starts_with_unweldable_two_byte_character
+    return 1
+  endif
+
+  return 0
 endfunction
 
 " ***
