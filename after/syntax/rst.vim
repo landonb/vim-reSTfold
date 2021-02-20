@@ -298,6 +298,10 @@ endfunction
 "   nocombine   override attributes instead of combining them
 "   NONE
 
+" TRACK/2021-02-19: MacVim does not support strikethrough.
+" - Issue opened April, 2020, but no traction since?
+"   https://github.com/macvim-dev/macvim/issues/1034
+
 function! s:DubsSyn_CincoWords_FIXED()
   syn match CincoWordsFIXED '\([[:space:]\n\[(#]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
   " NOTE: GTK gVim uses `gui=`,
