@@ -127,13 +127,13 @@ endfunction
 
 " *** SYNTAX GROUP: Passwords.
 
-" 2018-12-07: Syntax Profiling: Top performance drag: Password15Good.
+" 2018-12-07: Syntax Profiling: Top performance drag: PasswordPossibly.
 "
-" [lb]: On a 7k-line file that takes 5.5 secs. to parse, Password15Good eats 1.75 s!
+" [lb]: On a 7k-line file that takes 5.5 secs. to parse, PasswordPossibly eats 1.75 s!
 " (To test: `:syntime clear`, `:syntime on`, open the reST document, read the results
 " using `:TabMessage syntime report`.)
 "
-function! s:DubsSyn_Password15Good()
+function! s:DubsSyn_PasswordPossibly()
   " Match "passwords" (why would you have those in a text file??).
   " Inspired by:
   "   https://dzone.com/articles/use-regex-test-password
@@ -147,11 +147,11 @@ function! s:DubsSyn_Password15Good()
   " NOTE: Trying {15,16} just to not match too much.
   " CUTE: If I misspell a normal FIXME/YYYY-MM-DD comment, e.g.,
   "       "FiXME/2018-03-21", then it gets highlighted as a password! So cute!!
-  syn match Password15Good '\([[:space:]\n]\)\@<=\([^[:space:]]*[a-z][^[:space:]]*\)\@=\([^[:space:]]*[A-Z][^[:space:]]*\)\@=\([^[:space:]]*[0-9][^[:space:]]*\)\@=\<[^[:space:]]\{15,16\}\([[:space:]\n]\)\@=' contains=@NoSpell
+  syn match PasswordPossibly '\([[:space:]\n]\)\@<=\([^[:space:]]*[a-z][^[:space:]]*\)\@=\([^[:space:]]*[A-Z][^[:space:]]*\)\@=\([^[:space:]]*[0-9][^[:space:]]*\)\@=\<[^[:space:]]\{16,24\}\([[:space:]\n]\)\@=' contains=@NoSpell
   " NOTE: We don't need a Password15Best to include special characters unless
   "       we wanted to color them differently; currently, such passwords will
-  "       match Password15Good.
-  hi def Password15Good term=reverse guibg=DarkRed guifg=Yellow ctermfg=1 ctermbg=6
+  "       match PasswordPossibly.
+  hi def PasswordPossibly term=reverse guibg=DarkRed guifg=Yellow ctermfg=1 ctermbg=6
 endfunction
 
 " *** SYNTAX GROUP: Acronyms.
@@ -178,7 +178,7 @@ endfunction
 
 " *** SYNTAX GROUP: Email Addys, Without Spelling Error Highlight.
 
-" Syntax Profiling: EmailNoSpell takes second longest, behind DubsSyn_Password15Good.
+" Syntax Profiling: EmailNoSpell takes second longest, behind DubsSyn_PasswordPossibly.
 " (From a 7K line reST that takes 3.76 secs. to load, EmailNoSpell consumes 0.21 secs.)
 
 function! s:DubsSyn_EmailNoSpell()
@@ -444,7 +444,7 @@ function! s:DubsRestWireBasic()
   if (l:redrawtimeout == l:defaultRedrawTimeout)
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     " Passwords first, so URL and Email matches override.
-    call s:DubsSyn_Password15Good()
+    call s:DubsSyn_PasswordPossibly()
     call s:DubsSyn_AcronymNoSpell()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
