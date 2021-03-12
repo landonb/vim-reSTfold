@@ -195,7 +195,7 @@ function! s:DubsSyn_AtHostNoSpell()
   " also be referred to as ``host``, but @host is cleaner.
   " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
   " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
-  syn match AtHostNoSpell '\([[:space:]\n]\)\@<=@[^,:\[:space:]\n]\+\([,:[:space:]\n]\)\@=' contains=@NoSpell
+  syn match AtHostNoSpell '\([[:space:]\n]\)\@<=@[^.,:\[:space:]\n]\+\([.,:[:space:]\n]\)\@=' contains=@NoSpell
   " Both LightMagenta and LightRed look good here. Not so much any other Light's.
   hi def AtHostNoSpell guifg=LightMagenta
 endfunction
@@ -272,7 +272,7 @@ function! s:DubsSyn_CincoWords_UPPER()
   " END: Said list as you wish.
 
   let l:cinco_re = join(l:cincos, '\|')
-  let l:cinco_pat = '\([[:space:]\n\[(#]\)\@<=\(' . l:cinco_re . '\)\([,:/[:space:]\n]\)\@='
+  let l:cinco_pat = '\([[:space:]\n\[(#]\)\@<=\(' . l:cinco_re . '\)\([.,:/[:space:]\n]\)\@='
   let l:syn_cmd = "syn match CincoWordsUPPER '" . l:cinco_pat . "' contains=@NoSpell"
   exec l:syn_cmd
 
@@ -303,7 +303,7 @@ endfunction
 "   https://github.com/macvim-dev/macvim/issues/1034
 
 function! s:DubsSyn_CincoWords_FIXED()
-  syn match CincoWordsFIXED '\([[:space:]\n\[(#]\)\@<=FIXED\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsFIXED '\([[:space:]\n\[(#]\)\@<=FIXED\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
   " NOTE: GTK gVim uses `gui=`,
   "       terminal Vim uses `cterm=`,
   "       I'm not sure what uses `term=`.
@@ -312,17 +312,17 @@ endfunction
 
 " SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
 function! s:DubsSyn_CincoWords_SPOKE()
-  syn match CincoWordsSPOKE '\([[:space:]\n\[(#]\)\@<=SPOKE\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsSPOKE '\([[:space:]\n\[(#]\)\@<=SPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
 function! s:DubsSyn_CincoWords_TBLLC()
-  syn match CincoWordsTBLLC '\([[:space:]\n\[(#]\)\@<=TBLLC\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsTBLLC '\([[:space:]\n\[(#]\)\@<=TBLLC\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsTBLLC guifg=#198CCF
 endfunction
 
 function! s:DubsSyn_CincoWords_TAXES()
-  syn match CincoWordsTAXES '\([[:space:]\n\[(#]\)\@<=TAXES\([,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsTAXES '\([[:space:]\n\[(#]\)\@<=TAXES\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsTAXES guifg=#00a15b gui=bold cterm=bold
 endfunction
 
