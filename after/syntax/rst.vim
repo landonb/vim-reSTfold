@@ -195,7 +195,7 @@ function! s:DubsSyn_AtHostNoSpell()
   " also be referred to as ``host``, but @host is cleaner.
   " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
   " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
-  syn match AtHostNoSpell '\([[:space:]\n]\)\@<=@[^.,:\[:space:]\n]\+\([.,:[:space:]\n]\)\@=' contains=@NoSpell
+  syn match AtHostNoSpell '\([[:space:]\n]\)\@<=@[^.,?:\[:space:]\n]\+\([.,?:[:space:]\n]\)\@=' contains=@NoSpell
   " Both LightMagenta and LightRed look good here. Not so much any other Light's.
   hi def AtHostNoSpell guifg=LightMagenta
 endfunction
