@@ -176,6 +176,14 @@ function! s:DubsSyn_AcronymNoSpell()
   syn match AcronymNoSpell '\<\(\u\|\d\)\{3,}s\?\>' contains=@NoSpell
 endfunction
 
+" Copied rstStandaloneHyperlink from marshallward/opt/vim-restructuredtext/syntax/rst.vim
+" and made it work on URLs like chrome://extensions/shortcuts and about:config.
+function! s:DubsSyn_rstStandaloneHyperlinkExtended()
+  syn match rstStandaloneHyperlinkExtended contains=@NoSpell
+      \ "\<\%(\%(chrome\)://\|\%(about\):\)[^[:space:]'\"<>]\+"
+  hi def link rstStandaloneHyperlinkExtended Identifier
+endfunction
+
 " *** SYNTAX GROUP: Email Addys, Without Spelling Error Highlight.
 
 " Syntax Profiling: EmailNoSpell takes second longest, behind DubsSyn_PasswordPossibly.
@@ -446,6 +454,7 @@ function! s:DubsRestWireBasic()
     " Passwords first, so URL and Email matches override.
     call s:DubsSyn_PasswordPossibly()
     call s:DubsSyn_AcronymNoSpell()
+    call s:DubsSyn_rstStandaloneHyperlinkExtended()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
     call s:DubsSyn_AtHostNoSpell()
