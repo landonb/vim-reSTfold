@@ -134,7 +134,10 @@ endfunction
 " using `:TabMessage syntime report`.)
 "
 function! s:DubsSyn_PasswordPossibly()
-  " Match "passwords" (why would you have those in a text file??).
+  " Match "passwords" (which you shouldn't use in plain text files -- so they're
+  "                    highlighted as a warning -- but also that you use in `pass`
+  "                    entries that you `pass edit` with Vim, where it's also nice
+  "                    to see them highlighted).
   " Inspired by:
   "   https://dzone.com/articles/use-regex-test-password
   "   var strongRegex = new RegExp(
