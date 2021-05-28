@@ -170,9 +170,9 @@ function! s:DubsSyn_AcronymNoSpell()
   "     syn match UrlNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell
 
   " `Don't count acronyms / abbreviations as spelling errors
-  "  (all upper-case letters, at least three characters)
-  "  Also will not count acronym with 's' at the end a spelling error
-  "  Also will not count numbers that are part of this`
+  "  (all upper-case letters, at least three characters)`
+  "  - Nor count acronym with lowercase 's' at the end as spelling error
+  "  - Nor count numbers that are part of this
   syn match AcronymNoSpell '\<\(\u\|\d\)\{3,}s\?\>' contains=@NoSpell
 endfunction
 
@@ -451,9 +451,11 @@ function! s:DubsRestWireBasic()
 
   if (l:redrawtimeout == l:defaultRedrawTimeout)
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
+    " Acronyms first, which is loosest pattern, so others override
+    " (esp. passwords, which often have 3+ consec. uppers/digits).
+    call s:DubsSyn_AcronymNoSpell()
     " Passwords first, so URL and Email matches override.
     call s:DubsSyn_PasswordPossibly()
-    call s:DubsSyn_AcronymNoSpell()
     call s:DubsSyn_rstStandaloneHyperlinkExtended()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
