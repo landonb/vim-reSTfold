@@ -150,7 +150,7 @@ function! s:DubsSyn_PasswordPossibly()
   " NOTE: Trying {15,16} just to not match too much.
   " CUTE: If I misspell a normal FIXME/YYYY-MM-DD comment, e.g.,
   "       "FiXME/2018-03-21", then it gets highlighted as a password! So cute!!
-  syn match PasswordPossibly '\(^\|[[:space:]]\|\n\)\@<=\([^[:space:]]*[a-z][^[:space:]]*\)\@=\([^[:space:]]*[A-Z][^[:space:]]*\)\@=\([^[:space:]]*[0-9][^[:space:]]*\)\@=\<[^[:space:]]\{16,24\}\([[:space:]\n]\)\@=' contains=@NoSpell
+  syn match PasswordPossibly '\(^\|[[:space:]]\|\n\)\@<=\([^[:space:]]*[a-z][^[:space:]]*\)\@=\([^[:space:]]*[A-Z][^[:space:]]*\)\@=\([^[:space:]]*[0-9][^[:space:]]*\)\@=\<[^[:space:]]\{16,24\}\([[:space:]]\|\n\)\@=' contains=@NoSpell
   " NOTE: We don't need a Password15Best to include special characters unless
   "       we wanted to color them differently; currently, such passwords will
   "       match PasswordPossibly.
