@@ -231,7 +231,7 @@ function! s:DubsSyn_CincoWords_EVERY()
   "     'CINCO/2021-01-19 00:08: Some note'.
 
   syn match CincoWordsEVERY '\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]]\{5}\([/]\)\@=' contains=@NoSpell
-  "                                                  The lone slash ^
+  "                                                        The lone slash ^
 
   " Not as bright a yellow, to be less noticeable than CincoWordsUPPER.
   hi def CincoWordsEVERY guifg=#caf751
