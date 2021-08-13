@@ -134,17 +134,17 @@ endfunction
 " using `:TabMessage syntime report`.)
 "
 function! s:DubsSyn_PasswordPossibly()
-  " Match "passwords" (which you shouldn't use in plain text files -- so they're
-  "                    highlighted as a warning -- but also that you use in `pass`
-  "                    entries that you `pass edit` with Vim, where it's also nice
-  "                    to see them highlighted).
-  " Inspired by:
-  "   https://dzone.com/articles/use-regex-test-password
+  " Match password-looking sequences (not that we expect you to have passwords
+  " in plain text files, so consider the highlight as a warning — that, or the
+  " highlight is being used by a `pass edit` command, in which case a password
+  " highlight is a nicety).
+  " - Inspired by:
+  "     https://dzone.com/articles/use-regex-test-password
   "   var strongRegex = new RegExp(
   "     "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"
   "   );
   " But completely Vimified! E.g., Perl's look-ahead (?=) is Vim's \(\)\@=
-  " HINT: To test, run ``syn clear``, then try the new ``syn match``.
+  " HINT: To test, run `syn clear`, then try the new `syn match`.
   " NOTE: \@= is Vim look-ahead. I also tried \@<= look-behind but it didn't work for me.
   " NOTE: Do this before EmailNoSpell, so that we don't think emails are passwords.
   " NOTE: Trying {15,16} just to not match too much.
@@ -172,10 +172,9 @@ function! s:DubsSyn_AcronymNoSpell()
   "     " `Don't mark URL-like things as spelling errors`
   "     syn match UrlNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell
 
-  " `Don't count acronyms / abbreviations as spelling errors
-  "  (all upper-case letters, at least three characters)`
-  "  - Nor count acronym with lowercase 's' at the end as spelling error
-  "  - Nor count numbers that are part of this
+  " Do not mark acronyms or abbreviations with a spelling error highlight
+  " (where an acrobbreviation is all upper-case, at least 3 letters long).
+  " - Nor spell check an acronym with an 's' at the end.
   syn match AcronymNoSpell '\<\(\u\|\d\)\{3,}s\?\>' contains=@NoSpell
 endfunction
 
@@ -351,7 +350,7 @@ endfunction
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
 
 function! s:Presto_HRrules()
-  " 2018-01-30: NUTS!
+  " 2018-01-30: BONKERS!
   "
   "   This is pretty cool. And it only serves one purpose:
   "     Making me color-happy when reSTing.
@@ -472,6 +471,7 @@ function! s:DubsRestWireBasic()
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     " Acronyms first, which is loosest pattern, so others override
     " (esp. passwords, which often have 3+ consec. uppers/digits).
+    " Otherwise, if this came last, it would undo FIVER highlights.
     call s:DubsSyn_AcronymNoSpell()
     " Passwords first, so URL and Email matches override.
     if l:fileLineLen < l:passwordThreshold
