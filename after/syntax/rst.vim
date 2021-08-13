@@ -330,19 +330,10 @@ function! s:DubsSyn_CincoWords_FIXED()
 endfunction
 
 " SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
+" FIXME/2021-08-12 19:27: Combine FIXED and SPOKE.
 function! s:DubsSyn_CincoWords_SPOKE()
   syn match CincoWordsSPOKE '\(^\|[[:space:]\n\[(#]\)\zsSPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-function! s:DubsSyn_CincoWords_TBLLC()
-  syn match CincoWordsTBLLC '\(^\|[[:space:]\n\[(#]\)\zsTBLLC\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsTBLLC guifg=#198CCF
-endfunction
-
-function! s:DubsSyn_CincoWords_TAXES()
-  syn match CincoWordsTAXES '\(^\|[[:space:]\n\[(#]\)\zsTAXES\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsTAXES guifg=#00a15b gui=bold cterm=bold
 endfunction
 
 " +----------------------------------------------------------------------+
@@ -485,8 +476,6 @@ function! s:DubsRestWireBasic()
     call s:DubsSyn_CincoWords_UPPER()
     call s:DubsSyn_CincoWords_FIXED()
     call s:DubsSyn_CincoWords_SPOKE()
-    call s:DubsSyn_CincoWords_TBLLC()
-    call s:DubsSyn_CincoWords_TAXES()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
