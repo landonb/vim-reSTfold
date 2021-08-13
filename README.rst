@@ -11,6 +11,49 @@ This plugin adds advanced reST document section folding,
 so you can use reStructuredText to manage notes files in
 Vim using reST markup.
 
+Why You Might Want to Use This Plugin
+=====================================
+
+If you like to use Vim to organize your life, this plugin
+might make it easier to manage your notes.
+
+Consider the following document::
+
+  ####################################
+  FIXME: Update reSTfold plugin README
+  ####################################
+
+  2021-07-12 21:39: Update reSTfold README with latest enhancements.
+
+  #######################################################
+  MAYBE: Publish Medium article to promote reSTfold usage
+  #######################################################
+
+  2021-07-13 12:04: Get some claps.
+  - Research what makes a good tech article.
+  - Devise a better example than this readme.
+  - Find a copy editor to review your work.
+
+  ######################
+  NOTES: Some more notes
+  ######################
+
+  Foo bar baz bat.
+
+This plugin lets you fold the reST headers, collapsing everything into
+essentially a high-level Table of Contents. You can then open individual
+sections to read or work on their contents.
+
+E.g., press ``<F5>`` to collapse all folds, and Vim will show::
+
+   1  ┌─ FIXME: Update reSTfold plugin README                     ──┤  6 ll. ├─
+   7  ├─ MAYBE: Publish Medium article to promote reSTfold usage  ──┤  8 ll. ├─
+  16  └─ NOTES: Some more notes                                   ──┤  6 ll. ├─
+
+You can then use the normal Vim fold commands to open and close folds.
+
+For example, position the cursor over a fold title and type ``za`` to open it.
+
 Usage: Signify Fold Levels using Specific Punctuation
 =====================================================
 
