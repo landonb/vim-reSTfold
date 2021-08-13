@@ -19,6 +19,10 @@ might make it easier to manage your notes.
 
 Consider the following document::
 
+  @@@@@@@@@@@@@@
+  reSTfold Notes
+  @@@@@@@@@@@@@@
+
   ####################################
   FIXME: Update reSTfold plugin README
   ####################################
@@ -46,9 +50,13 @@ sections to read or work on their contents.
 
 E.g., press ``<F5>`` to collapse all folds, and Vim will show::
 
-   1  ┌─ FIXME: Update reSTfold plugin README                     ──┤  6 ll. ├─
-   7  ├─ MAYBE: Publish Medium article to promote reSTfold usage  ──┤  8 ll. ├─
-  16  └─ NOTES: Some more notes                                   ──┤  6 ll. ├─
+   1 @@@@@@@@@@@@@@
+   2 reSTfold Notes
+   3 @@@@@@@@@@@@@@
+   4
+   5  ┌─ FIXME: Update reSTfold plugin README                     ──┤  6 ll. ├─
+  11  ├─ MAYBE: Publish Medium article to promote reSTfold usage  ──┤  8 ll. ├─
+  19  └─ NOTES: Some more notes                                   ──┤  6 ll. ├─
 
 You can then use the normal Vim fold commands to open and close folds.
 
@@ -177,6 +185,10 @@ Because of this, you can design section titles that look good folded, too.
 
 For instance, consider the following, unfolded document::
 
+  @@@@@
+  NOTES
+  @@@@@
+
   ###########################################################
   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
   ###########################################################
@@ -223,18 +235,22 @@ For instance, consider the following, unfolded document::
   ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
   ###########################################################
 
-Once folded (e.g., using ``<F5>``), it'll look like this::
+Once folded (e.g., press ``<F5>``), it'll look like this::
 
-   1 │  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓      │  4 ll. │
-   5 │  ┣━━ // * TABLE_OF_CONTENTS * // ━━━━━━━━━━━━━━━━━━━━━━━━━━┨      │  4 ll. │
-   9 │  ┃   ┏━━━━━━━━━━━━━┓                                       ┃      │  4 ll. │
-  13 │  ┃   ┃ ☼ FOO BAR ☼ ┃                                       ┃      │  4 ll. │
-  17 │  ┃ ┏━┻━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ ┃      │  4 ll. │
-  21 ├─ ┃ ┃ SECTION X: Blah blah blah                           ┃ ┃    ──┤  6 ll. ├─
-  27 ├─ ┃ ┃ SECTION Y: Blasé blasé blasé                        ┃ ┃    ──┤  6 ll. ├─
-  33 ├─ ┃ ┃ SECTION Z: Patati Patata                            ┃ ┃    ──┤  6 ll. ├─
-  39 │  ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃      │  4 ll. │
-  43 │  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛      │  4 ll. │
+   1 @@@@@
+   2 NOTES
+   3 @@@@@
+   4
+   5 │  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓      │  4 ll. │
+   9 │  ┣━━ // * TABLE_OF_CONTENTS * // ━━━━━━━━━━━━━━━━━━━━━━━━━━┨      │  4 ll. │
+  13 │  ┃   ┏━━━━━━━━━━━━━┓                                       ┃      │  4 ll. │
+  17 │  ┃   ┃ ☼ FOO BAR ☼ ┃                                       ┃      │  4 ll. │
+  21 │  ┃ ┏━┻━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ ┃      │  4 ll. │
+  25 ├─ ┃ ┃ SECTION X: Blah blah blah                           ┃ ┃    ──┤  6 ll. ├─
+  31 ├─ ┃ ┃ SECTION Y: Blasé blasé blasé                        ┃ ┃    ──┤  6 ll. ├─
+  37 ├─ ┃ ┃ SECTION Z: Patati Patata                            ┃ ┃    ──┤  6 ll. ├─
+  43 │  ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃      │  4 ll. │
+  47 │  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛      │  4 ll. │
 
 .. 2021-08-12: Here's what the folding used to look like, before overriding
 ..             Vim's default folding markup:
