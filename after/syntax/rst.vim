@@ -236,7 +236,7 @@ function! s:DubsSyn_CincoWords_EVERY()
   "                                                         ... or a colon ^
 
   " Not as bright a yellow, to be less noticeable than CincoWordsUPPER.
-  hi def CincoWordsEVERY guifg=#caf751
+  hi def CincoWordsEVERY guifg=#caf751 gui=bold cterm=bold
 endfunction
 
 function! s:DubsSyn_CincoWords_UPPER()
