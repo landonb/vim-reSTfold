@@ -7,8 +7,9 @@ Dubs Vim |em_dash| reST Document Folding
 About This Plugin
 =================
 
-This plugin improves upon and fixes performance issues with Vim's
-built-in reST syntax highlighting and document section folding.
+This plugin adds advanced reST document section folding,
+so you can use reStructuredText to manage notes files in
+Vim using reST markup.
 
 Installation
 ============
