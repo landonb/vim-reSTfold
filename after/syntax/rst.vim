@@ -195,8 +195,9 @@ endfunction
 function! s:DubsSyn_EmailNoSpell()
   " (lb) added this to ignore spelling errors on words such as `emails@somewhere.com`.
   " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
-  "       Improve: Vim docs suggest using \zs to start match, and not look-behind.
-  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
+  "   Profiling: Vim docs suggest using \zs to start match, and not look-behind.
+  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows match.
+  "   Profiling: I tested \ze to end match, replacing look-ahead \@=, but not faster.
   syn match EmailNoSpell '\(^\|[[:space:]]\|\n\)\zs\<[^[:space:]]\+@[^[:space:]]\+\.\(com\|org\|edu\|us\|io\)\([^[:alnum:]]\|\n\)\@=' contains=@NoSpell
   hi def EmailNoSpell guifg=LightGreen
 endfunction
@@ -206,8 +207,8 @@ function! s:DubsSyn_AtHostNoSpell()
   " which is a convention I've been using recently to identify what could
   " also be referred to as ``host``, but @host is cleaner.
   " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
-  "       Improve: Vim docs suggest using \zs to start match, and not look-behind.
-  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows  match.
+  "   Profiling: Vim docs suggest using \zs to start match, and not look-behind.
+  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows match.
   syn match AtHostNoSpell '\(^\|[[:space:]]\|\n\)\zs@[^.,?:\[:space:]\n]\+\([.,?:[:space:]\n]\)\@=' contains=@NoSpell
   " Both LightMagenta and LightRed look good here. Not so much any other Light's.
   hi def AtHostNoSpell guifg=LightMagenta
@@ -285,6 +286,11 @@ function! s:DubsSyn_CincoWords_UPPER()
   " END: Said list as you wish.
 
   let l:cinco_re = join(l:cincos, '\|')
+  " Profiling: Vim docs suggest using \zs to start match, and not look-behind \@<=.
+  " - I also tried similar with \ze to end match, replacing look-ahead \@=. But I do
+  "   not see a change, CincoWordsUPPER still takes ~0.10 secs. on a ~10k line file.
+  "   E.g.,
+  "     let l:cinco_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:cinco_re . '\)\ze\([.,:/[:space:]\n]\)'
   let l:cinco_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:cinco_re . '\)\([.,:/[:space:]\n]\)\@='
   let l:syn_cmd = "syn match CincoWordsUPPER '" . l:cinco_pat . "' contains=@NoSpell"
   exec l:syn_cmd
