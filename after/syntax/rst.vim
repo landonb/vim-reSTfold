@@ -181,9 +181,13 @@ endfunction
 " Copied rstStandaloneHyperlink from marshallward/opt/vim-restructuredtext/syntax/rst.vim
 " and made it work on URLs like chrome://extensions/shortcuts and about:config.
 function! s:DubsSyn_rstStandaloneHyperlinkExtended()
-  syn match rstStandaloneHyperlinkExtended contains=@NoSpell
-      \ "\<\%(\%(chrome\)://\|\%(about\):\)[^[:space:]'\"<>]\+"
-  hi def link rstStandaloneHyperlinkExtended Identifier
+  syn match rstStandaloneHyperlinkExtendedChrome contains=@NoSpell
+      \ "\<chrome://[^[:space:]'\"<>]\+"
+  hi def link rstStandaloneHyperlinkExtendedChrome Identifier
+
+  syn match rstStandaloneHyperlinkExtendedFirefox contains=@NoSpell
+      \ "\<about:config\>"
+  hi def link rstStandaloneHyperlinkExtendedFirefox Identifier
 endfunction
 
 " *** SYNTAX GROUP: Email Addys, Without Spelling Error Highlight.
