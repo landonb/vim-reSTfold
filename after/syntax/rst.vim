@@ -461,13 +461,22 @@ function! s:DubsRestWireBasic()
   let l:defaultRedrawTimeout = 2000
   let l:syntaxEnableIfGreater = 4999
 
+  " MAGIC: Avoid slower highlights on longer files.
+  " - E.g., highlighting passwords is expensive, and really only useful
+  "   for `pass edit` commands (you don't store passwords in some other
+  "   text files, do you?), so only enable if fewer than, I dunno, 1k ll.
+  let l:fileLineLen = line('$')
+  let l:passwordThreshold = 1000
+
   if (l:redrawtimeout == l:defaultRedrawTimeout)
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     " Acronyms first, which is loosest pattern, so others override
     " (esp. passwords, which often have 3+ consec. uppers/digits).
     call s:DubsSyn_AcronymNoSpell()
     " Passwords first, so URL and Email matches override.
-    call s:DubsSyn_PasswordPossibly()
+    if l:fileLineLen < l:passwordThreshold
+      call s:DubsSyn_PasswordPossibly()
+    endif
     call s:DubsSyn_rstStandaloneHyperlinkExtended()
     " Syntax Profiling: EmailNoSpell is costly.
     call s:DubsSyn_EmailNoSpell()
