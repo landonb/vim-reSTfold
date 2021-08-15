@@ -7,15 +7,18 @@ Dubs Vim |em_dash| reST Document Folding
 About This Plugin
 =================
 
-This plugin adds advanced reST document section folding,
-so you can use reStructuredText to manage notes files in
-Vim using reST markup.
+This plugin adds advanced reST document section folding.
+
+Supercharge your notetaking and recordkeeping!
+
+Install this plugin to make it easier to manage
+notes in Vim using reStructuredText markup.
 
 Why You Might Want to Use This Plugin
 =====================================
 
-If you like to use Vim to organize your life, this plugin
-might make it easier to manage your notes.
+If you like to use Vim to organize your life (I do!),
+see how this plugin makes it easier to manage your notes.
 
 Consider the following document::
 
@@ -65,13 +68,14 @@ For example, position the cursor over a fold title and type ``za`` to open it.
 Usage: Signify Fold Levels using Specific Punctuation
 =====================================================
 
-The reST language is flexible when it comes to delimiting sections,
-allowing you to choose generally any ASCII non-alphanum as a delimiter,
-and then inferring the level of each section by the order in which the
-section delimiters are introduced in the document. You can also choose
-to use just an underscored delimiter, or you can add an overscore, too.
+Generally, reST lets you choose any delimiters (ASCII punctuation)
+to use for the different heading levels, and the reST parser will
+infer the levels from their usage order within the document.
 
-For instance, both of the following documents will render the same:
+You indicate a heading by underlining with the same punctuation
+character. The reST specification also lets you add an overline.
+
+For instance, both of these documents render the same:
 
 Document 1::
 
@@ -91,30 +95,34 @@ and Document 2::
   Level 2 Heading
   ---------------
 
-Obviously, this flexibility makes any parser more complex to write,
-and it might noticeably impact real-time application responsiveness.
+But this plugin is not as flexible.
 
-Accordingly, the ``dubs_rest_fold`` plugin imposes strict rules for
-section headers used for folding:
+To use ``vim-reSTfold``, you'll need to follow a few guidelines.
 
-- Only double-bordered reST sections will be folded.
+(These rules make the plugin less complex, and probably faster.)
 
-  E.g., this header with both an overscore and an underscore will be folded::
+Rule #1: Only double-bordered headers will be folded
+----------------------------------------------------
+
+- Use a double-bordered reST heading for sections you want folded.
+
+- E.g., this header with both an overscore and an underscore will be folded::
 
     ###########################
     This Section Will Be Folded
     ###########################
 
-  but this header, with simply an underscore, will be ignored by the folding engine::
+  but this header, with only an underscore, will not be folded::
 
     This Section Will Not Be Folded
     ###############################
 
-- Fold levels are assigned in a specific, static order.
+**Use an underline and overline around the heading for each section you want folded.**
 
-  That is, as you use the command ``zr`` to collapse one level of folds,
-  or use ``zm`` to open a level of folds, or ``za`` to toggle the current
-  fold, the sections levels are determined based on the delimiter used:
+Rule #2: Use these 4 characters for your headings
+-------------------------------------------------
+
+- Use the following characters for the heading levels indicated:
 
   - Level 1: ``@``
 
@@ -124,34 +132,51 @@ section headers used for folding:
 
   - Level 4: ``-``
 
-  For instance, this document has two Level 2 sections::
+(Note that characters used for the higher levels use more pixels per
+character than those in lower levels. So, visually, higher level
+headings appear darker.)
 
-    @@@@@@@@@@@@@@@@@@@@@@@
-    Document Section Header
-    @@@@@@@@@@@@@@@@@@@@@@@
+- Note that each document must only have one Level 1 heading, at the top.
 
-    #####################
-    One Top-Level Section
-    #####################
+  This section is never folded.
+
+- Use the normal Vim fold commands to open and close folds.
+
+  E.g., type ``zr`` (in Normal mode) to collapse one level of folds.
+
+  Or type ``zm`` to open one level of folds, or ``za`` to toggle the
+  current fold open and closed.
+
+- As an example, this document has two Level 2 sections::
+
+    @@@@@@@@@@@@@@
+    Document Title
+    @@@@@@@@@@@@@@
+
+    ###############
+    Level 2 Section
+    ###############
 
     ===============
     Level 3 Section
     ===============
 
-    #########################
-    Another Top-Level Section
-    #########################
+    #######################
+    Another Level 2 Section
+    #######################
 
     =======================
     Another Level 3 Section
     =======================
 
-    A Level 3 reST section, but ignored by folder
-    =============================================
+    Another Level 3 section, but ignored by folder
+    ==============================================
 
-    ------------------------
-    Foldable Level 4 Section
-    ------------------------
+    --------------------------
+    A Foldable Level 4 Section
+    --------------------------
+
+**Use the 4 characters (@, #, =, and -) to signify the different heading levels.**
 
 Usage: Press ``<F5>`` to Manually Recalculate Folds
 ===================================================
@@ -169,14 +194,14 @@ Usage: Use ``<C-Up>`` and ``<C-Down>`` to Transpose Folds
 =========================================================
 
 In normal mode, with the cursor over a folded reST section,
-press ``<C-Up>`` to swap the fold under the cursor with the
-fold under the line above the cursor; press ``<C-Down>`` to
+press ``<Ctrl-Up>`` to swap the fold under the cursor with the
+fold under the line above the cursor; press ``<Ctrl-Down>`` to
 swap with the fold on the line following the current fold.
 
 **Swap reST Sections (Transpose Folds) using ``<C-Up>`` and ``<C-Down>``.**
 
-Tips: Make Titles Pretty When Collapsed
-=======================================
+Tip: You Can Beautify Titles When Collapsed
+===========================================
 
 The reST section title that's sandwiched between the section delimiter
 lines is used for the folded view title.
@@ -266,10 +291,10 @@ Once folded (e.g., press ``<F5>``), it'll look like this::
 ..   39 +-- ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ---- |  4 lines |--
 ..   43 +-- ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ---- |  4 lines |--
 
-Tips: Change 'redrawtime' for Very Large Documents
-==================================================
+Tips: Change ``redrawtime`` for Very Large Documents
+====================================================
 
-Vim's default "redrawtime" (``:echo &rdt``) is "2000", or 2 seconds.
+Vim's default ``redrawtime`` (``:echo &rdt``) is "2000", or 2 seconds.
 
 If Vim runs longer than this during syntax matching, it cancels the operation
 and logs the message, "'redrawtime' exceeded, syntax highlighting disabled".
