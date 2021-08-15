@@ -375,7 +375,15 @@ function! s:Presto_HRrules()
   "
   " Match lines with the same character repeating 8 or more times,
   " with optional preceding and trailing whitespace.
-  syn match rstFakeHRAll   '^\n\s*\(.\)\1\{8,}\s*\n$'
+  " - Note that, even though this rule is first, it'll override the
+  "   following rules, sorta. E.g., if we used this rule with a period
+  "   to match any character:
+  "     syn match rstFakeHRAll '^\n\s*\(.\)\1\{8,}\s*\n$'
+  "   then typing 8 repeating asterisks as one line would match the
+  "   rstFakeHRStars rule, but typing 9 or more repeating asterisk
+  "   would match rstFakeHRAll instead. Not sure why. To avoid this,
+  "   exclude the special characters from the 'all' match.
+  syn match rstFakeHRAll   '^\n\s*\([^|*$()%]\)\1\{8,}\s*\n$'
   " Match lines of repeating `|`s.
   syn match rstFakeHRPipes '^\s*|\{8,}\s*\n$'
   " Match lines of repeating `$`s.
