@@ -1,6 +1,6 @@
 " Innovative reST section folding
 " Author: Landon Bouma <https://tallybark.com/>
-" Online: https://github.com/landonb/dubs_rest_fold
+" Online: https://github.com/landonb/vim-reSTfold#🙏
 " License: https://creativecommons.org/publicdomain/zero/1.0/
 "  vim:tw=0:ts=2:sw=2:et:norl:ft=vim
 " Copyright © 2018-21 Landon Bouma.

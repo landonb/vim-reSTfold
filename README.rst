@@ -1,6 +1,6 @@
-########################################
-Dubs Vim |em_dash| reST Document Folding
-########################################
+################################################
+``vim-reSTfold`` |em_dash| reST Document Folds
+################################################
 
 .. |em_dash| unicode:: 0x2014 .. em dash
 
@@ -332,13 +332,13 @@ Clone the project to the desired path:
 
 .. code-block:: bash
 
-    git clone https://github.com/landonb/dubs_rest_fold.git
+    git clone https://github.com/landonb/vim-reSTfold.git
 
 If you installed to the optional path, tell Vim to load the package:
 
 .. code-block:: vim
 
-   :packadd! dubs_rest_fold
+   :packadd! vim-reSTfold
 
 Just once, tell Vim to build the online help:
 
@@ -350,5 +350,5 @@ Then whenever you want to reference the help from Vim, run:
 
 .. code-block:: vim
 
-   :help dubs-rest-fold
+   :help vim-reSTfold
 

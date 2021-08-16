@@ -1,25 +1,25 @@
-*dubs_rest_fold.txt*	For Vim version 7.4.	Last change: 2018 Dec 07
+*vim-reSTfold.txt*	For Vim version 7.4.	Last change: 2018 Dec 07
 
 Dubs Vim -- reST Document Folding~
 
-FILETYPE-SPECIFIC MESS			*dubs-rest-fold*
+FILETYPE-SPECIFIC MESS			*vim-reSTfold*
 
-1. About This Plugin			|dubs-rstfd-about|
-2. reST Section Syntax			|dubs-rstfd-sectioning|
-3. Calculate reST Folds			|dubs-rstfd-calculating|
-4. Transpose reST Folds			|dubs-rstfd-transposing|
-5. Tips 'n Tricks			|dubs-rstfd-tipsntricks|
+1. About This Plugin			|vim-rstfd-about|
+2. reST Section Syntax			|vim-rstfd-sectioning|
+3. Calculate reST Folds			|vim-rstfd-calculating|
+4. Transpose reST Folds			|vim-rstfd-transposing|
+5. Tips 'n Tricks			|vim-rstfd-tipsntricks|
 
 ==============================================================================
-1. About This Plugin			*dubs-rstfd-about*
+1. About This Plugin			*vim-rstfd-about*
 
 This plugin improves upon and fixes performance issues with Vim's
 built-in reST syntax highlighting and document section folding.
 
-Project page: https://github.com/landonb/dubs_rest_fold
+Project page: https://github.com/landonb/vim-reSTfold#🙏
 
 ==============================================================================
-2. reST Section Syntax			*dubs-rstfd-sectioning*
+2. reST Section Syntax			*vim-rstfd-sectioning*
 
 reST Fold Delimiters
 --------------------
@@ -53,7 +53,7 @@ and Document 2:
 Obviously, this flexibility makes any parser more complex to write,
 and it might noticeably impact real-time application responsiveness.
 
-Accordingly, the `dubs_rest_fold` plugin imposes strict rules for
+Accordingly, the `vim-reSTfold` plugin imposes strict rules for
 section headers used for folding:
 
 - Only double-bordered reST sections will be folded.
@@ -113,7 +113,7 @@ section headers used for folding:
     `------------------------`
 
 ==============================================================================
-3. Calculate reST Folds			*dubs-rstfd-calculating*
+3. Calculate reST Folds			*vim-rstfd-calculating*
 
 Manually Calculating reST Folds [`<F5>`]
 ----------------------------------------
@@ -128,7 +128,7 @@ To prevent performance issues, the user must explicitly generate folds.
 Press `<F5>` to generate (and collapse all) folds.
 
 ==============================================================================
-4. Transpose reST Folds			*dubs-rstfd-transposing*
+4. Transpose reST Folds			*vim-rstfd-transposing*
 
 Swap reST Sections (Transpose Folds) [`<C-Up>` and `<C-Down>`]
 --------------------------------------------------------------
@@ -139,7 +139,7 @@ fold under the line above the cursor; press `<C-Down>` to
 swap with the fold on the line following the current fold.
 
 ==============================================================================
-5. Tips 'n Tricks			*dubs-rstfd-tipsntricks*
+5. Tips 'n Tricks			*vim-rstfd-tipsntricks*
 
 Fold Title Trickery
 -------------------
