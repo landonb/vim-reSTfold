@@ -116,98 +116,6 @@ endfunction
 
 " +----------------------------------------------------------------------+
 
-" *** SYNTAX GROUP: Passwords.
-
-" 2018-12-07: Syntax Profiling: Top performance drag: PasswordPossibly.
-"
-" [lb]: On a 7k-line file that takes 5.5 secs. to parse, PasswordPossibly eats 1.75 s!
-" (To test: `:syntime clear`, `:syntime on`, open the reST document, read the results
-" using `:TabMessage syntime report`.)
-"
-function! s:DubsSyn_PasswordPossibly()
-  " Match password-looking sequences (not that we expect you to have passwords
-  " in plain text files, so consider the highlight as a warning — that, or the
-  " highlight is being used by a `pass edit` command, in which case a password
-  " highlight is a nicety).
-  " - Inspired by:
-  "     https://dzone.com/articles/use-regex-test-password
-  "   var strongRegex = new RegExp(
-  "     "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"
-  "   );
-  " But completely Vimified! E.g., Perl's look-ahead (?=) is Vim's \(\)\@=
-  " HINT: To test, run `syn clear`, then try the new `syn match`.
-  " NOTE: \@= is Vim look-ahead. I also tried \@<= look-behind but it didn't work for me.
-  " NOTE: Do this before EmailNoSpell, so that we don't think emails are passwords.
-  " NOTE: Trying {15,16} just to not match too much.
-  " CUTE: If I misspell a normal FIXME/YYYY-MM-DD comment, e.g.,
-  "       "FiXME/2018-03-21", then it gets highlighted as a password! So cute!!
-  syn match PasswordPossibly '\(^\|[[:space:]]\|\n\)\zs\([^[:space:]]*[a-z]\)\@=\([^[:space:]]*[A-Z]\)\@=\([^[:space:]]*[0-9]\)\@=[^[:space:]]\{16,24\}\([[:space:]]\|\n\)\@=' contains=@NoSpell
-  " NOTE: We don't need a Password15Best to include special characters unless
-  "       we wanted to color them differently; currently, such passwords will
-  "       match PasswordPossibly.
-  hi def PasswordPossibly term=reverse guibg=DarkRed guifg=Yellow ctermfg=1 ctermbg=6
-endfunction
-
-" *** SYNTAX GROUP: Acronyms.
-
-function! s:DubsSyn_AcronymNoSpell()
-  " Thanks!
-  "   http://www.panozzaj.com/blog/2016/03/21/
-  "     ignore-urls-and-acroynms-while-spell-checking-vim/
-
-  " WEIRD: [lb]: Why did I make this filter? Oh! Because that new Vim syntax
-  "   code I tried (vim-restructuredtext) was not highlighting URLs? Or was
-  "   it working, but I just didn't notice? In any case, the Vim system
-  "   rst.vim syntax highlighter has a rstStandaloneHyperlink group, which
-  "   we don't want to override. Which means don't do this:
-  "     " `Don't mark URL-like things as spelling errors`
-  "     syn match UrlNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell
-
-  " Do not mark acronyms or abbreviations with a spelling error highlight
-  " (where an acrobbreviation is all upper-case, at least 3 letters long).
-  " - Nor spell check an acronym with an 's' at the end.
-  syn match AcronymNoSpell '\<\(\u\|\d\)\{3,}s\?\>' contains=@NoSpell
-endfunction
-
-" Copied rstStandaloneHyperlink from marshallward/opt/vim-restructuredtext/syntax/rst.vim
-" and made it work on URLs like chrome://extensions/shortcuts and about:config.
-function! s:DubsSyn_rstStandaloneHyperlinkExtended()
-  syn match rstStandaloneHyperlinkExtendedChrome contains=@NoSpell
-      \ "\<chrome://[^[:space:]'\"<>]\+"
-  hi def link rstStandaloneHyperlinkExtendedChrome Identifier
-
-  syn match rstStandaloneHyperlinkExtendedFirefox contains=@NoSpell
-      \ "\<about:config\>"
-  hi def link rstStandaloneHyperlinkExtendedFirefox Identifier
-endfunction
-
-" *** SYNTAX GROUP: Email Addys, Without Spelling Error Highlight.
-
-" Syntax Profiling: EmailNoSpell takes second longest, behind DubsSyn_PasswordPossibly.
-" (From a 7K line reST that takes 3.76 secs. to load, EmailNoSpell consumes 0.21 secs.)
-
-function! s:DubsSyn_EmailNoSpell()
-  " (lb) added this to ignore spelling errors on words such as `emails@somewhere.com`.
-  " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
-  "   Profiling: Vim docs suggest using \zs to start match, and not look-behind.
-  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows match.
-  "   Profiling: I tested \ze to end match, replacing look-ahead \@=, but not faster.
-  syn match EmailNoSpell '\(^\|[[:space:]]\|\n\)\zs\<[^[:space:]]\+@[^[:space:]]\+\.\(com\|org\|edu\|us\|io\)\([^[:alnum:]]\|\n\)\@=' contains=@NoSpell
-  hi def EmailNoSpell guifg=LightGreen
-endfunction
-
-function! s:DubsSyn_AtHostNoSpell()
-  " (lb) added this to ignore spelling errors on words such as `@somehost`,
-  " which is a convention I've been using recently to identify what could
-  " also be referred to as ``host``, but @host is cleaner.
-  " NOTE: Look-behind: \([[:space:]\n]\)\@<= ensures space or newline precedes match.
-  "   Profiling: Vim docs suggest using \zs to start match, and not look-behind.
-  " NOTE: Look-ahead:  \([[:space:]\n]\)\@=  ensures space or newline follows match.
-  syn match AtHostNoSpell '\(^\|[[:space:]]\|\n\)\zs@[^.,?:\[:space:]\n]\+\([.,?:[:space:]\n]\)\@=' contains=@NoSpell
-  " Both LightMagenta and LightRed look good here. Not so much any other Light's.
-  hi def AtHostNoSpell guifg=LightMagenta
-endfunction
-
 " HINT: You can `hi clear {group-name}` and `hi def...` in a reST file to live-test.
 "       But for `syn clear ...` and `syn match ...` you need to `:e` reload the file
 "       (or `do Syntax`/`doautocmd Syntax` (`syntax sync fromstart` did not work FM)).
@@ -315,6 +223,8 @@ endfunction
 " TRACK/2021-02-19: MacVim does not support strikethrough.
 " - Issue opened April, 2020, but no traction since?
 "   https://github.com/macvim-dev/macvim/issues/1034
+
+" +----------------------------------------------------------------------+
 
 function! s:DubsSyn_CincoWords_FIXED()
   syn match CincoWordsFIXED '\(^\|[[:space:]\n\[(#]\)\zsFIXED\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
@@ -446,6 +356,8 @@ endfunction
 " MAGIC: The 4999 below is arbitrary. (2021-01-16: And I
 "        haven't had a reason to opt-out any files yet.)
 
+" +----------------------------------------------------------------------+
+
 function! s:DubsRestWireBasic()
   call s:DubsClr_rstSections()
 
@@ -454,27 +366,8 @@ function! s:DubsRestWireBasic()
   let l:defaultRedrawTimeout = 2000
   let l:syntaxEnableIfGreater = 4999
 
-  " MAGIC: Avoid slower highlights on longer files.
-  " - E.g., highlighting passwords is expensive, and really only useful
-  "   for `pass edit` commands (you don't store passwords in some other
-  "   text files, do you?), so only enable if fewer than, I dunno, 1k ll.
-  let l:fileLineLen = line('$')
-  let l:passwordThreshold = 1000
-
   if (l:redrawtimeout == l:defaultRedrawTimeout)
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
-    " Acronyms first, which is loosest pattern, so others override
-    " (esp. passwords, which often have 3+ consec. uppers/digits).
-    " Otherwise, if this came last, it would undo FIVER highlights.
-    call s:DubsSyn_AcronymNoSpell()
-    " Passwords first, so URL and Email matches override.
-    if l:fileLineLen < l:passwordThreshold
-      call s:DubsSyn_PasswordPossibly()
-    endif
-    call s:DubsSyn_rstStandaloneHyperlinkExtended()
-    " Syntax Profiling: EmailNoSpell is costly.
-    call s:DubsSyn_EmailNoSpell()
-    call s:DubsSyn_AtHostNoSpell()
     call s:DubsSyn_CincoWords_EVERY()
     call s:DubsSyn_CincoWords_UPPER()
     call s:DubsSyn_CincoWords_FIXED()
@@ -490,8 +383,9 @@ function! s:DubsRestWireBasic()
 
   " Do real reST Section highlighting so it overrides, e.g., rstFakeHRAll.
   call s:DubsSyn_rstSections()
-
 endfunction
+
+" +----------------------------------------------------------------------+
 
 call s:DubsRestWireBasic()
 
