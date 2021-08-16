@@ -1,6 +1,6 @@
-################################################
-``vim-reSTfold`` |em_dash| reST Document Folds
-################################################
+###############################################
+``vim-reSTfold`` |em_dash| reST Document Folder
+###############################################
 
 .. |em_dash| unicode:: 0x2014 .. em dash
 
@@ -306,6 +306,48 @@ to any reST document that needs extra parsing time. E.g., at the top
 of a reST document, you could add::
 
   .. vim:rdt=10000
+
+Tips: Related supercharged reST plugins
+=======================================
+
+See complementary reST highlights plugins from this author
+that pair well with this plugin to help you take notes in Vim:
+
+- Additional syntax highlight rules.
+
+  `https://github.com/landonb/vim-reST-highdefs#🎨
+  <https://github.com/landonb/vim-reST-highdefs#🎨>`__
+
+  Colorize email addresses and host names, and disable spell checking
+  on emails, hosts, and acronyms (all-capital words).
+
+- Special so-called *FIVER* syntax rules.
+
+  `https://github.com/landonb/vim-reST-highfive#🖐
+  <https://github.com/landonb/vim-reST-highfive#🖐>`__
+
+  Helps you find actions within notes. E.g., "FIXME" is emphasized (in
+  bright, bold yellow), and so is "FIXED" (crossed-out and purple), and
+  so are "MAYBE", "LEARN", "ORDER", and "CHORE", and a few other choice
+  five-letter words.
+
+  (Why five letters? Because I noticed a pattern in my note-taking:
+  I was writing an action word followed by the date, e.g.,
+  *FIXME/2021-08-13: Do something*. And after multiple lines of such
+  notes, it was nice to see the actions and dates align vertically!
+  So I decided why not highlight any uppercase five-letter word.
+  Also, using same-width actions is especially handy for section
+  headings, because then all the titles line up nicely when you
+  collapse folds.)
+
+- Simple horizontal rule highlight.
+
+  `https://github.com/landonb/vim-reST-highline#➖
+  <https://github.com/landonb/vim-reST-highline#➖>`__
+
+  Let's you repeat the same punctuation character 8 or more times on
+  a line, and it'll be highlighted. Useful for adding a visual
+  separation to your notes without using a reST heading.
 
 Installation
 ============
