@@ -326,28 +326,28 @@ that pair well with this plugin to help you take notes in Vim:
   `https://github.com/landonb/vim-reST-highfive#🖐
   <https://github.com/landonb/vim-reST-highfive#🖐>`__
 
-  Helps you find actions within notes. E.g., "FIXME" is emphasized (in
-  bright, bold yellow), and so is "FIXED" (crossed-out and purple), and
-  so are "MAYBE", "LEARN", "ORDER", and "CHORE", and a few other choice
-  five-letter words.
+  Highlight action words.
 
-  (Why five letters? Because I noticed a pattern in my note-taking:
-  I was writing an action word followed by the date, e.g.,
-  *FIXME/2021-08-13: Do something*. And after multiple lines of such
-  notes, it was nice to see the actions and dates align vertically!
-  So I decided why not highlight any uppercase five-letter word.
-  Also, using same-width actions is especially handy for section
-  headings, because then all the titles line up nicely when you
-  collapse folds.)
+  E.g., "FIXME" is emphasized (in bright, bold yellow), and so is
+  "FIXED" (crossed-out and purple), and so are "MAYBE", "LEARN",
+  "ORDER", and "CHORE", and a few other choice five-letter words.
+
+  Why five letters? So you can use the same action words in section
+  headings, and then the heading titles align nicely when folded.
+  (So, really, it's important that the action words are all the same
+  width, and not necessarily five in length, but *FIXME* is the
+  uttermost developer action word, so might as well be five.)
 
 - Simple horizontal rule highlight.
 
   `https://github.com/landonb/vim-reST-highline#➖
   <https://github.com/landonb/vim-reST-highline#➖>`__
 
-  Let's you repeat the same punctuation character 8 or more times on
-  a line, and it'll be highlighted. Useful for adding a visual
-  separation to your notes without using a reST heading.
+  Repeat the same punctuation character 8 or more times on
+  a line, and it'll be highlighted.
+
+  Useful for adding a visual separation to your notes without
+  using a reST section heading.
 
 Installation
 ============
