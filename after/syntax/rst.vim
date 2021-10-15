@@ -249,6 +249,13 @@ function! s:DubsSyn_CincoWords_SPOKE()
   hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
+" ORDRD is the finished state of ORDER.
+" MAYBE/2021-10-13 11:25: Combine FIXED and SPOKE and ORDRD.
+function! s:DubsSyn_CincoWords_ORDRD()
+  syn match CincoWordsORDRD '\(^\|[[:space:]\n\[(#]\)\zsORDRD\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsORDRD guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
 " +----------------------------------------------------------------------+
 
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
@@ -380,6 +387,7 @@ function! s:DubsRestWireBasic()
     call s:DubsSyn_CincoWords_UPPER()
     call s:DubsSyn_CincoWords_FIXED()
     call s:DubsSyn_CincoWords_SPOKE()
+    call s:DubsSyn_CincoWords_ORDRD()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
