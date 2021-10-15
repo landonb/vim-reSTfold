@@ -111,7 +111,15 @@ function! s:DubsSyn_rstSections()
   "
   " NOTE: `+` does not highlight when used both below and above,
   "             because it's interpreted as rstTableLines.
-  syn match rstSections "\v^%(([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\1{2,}\n)?.{3,}\n([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\2{2,}$" contains=@Spell
+  "
+  " 2021-10-14: On second thought, disable spell checking.
+  " - For one, some rules will be superceded:
+  "   - AcronymNoSpell, e.g., 'ABCs' is under-squiggled as misspelled.
+  "   - Code blocks, e.g., ``fooBar``.
+  " - The under-squiggle makes the title more difficult to read.
+  " - So don't use @Spell, e.g., not: syn match rstSections ... contains=@Spell
+  "
+  syn match rstSections "\v^%(([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\1{2,}\n)?.{3,}\n([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\2{2,}$" contains=@NoSpell
 endfunction
 
 " +----------------------------------------------------------------------+
