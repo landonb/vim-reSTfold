@@ -141,7 +141,7 @@ function! s:DubsSyn_CincoWords_EVERY()
   "   context of something you want to emphasize, e.g.,
   "     'CINCO/2021-01-19 00:08: Some note'.
 
-  syn match CincoWordsEVERY '\(^\|[[:space:]\n\[(#]\)\zs[_[:upper:]]\{5}\([/:]\)\@=' contains=@NoSpell
+  syn match CincoWordsEVERY '\(^\|[[:space:]\n\[(#]\)\zs[_[:upper:][:digit:]]\{5}\([/:]\)\@=' contains=@NoSpell
   "                                                   Followed by a slash ^
   "                                                         ... or a colon ^
 
