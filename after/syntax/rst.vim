@@ -256,6 +256,13 @@ function! s:DubsSyn_CincoWords_ORDRD()
   hi def CincoWordsORDRD guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
+" ANNUL is a way to cancel FIXME so it appears in strikethrough, to avoid FIXED,
+" and because WONTFIX too many characters. WNTFX it? Naw. ANNUL it.
+function! s:DubsSyn_CincoWords_ANNUL()
+  syn match CincoWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
 " +----------------------------------------------------------------------+
 
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
@@ -388,6 +395,7 @@ function! s:DubsRestWireBasic()
     call s:DubsSyn_CincoWords_FIXED()
     call s:DubsSyn_CincoWords_SPOKE()
     call s:DubsSyn_CincoWords_ORDRD()
+    call s:DubsSyn_CincoWords_ANNUL()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
