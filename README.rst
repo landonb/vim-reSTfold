@@ -310,8 +310,8 @@ of a reST document, you could add::
 Tips: Related supercharged reST plugins
 =======================================
 
-See complementary reST highlights plugins from this author
-that pair well with this plugin to help you take notes in Vim:
+Consider these complementary reST highlights plugins that pair
+well with this plugin to help you take notes in Vim:
 
 - Additional syntax highlight rules.
 
@@ -332,11 +332,11 @@ that pair well with this plugin to help you take notes in Vim:
   "FIXED" (crossed-out and purple), and so are "MAYBE", "LEARN",
   "ORDER", and "CHORE", and a few other choice five-letter words.
 
-  Why five letters? So you can use the same action words in section
-  headings, and then the heading titles align nicely when folded.
-  (So, really, it's important that the action words are all the same
-  width, and not necessarily five in length, but *FIXME* is the
-  uttermost developer action word, so might as well be five.)
+  Why five letters? So that you can use action words in section
+  headers, and then the heading titles align nicely when folded.
+  (Really, it's only important that each action word is the same
+  width, and not necessarily that it's five long — but *FIXME* is
+  the ultimate developer action word, so might as well be five.)
 
 - Simple horizontal rule highlight.
 
