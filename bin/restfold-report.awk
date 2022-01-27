@@ -166,6 +166,7 @@ function convert_action_category_fwd(category) {
   cranks["MAYBE"] = 400
   cranks["LOPRI"] = 420
   cranks["LOBAR"] = 500
+  cranks["FTREQ"] = 525
   cranks["INERT"] = 555
   cranks["DEFER"] = 633
   cranks["DEBAR"] = 666
@@ -176,15 +177,20 @@ function convert_action_category_fwd(category) {
   return 900
 }
 
+# SYNC_ME: This list defines a hash similar to convert_action_category_fwd,
+#          but numerically in reverse.
+#          - Order the FIVER names the same, but set the first item to 900,
+#            and then number down from there with the numbers from above.
 function convert_action_category_rwd(category) {
   cranks["FIXME"] = 900
   cranks["SPIKE"] = 777
   cranks["HIPRI"] = 666
   cranks["HIBAR"] = 633
   cranks["LATER"] = 555
-  cranks["MAYBE"] = 500
-  cranks["LOPRI"] = 420
-  cranks["LOBAR"] = 400
+  cranks["MAYBE"] = 525
+  cranks["LOPRI"] = 500
+  cranks["LOBAR"] = 420
+  cranks["FTREQ"] = 400
   cranks["INERT"] = 333
   cranks["DEFER"] = 240
   cranks["DEBAR"] = 220
