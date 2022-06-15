@@ -263,6 +263,24 @@ function! s:DubsSyn_CincoWords_ANNUL()
   hi def CincoWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
+" AWAIT → WAITD (or AWATD?)
+function! s:DubsSyn_CincoWords_WAITD()
+  syn match CincoWordsWAITD '\(^\|[[:space:]\n\[(#]\)\zsWAITD\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsWAITD guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
+" PACKT → PACKD
+function! s:DubsSyn_CincoWords_PACKD()
+  syn match CincoWordsPACKD '\(^\|[[:space:]\n\[(#]\)\zsPACKD\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsPACKD guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
+" Any FIVER ending in 'D'?
+function! s:DubsSyn_CincoWords_XXXXD()
+  syn match CincoWordsXXXXD '\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsXXXXD guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
 " +----------------------------------------------------------------------+
 
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
@@ -386,16 +404,21 @@ function! s:DubsRestWireBasic()
   let l:redrawtimeout = &rdt
   " MAGIC: Vim's rdt default is 2000 (2 secs.).
   let l:defaultRedrawTimeout = 2000
+  " MAGIC: SYNC_ME: All the vim-reST* plugins use the same redrawtime
+  "        logic: skip special highlights if rdt <= 4999 but not 2000.
   let l:syntaxEnableIfGreater = 4999
 
   if (l:redrawtimeout == l:defaultRedrawTimeout)
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     call s:DubsSyn_CincoWords_EVERY()
     call s:DubsSyn_CincoWords_UPPER()
-    call s:DubsSyn_CincoWords_FIXED()
+    "call s:DubsSyn_CincoWords_FIXED()
     call s:DubsSyn_CincoWords_SPOKE()
-    call s:DubsSyn_CincoWords_ORDRD()
+    "call s:DubsSyn_CincoWords_ORDRD()
     call s:DubsSyn_CincoWords_ANNUL()
+    "call s:DubsSyn_CincoWords_WAITD()
+    "call s:DubsSyn_CincoWords_PACKD()
+    call s:DubsSyn_CincoWords_XXXXD()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
