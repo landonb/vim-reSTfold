@@ -140,7 +140,7 @@ endfunction
 "     `FIVER:` and `FIVER/` are highlighted, but not `any FIVER alone`.
 " - Selectively highlight specific FIVER words chosen to be special:
 "   - E.g., `FIXME` is always highlighted.
-"   - See the l:cincos list below.
+"   - See the l:fivers list below.
 
 " +----------------------------------------------------------------------+
 
@@ -158,14 +158,13 @@ endfunction
 " Ref:
 "   :h /character-classes
 "   :h gui-colors
-function! s:DubsSyn_CincoWords_EVERY()
+function! s:HighFive_FIVERs_Punctuated()
+  syn match FIVERsPunctuated '\(^\|[[:space:]\n\[(#]\)\zs[_[:upper:][:digit:]]\{5}\([/:]\)\@=' contains=@NoSpell
+  "                                                              Followed by a slash ^
+  "                                                                    ... or a colon ^
 
-  syn match CincoWordsEVERY '\(^\|[[:space:]\n\[(#]\)\zs[_[:upper:][:digit:]]\{5}\([/:]\)\@=' contains=@NoSpell
-  "                                                   Followed by a slash ^
-  "                                                         ... or a colon ^
-
-  " Not as bright a yellow, to be less noticeable than CincoWordsUPPER.
-  hi def CincoWordsEVERY guifg=#caf751 gui=bold cterm=bold
+  " Not as bright a yellow, to be less noticeable than FIVERsAlwaysHot.
+  hi def FIVERsPunctuated guifg=#caf751 gui=bold cterm=bold
 endfunction
 
 " +----------------------------------------------------------------------+
@@ -177,7 +176,7 @@ endfunction
 "   capitalize to make them pop in my notes documents, but that work
 "   without adding triggering punctuation (such as a slash or a colon).
 
-function! s:DubsSyn_CincoWords_UPPER()
+function! s:HighFive_FIVERs_Always_Hot()
 
   " YOU: Modify this list to your liking.
 
@@ -185,60 +184,60 @@ function! s:DubsSyn_CincoWords_UPPER()
   "       highlighted (without trailing / or : punctuation), but that I
   "       want to document nonetheless.
 
-  let l:cincos = []
+  let l:fivers = []
 
   " *** Most used action FIVERs ((lb): that the author uses)
   "     that'll always be highlighted.
-  let l:cincos = add(l:cincos, 'FIXME')  " Want to do 'now'.
-  let l:cincos = add(l:cincos, 'LATER')  " Want to do ... eventually.
-  let l:cincos = add(l:cincos, 'MAYBE')  " Not sure if you want to do.
+  let l:fivers = add(l:fivers, 'FIXME')  " Want to do 'now'.
+  let l:fivers = add(l:fivers, 'LATER')  " Want to do ... eventually.
+  let l:fivers = add(l:fivers, 'MAYBE')  " Not sure if you want to do.
 
-  let l:cincos = add(l:cincos, 'SPIKE')  " Agile meaning (requires 1-2h investigation).
+  let l:fivers = add(l:fivers, 'SPIKE')  " Agile meaning (requires 1-2h investigation).
 
-  let l:cincos = add(l:cincos, 'LEARN')  " Articles, books, technology you want to study.
-  let l:cincos = add(l:cincos, 'STUDY')  " Similar to LEARN (generally interchangeable).
-  let l:cincos = add(l:cincos, 'WATCH')  " Video to WATCH (not to be confused with TRACK).
+  let l:fivers = add(l:fivers, 'LEARN')  " Articles, books, technology you want to study.
+  let l:fivers = add(l:fivers, 'STUDY')  " Similar to LEARN (generally interchangeable).
+  let l:fivers = add(l:fivers, 'WATCH')  " Video to WATCH (not to be confused with TRACK).
 
-  let l:cincos = add(l:cincos, 'TRACK')  " Issue to keep an eye on (similar to SAVVY).
-  let l:cincos = add(l:cincos, 'AWAIT')  " Issue on hold until something else happens.
+  let l:fivers = add(l:fivers, 'TRACK')  " Issue to keep an eye on (similar to SAVVY).
+  let l:fivers = add(l:fivers, 'AWAIT')  " Issue on hold until something else happens.
 
-  let l:cincos = add(l:cincos, 'ORDER')  " As in shopping (crap you want to buy).
+  let l:fivers = add(l:fivers, 'ORDER')  " As in shopping (crap you want to buy).
 
-  let l:cincos = add(l:cincos, 'CHORE')  " Physical chore around the house/city.
+  let l:fivers = add(l:fivers, 'CHORE')  " Physical chore around the house/city.
   "                            'ETASK'   " Digital chore you can do without thinking.
-  let l:cincos = add(l:cincos, 'AUDIT')  " Something you want to review.
-  let l:cincos = add(l:cincos, 'CHECK')  " Similar to AUDIT.
-  let l:cincos = add(l:cincos, 'REPLY')  " As in email or persons.
+  let l:fivers = add(l:fivers, 'AUDIT')  " Something you want to review.
+  let l:fivers = add(l:fivers, 'CHECK')  " Similar to AUDIT.
+  let l:fivers = add(l:fivers, 'REPLY')  " As in email or persons.
   "                            'EMAIL'   " As in email.
 
   " *** Less used action FIVERs.
   "                            'TODAY'
   "                            'DAILY'
   "                            'RECUR'
-  let l:cincos = add(l:cincos, 'TRYME')
+  let l:fivers = add(l:fivers, 'TRYME')
   "                            'TWEAK'
 
   " *** Not really actions...
-  let l:cincos = add(l:cincos, 'HRMMM')
-  let l:cincos = add(l:cincos, 'MEHHH')
-  let l:cincos = add(l:cincos, 'BONUS')
-  let l:cincos = add(l:cincos, 'OOOPS')
+  let l:fivers = add(l:fivers, 'HRMMM')
+  let l:fivers = add(l:fivers, 'MEHHH')
+  let l:fivers = add(l:fivers, 'BONUS')
+  let l:fivers = add(l:fivers, 'OOOPS')
 
   " *** EOL
 
-  let l:cinco_re = join(l:cincos, '\|')
+  let l:fiver_re = join(l:fivers, '\|')
   " Profiling: Vim docs suggest using \zs to start match, and not look-behind \@<=.
   " - I also tried similar with \ze to end match, replacing look-ahead \@=. But I do
-  "   not see a change, CincoWordsUPPER still takes ~0.10 secs. on a ~10k line file.
+  "   not see a change, FIVERsAlwaysHot still takes ~0.10 secs. on a ~10k line file.
   "   E.g.,
-  "     let l:cinco_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:cinco_re . '\)\ze\([.,:/[:space:]\n]\)'
-  let l:cinco_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:cinco_re . '\)\([.,:/[:space:]\n]\)\@='
-  let l:syn_cmd = "syn match CincoWordsUPPER '" . l:cinco_pat . "' contains=@NoSpell"
+  "     let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\ze\([.,:/[:space:]\n]\)'
+  let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\([.,:/[:space:]\n]\)\@='
+  let l:syn_cmd = "syn match FIVERsAlwaysHot '" . l:fiver_pat . "' contains=@NoSpell"
   exec l:syn_cmd
 
   " HRMMM/2021-01-19: Yellow without bold is almost more striking.
-  "  MAYBE: CincoWordsEVERY is Yellow but not bold; maybe change its color.
-  hi def CincoWordsUPPER guifg=Yellow gui=bold cterm=bold
+  "  MAYBE: FIVERsPunctuated is Yellow but not bold; maybe change its color.
+  hi def FIVERsAlwaysHot guifg=Yellow gui=bold cterm=bold
 endfunction
 
 " MAYBE/2021-01-16 18:39: Consider available attrs:
@@ -281,23 +280,23 @@ endfunction
 " - GTK gVim uses `gui=`,
 "   terminal Vim uses `cterm=`,
 "   I'm not sure what uses `term=`.
-function! s:DubsSyn_CincoWords_XXXXD()
-  syn match CincoWordsXXXXD '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
-  hi def CincoWordsXXXXD guifg=Purple gui=strikethrough cterm=strikethrough
+function! s:HighFive_XXXXDs_Strikethru()
+  syn match FiverWordsXXXXD '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
+  hi def FiverWordsXXXXD guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
 " SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
 " FIXME/2021-08-12 19:27: Combine FIXED and SPOKE.
-function! s:DubsSyn_CincoWords_SPOKE()
-  syn match CincoWordsSPOKE '\(^\|[[:space:]\n\[(#]\)\zsSPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
+function! s:HighFive_XXXXDs_Strikethru_SPOKE()
+  syn match FiverWordsSPOKE '\(^\|[[:space:]\n\[(#]\)\zsSPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def FiverWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
 " ANNUL is a way to cancel FIXME so it appears in strikethrough, to avoid FIXED,
 " and because WONTFIX too many characters. WNTFX it? Naw. ANNUL it.
-function! s:DubsSyn_CincoWords_ANNUL()
-  syn match CincoWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
+function! s:HighFive_XXXXDs_Strikethru_ANNUL()
+  syn match FiverWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def FiverWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
 " +----------------------------------------------------------------------+
@@ -431,11 +430,11 @@ function! s:DubsRestWireBasic()
 
   if (l:redrawtimeout == l:defaultRedrawTimeout)
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
-    call s:DubsSyn_CincoWords_EVERY()
-    call s:DubsSyn_CincoWords_UPPER()
-    call s:DubsSyn_CincoWords_SPOKE()
-    call s:DubsSyn_CincoWords_ANNUL()
-    call s:DubsSyn_CincoWords_XXXXD()
+    call s:HighFive_FIVERs_Punctuated()
+    call s:HighFive_FIVERs_Always_Hot()
+    call s:HighFive_XXXXDs_Strikethru()
+    call s:HighFive_XXXXDs_Strikethru_SPOKE()
+    call s:HighFive_XXXXDs_Strikethru_ANNUL()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
