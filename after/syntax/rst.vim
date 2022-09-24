@@ -204,9 +204,6 @@ function! s:DubsSyn_CincoWords_UPPER()
 
   let l:cincos = add(l:cincos, 'ORDER')  " As in shopping (crap you want to buy).
 
-  let l:cincos = add(l:cincos, 'TODAY')
-  let l:cincos = add(l:cincos, 'DAILY')
-  let l:cincos = add(l:cincos, 'RECUR')
   let l:cincos = add(l:cincos, 'CHORE')  " Physical chore around the house/city.
   "                            'ETASK'   " Digital chore you can do without thinking.
   let l:cincos = add(l:cincos, 'AUDIT')  " Something you want to review.
@@ -215,8 +212,11 @@ function! s:DubsSyn_CincoWords_UPPER()
   "                            'EMAIL'   " As in email.
 
   " *** Less used action FIVERs.
+  "                            'TODAY'
+  "                            'DAILY'
+  "                            'RECUR'
   let l:cincos = add(l:cincos, 'TRYME')
-  let l:cincos = add(l:cincos, 'TWEAK')
+  "                            'TWEAK'
 
   " *** Not really actions...
   let l:cincos = add(l:cincos, 'HRMMM')
