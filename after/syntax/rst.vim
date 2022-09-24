@@ -6,7 +6,7 @@
 
 " +----------------------------------------------------------------------+
 
-" REF: See the reST syntax file included with Vim.
+" REFER: See the reST syntax file included with Vim.
 " - E.g.:
 "     /usr/share/vim/vim81/syntax/rst.vim
 "   Or maybe:
@@ -14,14 +14,15 @@
 " See also the most current upstream source of the same:
 "   https://github.com/marshallward/vim-restructuredtext
 
-" REF: See complementary reST highlights plugins from this author
-"      (pairs well with this plugin to help you take notes in Vim):
+" REFER: See complementary reST highlights plugins from this author
+"        (pairs well with this plugin to help you take notes in Vim):
 "
 "   https://github.com/landonb/vim-reST-highdefs#🎨
 "   https://github.com/landonb/vim-reST-highfive#🖐
 "   https://github.com/landonb/vim-reST-highline#➖
 
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 " *** DEV. UTIL. FCN.: Log message to file (b/c `echom` doesn't work from syntax).
 
@@ -36,7 +37,8 @@ endfunction
 " NOTE: [lb]: I can `call s:log('...')` and `tail -F /tmp/vim_log_dubs_after_syntax_rst`
 "       successfully. But I cannot `echom '...'` anything. Not sure why.
 
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 " *** SYNTAX GROUP: reST section highlighting.
 
@@ -122,24 +124,41 @@ function! s:DubsSyn_rstSections()
   syn match rstSections "\v^%(([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\1{2,}\n)?.{3,}\n([=`:.'"~^_*+#!@$%&()[\]{}<>/\\|,;?-])\2{2,}$" contains=@NoSpell
 endfunction
 
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 " HINT: You can `hi clear {group-name}` and `hi def...` in a reST file to live-test.
 "       But for `syn clear ...` and `syn match ...` you need to `:e` reload the file
 "       (or `do Syntax`/`doautocmd Syntax` (`syntax sync fromstart` did not work FM)).
 
-" 2021-01-16 17:39... just had this idea.
+" +======================================================================+
+" +======================================================================+
+
+" Highlight FIVER words, but split the pattern into two categories:
+" - Always highlight *any* FIVER followed by certain punctuation:
+"   - Highlight any FIVER followed by a slash or a colon, e.g.,
+"     `FIVER:` and `FIVER/` are highlighted, but not `any FIVER alone`.
+" - Selectively highlight specific FIVER words chosen to be special:
+"   - E.g., `FIXME` is always highlighted.
+"   - See the l:cincos list below.
+
+" +----------------------------------------------------------------------+
+
+" First match: Selectively highlight FIVER words that appear alone
+" (FIVERs surrounded by whitespace), otherwise we might highlight
+" acronyms that we don't want to emphasize (such as STOCK symbols).
+" - Instead, highlight FIVER words followed by certain punctuation,
+"   for now, either a forward slash or a colon.
+"   - This assumes that this format (e.g., 'FIVER/', or 'FIVER:')
+"     is generally only used in the context of something you want
+"     to emphasize, e.g.,
+"     - 'FIVER/2021-01-19 00:08: Some note'.
+"     - 'FIVER: Some other note`.
+
 " Ref:
 "   :h /character-classes
 "   :h gui-colors
 function! s:DubsSyn_CincoWords_EVERY()
-  " Let's not highlight all CINCO words that appear alone (surrounded by
-  " whitespace), otherwise we'll highlight acronyms we don't intend to
-  " emphasize (such as STOCK symbols).
-  " - But let's highlight CINCO words followed by a forward slash. This
-  "   assumes that that format ('CINCO/') is generally only used in the
-  "   context of something you want to emphasize, e.g.,
-  "     'CINCO/2021-01-19 00:08: Some note'.
 
   syn match CincoWordsEVERY '\(^\|[[:space:]\n\[(#]\)\zs[_[:upper:][:digit:]]\{5}\([/:]\)\@=' contains=@NoSpell
   "                                                   Followed by a slash ^
@@ -149,42 +168,53 @@ function! s:DubsSyn_CincoWords_EVERY()
   hi def CincoWordsEVERY guifg=#caf751 gui=bold cterm=bold
 endfunction
 
+" +----------------------------------------------------------------------+
+
+" Second match: Proactively (always) highlight specific FIVER words.
+" - These are FIVER words that are always used in a FIVER context.
+" - Well, these are FIVER words that the author always uses in a FIVER
+"   context, i.e., these are conventional *actionable* words that I
+"   capitalize to make them pop in my notes documents, but that work
+"   without adding triggering punctuation (such as a slash or a colon).
+
 function! s:DubsSyn_CincoWords_UPPER()
-  " Highlight *actionable* CINCO words specially. CINCO CTAs. (Or CsTA?)
-  " - Use case: You want to visually scan a notes file quickly looking
-  "             for FIXME notes and other tasks you can work on.
-  "             *Calls to Action*
 
   " YOU: Modify this list to your liking.
 
+  " NOTE: I include FIVERs in this list that I don't need unconditionally
+  "       highlighted (without trailing / or : punctuation), but that I
+  "       want to document nonetheless.
+
   let l:cincos = []
 
-  " *** Most used action CINCOs ((lb): that I use).
+  " *** Most used action FIVERs ((lb): that the author uses)
+  "     that'll always be highlighted.
   let l:cincos = add(l:cincos, 'FIXME')  " Want to do 'now'.
   let l:cincos = add(l:cincos, 'LATER')  " Want to do ... eventually.
   let l:cincos = add(l:cincos, 'MAYBE')  " Not sure if you want to do.
 
-  let l:cincos = add(l:cincos, 'SPIKE')  " Agile meaning
-  let l:cincos = add(l:cincos, 'LEARN')  " Articles, books, technology
-  let l:cincos = add(l:cincos, 'STUDY')  " Similar to LEARN
-  let l:cincos = add(l:cincos, 'WATCH')  " Videos to WATCH (or maybe
-                                         "  issues to keep an eye on,
-                                         "  like TRACK?)
+  let l:cincos = add(l:cincos, 'SPIKE')  " Agile meaning (requires 1-2h investigation).
 
-  let l:cincos = add(l:cincos, 'TRACK')  " For keeping vigilant
-  let l:cincos = add(l:cincos, 'AWAIT')  " For future events
+  let l:cincos = add(l:cincos, 'LEARN')  " Articles, books, technology you want to study.
+  let l:cincos = add(l:cincos, 'STUDY')  " Similar to LEARN (generally interchangeable).
+  let l:cincos = add(l:cincos, 'WATCH')  " Video to WATCH (not to be confused with TRACK).
 
-  let l:cincos = add(l:cincos, 'ORDER')  " As in shopping.
+  let l:cincos = add(l:cincos, 'TRACK')  " Issue to keep an eye on (similar to SAVVY).
+  let l:cincos = add(l:cincos, 'AWAIT')  " Issue on hold until something else happens.
 
-  let l:cincos = add(l:cincos, 'CHORE')  " Around the house, or code
-  let l:cincos = add(l:cincos, 'AUDIT')  " You need to review something
-  let l:cincos = add(l:cincos, 'CHECK')  " Similar to AUDIT
-  let l:cincos = add(l:cincos, 'REPLY')  " As in email or persons
+  let l:cincos = add(l:cincos, 'ORDER')  " As in shopping (crap you want to buy).
 
-  " *** Less used action CINCOs.
   let l:cincos = add(l:cincos, 'TODAY')
   let l:cincos = add(l:cincos, 'DAILY')
   let l:cincos = add(l:cincos, 'RECUR')
+  let l:cincos = add(l:cincos, 'CHORE')  " Physical chore around the house/city.
+  "                            'ETASK'   " Digital chore you can do without thinking.
+  let l:cincos = add(l:cincos, 'AUDIT')  " Something you want to review.
+  let l:cincos = add(l:cincos, 'CHECK')  " Similar to AUDIT.
+  let l:cincos = add(l:cincos, 'REPLY')  " As in email or persons.
+  "                            'EMAIL'   " As in email.
+
+  " *** Less used action FIVERs.
   let l:cincos = add(l:cincos, 'TRYME')
   let l:cincos = add(l:cincos, 'TWEAK')
 
@@ -194,7 +224,7 @@ function! s:DubsSyn_CincoWords_UPPER()
   let l:cincos = add(l:cincos, 'BONUS')
   let l:cincos = add(l:cincos, 'OOOPS')
 
-  " END: Said list as you wish.
+  " *** EOL
 
   let l:cinco_re = join(l:cincos, '\|')
   " Profiling: Vim docs suggest using \zs to start match, and not look-behind \@<=.
@@ -232,7 +262,8 @@ endfunction
 " - Issue opened April, 2020, but no traction since?
 "   https://github.com/macvim-dev/macvim/issues/1034
 
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 " Strikethrough any FIVER ending in 'D'.
 " - Except COVID, and whatever else you want to allowlist.
@@ -339,7 +370,8 @@ function! s:Presto_HRrules()
   hi! def link rstFakeHRBills rstHorizRuleUser01
 endfunction
 
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 " HINT: If syntax highlighting appears disabled, even if the file has
 " a Vim mode line saying otherwise, trying closing and reopening the
@@ -384,7 +416,8 @@ endfunction
 " MAGIC: The 4999 below is arbitrary. (2021-01-16: And I
 "        haven't had a reason to opt-out any files yet.)
 
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 function! s:DubsRestWireBasic()
   call s:DubsClr_rstSections()
