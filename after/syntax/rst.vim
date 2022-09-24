@@ -234,20 +234,6 @@ endfunction
 
 " +----------------------------------------------------------------------+
 
-" SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
-" FIXME/2021-08-12 19:27: Combine FIXED and SPOKE.
-function! s:DubsSyn_CincoWords_SPOKE()
-  syn match CincoWordsSPOKE '\(^\|[[:space:]\n\[(#]\)\zsSPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-" ANNUL is a way to cancel FIXME so it appears in strikethrough, to avoid FIXED,
-" and because WONTFIX too many characters. WNTFX it? Naw. ANNUL it.
-function! s:DubsSyn_CincoWords_ANNUL()
-  syn match CincoWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
 " Strikethrough any FIVER ending in 'D'.
 " - Except COVID, and whatever else you want to allowlist.
 " - FIVERs that end in 'D' (aka XXXXD) are generally the completed state of
@@ -267,6 +253,20 @@ endfunction
 function! s:DubsSyn_CincoWords_XXXXD()
   syn match CincoWordsXXXXD '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
   hi def CincoWordsXXXXD guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
+" SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
+" FIXME/2021-08-12 19:27: Combine FIXED and SPOKE.
+function! s:DubsSyn_CincoWords_SPOKE()
+  syn match CincoWordsSPOKE '\(^\|[[:space:]\n\[(#]\)\zsSPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
+endfunction
+
+" ANNUL is a way to cancel FIXME so it appears in strikethrough, to avoid FIXED,
+" and because WONTFIX too many characters. WNTFX it? Naw. ANNUL it.
+function! s:DubsSyn_CincoWords_ANNUL()
+  syn match CincoWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  hi def CincoWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
 " +----------------------------------------------------------------------+
