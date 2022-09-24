@@ -163,7 +163,7 @@ function! s:HighFive_FIVERs_Punctuated()
   "                                                              Followed by a slash ^
   "                                                                    ... or a colon ^
 
-  " Not as bright a yellow, to be less noticeable than FIVERsAlwaysHot.
+  " Not as bright a yellow, to be less noticeable than FIVERsAlways_Hot.
   hi def FIVERsPunctuated guifg=#caf751 gui=bold cterm=bold
 endfunction
 
@@ -228,17 +228,19 @@ function! s:HighFive_FIVERs_Always_Hot()
   let l:fiver_re = join(l:fivers, '\|')
   " Profiling: Vim docs suggest using \zs to start match, and not look-behind \@<=.
   " - I also tried similar with \ze to end match, replacing look-ahead \@=. But I do
-  "   not see a change, FIVERsAlwaysHot still takes ~0.10 secs. on a ~10k line file.
+  "   not see a change, FIVERsAlways_Hot still takes ~0.10 secs. on a ~10k line file.
   "   E.g.,
   "     let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\ze\([.,:/[:space:]\n]\)'
   let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\([.,:/[:space:]\n]\)\@='
-  let l:syn_cmd = "syn match FIVERsAlwaysHot '" . l:fiver_pat . "' contains=@NoSpell"
+  let l:syn_cmd = "syn match FIVERsAlways_Hot '" . l:fiver_pat . "' contains=@NoSpell"
   exec l:syn_cmd
 
   " HRMMM/2021-01-19: Yellow without bold is almost more striking.
   "  MAYBE: FIVERsPunctuated is Yellow but not bold; maybe change its color.
-  hi def FIVERsAlwaysHot guifg=Yellow gui=bold cterm=bold
+  hi def FIVERsAlways_Hot guifg=Yellow gui=bold cterm=bold
 endfunction
+
+" -------
 
 " MAYBE/2021-01-16 18:39: Consider available attrs:
 "
@@ -280,26 +282,38 @@ endfunction
 " - GTK gVim uses `gui=`,
 "   terminal Vim uses `cterm=`,
 "   I'm not sure what uses `term=`.
-function! s:HighFive_XXXXDs_Strikethru()
-  syn match FiverWordsXXXXD '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
-  hi def FiverWordsXXXXD guifg=Purple gui=strikethrough cterm=strikethrough
+function! s:HighFive_XXXXDs_EndsWith_D()
+  syn match FiverWordsXXXXDd '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
+  hi def FiverWordsXXXXDd guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
-" SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
-" FIXME/2021-08-12 19:27: Combine FIXED and SPOKE.
-function! s:HighFive_XXXXDs_Strikethru_SPOKE()
-  syn match FiverWordsSPOKE '\(^\|[[:space:]\n\[(#]\)\zsSPOKE\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def FiverWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
+" -------
+
+" Not all English words that indicate the Simple Past tense or otherwise
+" signify a completed task end in 'D'. Those FIVER words are listed here.
+
+function! s:HighFive_XXXXDs_SimplePast()
+
+  " YOU: Modify this list to your liking.
+
+  let l:fivers = []
+
+  let l:fivers = add(l:fivers, 'SPOKE')  " Awkwardly-named finished state of SPIKE.
+  let l:fivers = add(l:fivers, 'ANNUL')  " Any canceled task, e.g., a FIXME you WONTFIX.
+
+  " *** EOL
+
+  let l:fiver_re = join(l:fivers, '\|')
+  " Profiling: See comments near HighFive_FIVERs_Always_Hot's l:fiver_pat re: \zs vs. \@<=.
+  let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\([.,:/[:space:]\n]\)\@='
+  let l:syn_cmd = "syn match FiverWordsXXXXDs '" . l:fiver_pat . "' contains=@NoSpell"
+  exec l:syn_cmd
+
+  hi def FiverWordsXXXXDs guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
-" ANNUL is a way to cancel FIXME so it appears in strikethrough, to avoid FIXED,
-" and because WONTFIX too many characters. WNTFX it? Naw. ANNUL it.
-function! s:HighFive_XXXXDs_Strikethru_ANNUL()
-  syn match FiverWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def FiverWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-" +----------------------------------------------------------------------+
+" +======================================================================+
+" +======================================================================+
 
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
 
@@ -432,9 +446,8 @@ function! s:DubsRestWireBasic()
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     call s:HighFive_FIVERs_Punctuated()
     call s:HighFive_FIVERs_Always_Hot()
-    call s:HighFive_XXXXDs_Strikethru()
-    call s:HighFive_XXXXDs_Strikethru_SPOKE()
-    call s:HighFive_XXXXDs_Strikethru_ANNUL()
+    call s:HighFive_XXXXDs_EndsWith_D()
+    call s:HighFive_XXXXDs_SimplePast()
   else
     silent! syn clear rstCitationReference
     silent! syn clear rstFootnoteReference
