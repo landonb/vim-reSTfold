@@ -275,9 +275,24 @@ function! s:DubsSyn_CincoWords_PACKD()
   hi def CincoWordsPACKD guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
-" Any FIVER ending in 'D'?
+" Strikethrough any FIVER ending in 'D'.
+" - Except COVID, and whatever else you want to allowlist.
+" - FIVERs that end in 'D' (aka XXXXD) are generally the completed state of
+"   active FIVERs, using the common English language past tense conjugation.
+"   - Some examples:
+"     - FIXME → FIXED  # For items you fixed, 'natch.
+"     - ORDER → ORDRD  # For products you wanted to purchase.
+"     - AWAIT → WAITD  # For items that were delayed until later date or external trigger.
+"     - PACKT → PACKD  # For items you wanted to pack for a trip, and then did.
+" Pattern HINTS:
+" - \%(...\)  - Like \(\), but without counting as sub-expression, and a little bit faster.
+" - \@!       - Matches with zero width if preceding atom does NOT match.
+" Highlight HINTS:
+" - GTK gVim uses `gui=`,
+"   terminal Vim uses `cterm=`,
+"   I'm not sure what uses `term=`.
 function! s:DubsSyn_CincoWords_XXXXD()
-  syn match CincoWordsXXXXD '\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
+  syn match CincoWordsXXXXD '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
   hi def CincoWordsXXXXD guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
