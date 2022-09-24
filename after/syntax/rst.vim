@@ -234,14 +234,6 @@ endfunction
 
 " +----------------------------------------------------------------------+
 
-function! s:DubsSyn_CincoWords_FIXED()
-  syn match CincoWordsFIXED '\(^\|[[:space:]\n\[(#]\)\zsFIXED\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  " NOTE: GTK gVim uses `gui=`,
-  "       terminal Vim uses `cterm=`,
-  "       I'm not sure what uses `term=`.
-  hi def CincoWordsFIXED guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
 " SPOKE is the finished state of SPIKE. (I'll admit it, I got nothing better! At least it's something.)
 " FIXME/2021-08-12 19:27: Combine FIXED and SPOKE.
 function! s:DubsSyn_CincoWords_SPOKE()
@@ -249,30 +241,11 @@ function! s:DubsSyn_CincoWords_SPOKE()
   hi def CincoWordsSPOKE guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
-" ORDRD is the finished state of ORDER.
-" MAYBE/2021-10-13 11:25: Combine FIXED and SPOKE and ORDRD.
-function! s:DubsSyn_CincoWords_ORDRD()
-  syn match CincoWordsORDRD '\(^\|[[:space:]\n\[(#]\)\zsORDRD\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsORDRD guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
 " ANNUL is a way to cancel FIXME so it appears in strikethrough, to avoid FIXED,
 " and because WONTFIX too many characters. WNTFX it? Naw. ANNUL it.
 function! s:DubsSyn_CincoWords_ANNUL()
   syn match CincoWordsANNUL '\(^\|[[:space:]\n\[(#]\)\zsANNUL\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
   hi def CincoWordsANNUL guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-" AWAIT → WAITD (or AWATD?)
-function! s:DubsSyn_CincoWords_WAITD()
-  syn match CincoWordsWAITD '\(^\|[[:space:]\n\[(#]\)\zsWAITD\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsWAITD guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-" PACKT → PACKD
-function! s:DubsSyn_CincoWords_PACKD()
-  syn match CincoWordsPACKD '\(^\|[[:space:]\n\[(#]\)\zsPACKD\([.,:/[:space:]\n]\)\@=' contains=@NoSpell
-  hi def CincoWordsPACKD guifg=Purple gui=strikethrough cterm=strikethrough
 endfunction
 
 " Strikethrough any FIVER ending in 'D'.
@@ -427,12 +400,8 @@ function! s:DubsRestWireBasic()
      \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
     call s:DubsSyn_CincoWords_EVERY()
     call s:DubsSyn_CincoWords_UPPER()
-    "call s:DubsSyn_CincoWords_FIXED()
     call s:DubsSyn_CincoWords_SPOKE()
-    "call s:DubsSyn_CincoWords_ORDRD()
     call s:DubsSyn_CincoWords_ANNUL()
-    "call s:DubsSyn_CincoWords_WAITD()
-    "call s:DubsSyn_CincoWords_PACKD()
     call s:DubsSyn_CincoWords_XXXXD()
   else
     silent! syn clear rstCitationReference
