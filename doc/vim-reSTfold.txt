@@ -1,8 +1,8 @@
 *vim-reSTfold.txt*	For Vim version 7.4.	Last change: 2018 Dec 07
 
-Dubs Vim -- reST Document Folding~
+reST Document Folding~
 
-FILETYPE-SPECIFIC MESS			*vim-reSTfold*
+RESTRUCTUREDTEXT DOC FOLDER		*vim-reSTfold*
 
 1. About This Plugin			|vim-rstfd-about|
 2. reST Section Syntax			|vim-rstfd-sectioning|

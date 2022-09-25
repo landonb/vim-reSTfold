@@ -6,6 +6,14 @@
 
 " +----------------------------------------------------------------------+
 
+" REFER: See complementary reST highlights plugins from this author
+"        (pairs well with this plugin to help you take notes in Vim):
+"
+"   https://github.com/landonb/vim-reSTfold#🙏
+"   https://github.com/landonb/vim-reST-highdefs#🎨
+"   https://github.com/landonb/vim-reST-highfive#🖐
+"   https://github.com/landonb/vim-reST-highline#➖
+
 " REFER: See the reST syntax file included with Vim.
 " - E.g.:
 "     /usr/share/vim/vim81/syntax/rst.vim
@@ -13,13 +21,6 @@
 "     ${HOME}/.local/share/vim/vim81/syntax/rst.vim
 " See also the most current upstream source of the same:
 "   https://github.com/marshallward/vim-restructuredtext
-
-" REFER: See complementary reST highlights plugins from this author
-"        (pairs well with this plugin to help you take notes in Vim):
-"
-"   https://github.com/landonb/vim-reST-highdefs#🎨
-"   https://github.com/landonb/vim-reST-highfive#🖐
-"   https://github.com/landonb/vim-reST-highline#➖
 
 " +======================================================================+
 " +======================================================================+
@@ -42,7 +43,7 @@ endfunction
 
 " *** SYNTAX GROUP: reST section highlighting.
 
-function! s:DubsClr_rstSections()
+function! s:reSTfold_Clear_Highlights()
   " reST header syntax can use any of the 32 punctation keys found on a US keyboard:
   "
   "   ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
@@ -80,7 +81,7 @@ function! s:DubsClr_rstSections()
   syn clear rstSections
 endfunction
 
-function! s:DubsSyn_rstSections()
+function! s:reSTfold_Apply_Highlights_Missing_Punctuation()
   " Add the missing punctuation characters to reST header syntax matching:
   "
   "   !@$%&()[]{}<>/\|,;?
@@ -127,198 +128,10 @@ endfunction
 " +======================================================================+
 " +======================================================================+
 
-" HINT: You can `hi clear {group-name}` and `hi def...` in a reST file to live-test.
-"       But for `syn clear ...` and `syn match ...` you need to `:e` reload the file
-"       (or `do Syntax`/`doautocmd Syntax` (`syntax sync fromstart` did not work FM)).
-
-" +======================================================================+
-" +======================================================================+
-
-" Highlight FIVER words, but split the pattern into two categories:
-" - Always highlight *any* FIVER followed by certain punctuation:
-"   - Highlight any FIVER followed by a slash or a colon, e.g.,
-"     `FIVER:` and `FIVER/` are highlighted, but not `any FIVER alone`.
-" - Selectively highlight specific FIVER words chosen to be special:
-"   - E.g., `FIXME` is always highlighted.
-"   - See the l:fivers list below.
-
-" +----------------------------------------------------------------------+
-
-" First match: Selectively highlight FIVER words that appear alone
-" (FIVERs surrounded by whitespace), otherwise we might highlight
-" acronyms that we don't want to emphasize (such as STOCK symbols).
-" - Instead, highlight FIVER words followed by certain punctuation,
-"   for now, either a forward slash or a colon.
-"   - This assumes that this format (e.g., 'FIVER/', or 'FIVER:')
-"     is generally only used in the context of something you want
-"     to emphasize, e.g.,
-"     - 'FIVER/2021-01-19 00:08: Some note'.
-"     - 'FIVER: Some other note`.
-
-" Ref:
-"   :h /character-classes
-"   :h gui-colors
-function! s:HighFive_FIVERs_Punctuated()
-  syn match FIVERsPunctuated '\(^\|[[:space:]\n\[(#]\)\zs[_[:upper:][:digit:]]\{5}\([/:]\)\@=' contains=@NoSpell
-  "                                                              Followed by a slash ^
-  "                                                                    ... or a colon ^
-
-  " Not as bright a yellow, to be less noticeable than FIVERsAlways_Hot.
-  hi def FIVERsPunctuated guifg=#caf751 gui=bold cterm=bold
-endfunction
-
-" +----------------------------------------------------------------------+
-
-" Second match: Proactively (always) highlight specific FIVER words.
-" - These are FIVER words that are always used in a FIVER context.
-" - Well, these are FIVER words that the author always uses in a FIVER
-"   context, i.e., these are conventional *actionable* words that I
-"   capitalize to make them pop in my notes documents, but that work
-"   without adding triggering punctuation (such as a slash or a colon).
-
-function! s:HighFive_FIVERs_Always_Hot()
-
-  " YOU: Modify this list to your liking.
-
-  " NOTE: I include FIVERs in this list that I don't need unconditionally
-  "       highlighted (without trailing / or : punctuation), but that I
-  "       want to document nonetheless.
-
-  let l:fivers = []
-
-  " *** Most used action FIVERs ((lb): that the author uses)
-  "     that'll always be highlighted.
-  let l:fivers = add(l:fivers, 'FIXME')  " Want to do 'now'.
-  let l:fivers = add(l:fivers, 'LATER')  " Want to do ... eventually.
-  let l:fivers = add(l:fivers, 'MAYBE')  " Not sure if you want to do.
-
-  let l:fivers = add(l:fivers, 'SPIKE')  " Agile meaning (requires 1-2h investigation).
-
-  let l:fivers = add(l:fivers, 'LEARN')  " Articles, books, technology you want to study.
-  let l:fivers = add(l:fivers, 'STUDY')  " Similar to LEARN (generally interchangeable).
-  let l:fivers = add(l:fivers, 'WATCH')  " Video to WATCH (not to be confused with TRACK).
-
-  let l:fivers = add(l:fivers, 'TRACK')  " Issue to keep an eye on (similar to SAVVY).
-  let l:fivers = add(l:fivers, 'AWAIT')  " Issue on hold until something else happens.
-
-  let l:fivers = add(l:fivers, 'ORDER')  " As in shopping (crap you want to buy).
-
-  let l:fivers = add(l:fivers, 'CHORE')  " Physical chore around the house/city.
-  "                            'ETASK'   " Digital chore you can do without thinking.
-  let l:fivers = add(l:fivers, 'AUDIT')  " Something you want to review.
-  let l:fivers = add(l:fivers, 'CHECK')  " Similar to AUDIT.
-  let l:fivers = add(l:fivers, 'REPLY')  " As in email or persons.
-  "                            'EMAIL'   " As in email.
-
-  " *** Less used action FIVERs.
-  "                            'TODAY'
-  "                            'DAILY'
-  "                            'RECUR'
-  let l:fivers = add(l:fivers, 'TRYME')
-  "                            'TWEAK'
-
-  " *** Not really actions...
-  let l:fivers = add(l:fivers, 'HRMMM')
-  let l:fivers = add(l:fivers, 'MEHHH')
-  let l:fivers = add(l:fivers, 'BONUS')
-  let l:fivers = add(l:fivers, 'OOOPS')
-
-  " *** EOL
-
-  let l:fiver_re = join(l:fivers, '\|')
-  " Profiling: Vim docs suggest using \zs to start match, and not look-behind \@<=.
-  " - I also tried similar with \ze to end match, replacing look-ahead \@=. But I do
-  "   not see a change, FIVERsAlways_Hot still takes ~0.10 secs. on a ~10k line file.
-  "   E.g.,
-  "     let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\ze\([.,:/[:space:]\n]\)'
-  let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\([.,:/[:space:]\n]\)\@='
-  let l:syn_cmd = "syn match FIVERsAlways_Hot '" . l:fiver_pat . "' contains=@NoSpell"
-  exec l:syn_cmd
-
-  " HRMMM/2021-01-19: Yellow without bold is almost more striking.
-  "  MAYBE: FIVERsPunctuated is Yellow but not bold; maybe change its color.
-  hi def FIVERsAlways_Hot guifg=Yellow gui=bold cterm=bold
-endfunction
-
-" -------
-
-" MAYBE/2021-01-16 18:39: Consider available attrs:
-"
-"   bold, underline, undercurl, strikethrough, italic, reverse (inverse), standout
-"
-" The standout vs reverse (aka inverse) option is interesting.
-" - The same style can be done different ways,
-"   e.g., these three are similar:
-"     hi def foo guifg=Black guibg=Purple
-"     hi def foo guifg=Purple guibg=Black gui=reverse
-"     hi def foo guifg=Purple guibg=Black gui=inverse
-"     hi def foo guifg=Purple guibg=Black gui=standout
-"   but I think the text in standout is more readable (a little fatter).
-"
-" Useful? Maybe for testing?:
-"   nocombine   override attributes instead of combining them
-"   NONE
-
-" TRACK/2021-02-19: MacVim does not support strikethrough.
-" - Issue opened April, 2020, but no traction since?
-"   https://github.com/macvim-dev/macvim/issues/1034
-
-" +======================================================================+
-" +======================================================================+
-
-" Strikethrough any FIVER ending in 'D'.
-" - Except COVID, and whatever else you want to allowlist.
-" - FIVERs that end in 'D' (aka XXXXD) are generally the completed state of
-"   active FIVERs, using the common English language past tense conjugation.
-"   - Some examples:
-"     - FIXME → FIXED  # For items you fixed, 'natch.
-"     - ORDER → ORDRD  # For products you wanted to purchase.
-"     - AWAIT → WAITD  # For items that were delayed until later date or external trigger.
-"     - PACKT → PACKD  # For items you wanted to pack for a trip, and then did.
-" Pattern HINTS:
-" - \%(...\)  - Like \(\), but without counting as sub-expression, and a little bit faster.
-" - \@!       - Matches with zero width if preceding atom does NOT match.
-" Highlight HINTS:
-" - GTK gVim uses `gui=`,
-"   terminal Vim uses `cterm=`,
-"   I'm not sure what uses `term=`.
-function! s:HighFive_XXXXDs_EndsWith_D()
-  syn match FiverWordsXXXXDd '\%(\(^\|[[:space:]\n\[(#]\)\zs\(BUILD\|COVID\|FOUND\)\([.,:/[:space:]\n]\)\@=\)\@!\(\(^\|[[:space:]\n\[(#]\)\zs[[:upper:]][[:upper:]][[:upper:]][[:upper:]]D\([.,:/[:space:]\n]\)\@=\)' contains=@NoSpell
-  hi def FiverWordsXXXXDd guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-" -------
-
-" Not all English words that indicate the Simple Past tense or otherwise
-" signify a completed task end in 'D'. Those FIVER words are listed here.
-
-function! s:HighFive_XXXXDs_SimplePast()
-
-  " YOU: Modify this list to your liking.
-
-  let l:fivers = []
-
-  let l:fivers = add(l:fivers, 'SPOKE')  " Awkwardly-named finished state of SPIKE.
-  let l:fivers = add(l:fivers, 'ANNUL')  " Any canceled task, e.g., a FIXME you WONTFIX.
-
-  " *** EOL
-
-  let l:fiver_re = join(l:fivers, '\|')
-  " Profiling: See comments near HighFive_FIVERs_Always_Hot's l:fiver_pat re: \zs vs. \@<=.
-  let l:fiver_pat = '\(^\|[[:space:]\n\[(#]\)\zs\(' . l:fiver_re . '\)\([.,:/[:space:]\n]\)\@='
-  let l:syn_cmd = "syn match FiverWordsXXXXDs '" . l:fiver_pat . "' contains=@NoSpell"
-  exec l:syn_cmd
-
-  hi def FiverWordsXXXXDs guifg=Purple gui=strikethrough cterm=strikethrough
-endfunction
-
-" +======================================================================+
-" +======================================================================+
-
 " *** (p)reST(o) reST extension: reSTrule: Pseudo-Horizontal Rule Highlights
 
-function! s:Presto_HRrules()
-  " 2018-01-30: BONKERS!
+function! s:reSTfold_Apply_Highlights_Repeated_Chars()
+  " 2018-01-30: SO 🆒!
   "
   "   This is pretty cool. And it only serves one purpose:
   "     Making me color-happy when reSTing.
@@ -386,82 +199,16 @@ endfunction
 " +======================================================================+
 " +======================================================================+
 
-" HINT: If syntax highlighting appears disabled, even if the file has
-" a Vim mode line saying otherwise, trying closing and reopening the
-" file, or saving the file and running the `:e` command, or try this:
-"
-"     set rdt=9999
-"     doautocmd Syntax
-"     " Also works:
-"     syn on
+function! s:reSTfold_Wire_Highlights()
+  call s:reSTfold_Clear_Highlights()
 
-" 2021-01-16: This syntax plugin had been opt-in per file: you'd have
-" to set redrawtimeout to something other than 2000 to enable these
-" highlights. I think I was doing this because of performance issues
-" with some of my reST files. But I'm no longer sure that's the case,
-" or, if it was, it was probably on large files, and I've been in the
-" habit recently of keeping files under 10,000 lines. Also, it's been
-" annoying me that new rst files don't have these highlights enabled
-" until I notice and remember to add a modeline.
-"   So let's require users to opt-out instead!
-"
-" - tl;dr I'd rather this work on new files and without requiring modeline.
-"
-" YOU: To opt-out, set redrawtimeout (rdt) to something less than 4999
-"      but not 2000 (the default).
-"
-"      - E.g., to disable these highlights (and their associated
-"        computational overhead), add a modeline like this atop
-"        each reST file you want to opt-out:
-"
-"          .. vim:rdt=2001
-"
-"      - Otherwise, to have syntax highlighting enabled, use either
-"        the default value:
-"
-"          .. vim:rdt=2000
-"
-"        or set it 5000 or larger:
-"
-"          .. vim:rdt=5000
-"          .. vim:rdt=9999
-"
-" MAGIC: The 4999 below is arbitrary. (2021-01-16: And I
-"        haven't had a reason to opt-out any files yet.)
-
-" +======================================================================+
-" +======================================================================+
-
-function! s:DubsRestWireBasic()
-  call s:DubsClr_rstSections()
-
-  let l:redrawtimeout = &rdt
-  " MAGIC: Vim's rdt default is 2000 (2 secs.).
-  let l:defaultRedrawTimeout = 2000
-  " MAGIC: SYNC_ME: All the vim-reST* plugins use the same redrawtime
-  "        logic: skip special highlights if rdt <= 4999 but not 2000.
-  let l:syntaxEnableIfGreater = 4999
-
-  if (l:redrawtimeout == l:defaultRedrawTimeout)
-     \ || (l:redrawtimeout > l:syntaxEnableIfGreater)
-    call s:HighFive_FIVERs_Punctuated()
-    call s:HighFive_FIVERs_Always_Hot()
-    call s:HighFive_XXXXDs_EndsWith_D()
-    call s:HighFive_XXXXDs_SimplePast()
-  else
-    silent! syn clear rstCitationReference
-    silent! syn clear rstFootnoteReference
-    silent! syn clear rstInlineInternalTargets
-    silent! syn clear rstSubstitutionReference
-  endif
-
-  call s:Presto_HRrules()
+  call s:reSTfold_Apply_Highlights_Repeated_Chars()
 
   " Do real reST Section highlighting so it overrides, e.g., rstFakeHRAll.
-  call s:DubsSyn_rstSections()
+  call s:reSTfold_Apply_Highlights_Missing_Punctuation()
 endfunction
 
 " +----------------------------------------------------------------------+
 
-call s:DubsRestWireBasic()
+call s:reSTfold_Wire_Highlights()
 
