@@ -41,19 +41,22 @@
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
 
-" YOU: Uncomment next 'unlet', then <F9> to reload this file.
-"      (Iff: https://github.com/landonb/vim-source-reloader)
-"
+" GUARD: Press <F9> to reload this plugin (or :source it).
+" - Via: https://github.com/embrace-vim/vim-source-reloader#↩️
+
 " ALSO: Disable the guard clause `return` below, in
 "         s:ApplyDefault()
 "       if you also want to update the g:vars on <F9>.
 "       Look for:
 "         " DEV: Comment this if using vim-source-reloader to reset globals.
 "         "return
-"
-" silent! unlet g:loaded_restfold_after_ftplugin_rst
+
+if expand("%:p") ==# expand("<sfile>:p")
+  unlet g:loaded_restfold_after_ftplugin_rst
+endif
 
 if exists("g:loaded_restfold_after_ftplugin_rst") || &cp
+
   finish
 endif
 
