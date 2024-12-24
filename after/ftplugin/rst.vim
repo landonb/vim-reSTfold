@@ -51,11 +51,11 @@
 "         " DEV: Comment this if using vim-source-reloader to reset globals.
 "         "return
 
-if expand("%:p") ==# expand("<sfile>:p")
-  unlet g:loaded_restfold_after_ftplugin_rst
+if expand('%:p') ==# expand('<sfile>:p')
+  unlet! g:loaded_restfold_after_ftplugin_rst
 endif
 
-if exists("g:loaded_restfold_after_ftplugin_rst") || &cp
+if exists('g:loaded_restfold_after_ftplugin_rst') || &cp
 
   finish
 endif
