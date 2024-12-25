@@ -318,7 +318,7 @@ endfunction
 
 " ***
 
-function! s:apply_leadership_punctuation()
+function! g:embrace#reSecTions#CreateMaps() abort
   let l:number_punc = [
     \ ['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'],
     \ ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'],
@@ -369,6 +369,4 @@ function! s:apply_leadership_punctuation()
 
   call s:map_special_keys()
 endfunction
-
-call s:apply_leadership_punctuation()
 
