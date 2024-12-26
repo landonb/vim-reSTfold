@@ -9,15 +9,15 @@
 " - Via: https://github.com/embrace-vim/vim-source-reloader#↩️
 
 if expand('%:p') ==# expand('<sfile>:p')
-  unlet! g:loaded_reSTfold
+  unlet! g:loaded_restfold_vim_restfold
 endif
 
-if exists('g:loaded_reSTfold') || &cp
+if exists('g:loaded_restfold_vim_restfold') || &cp
 
   finish
 endif
 
-let g:loaded_reSTfold = 1
+let g:loaded_restfold_vim_restfold = 1
 
 " -------------------------------------------------------------------
 
