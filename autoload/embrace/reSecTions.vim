@@ -219,15 +219,17 @@ let s:trace = 0
 function! s:map_shift_only_punctuation_addline_normal_under(keych, delim) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
-  exe 'silent! nunmap <Leader>' . a:keych
-  exe 'nnoremap <Leader>' . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:up_n
+  let l:seq = '<Leader>' . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:up_n)
 endfunction
 
 function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, extra) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
-  exe 'silent! nunmap <Leader>' . a:extra . a:keych
-  exe 'nnoremap <Leader>' . a:extra . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
+  let l:seq = '<Leader>' . a:extra . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n)
 endfunction
 
 " ***
@@ -235,16 +237,18 @@ endfunction
 function! s:map_shift_only_punctuation_addline_insert_under(keych, delim) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
-  exe 'silent! iunmap <Leader>' . a:keych
+  let l:seq = '<Leader>' . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
   " MAYBE/2019-02-09: Use function, and restore cursor position. For now, goes to first character of line.
-  exe 'inoremap <Leader>' . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i'
+  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i')
 endfunction
 
 function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, extra) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
-  exe 'silent! iunmap <Leader>' . a:extra . a:keych
-  exe 'inoremap <Leader>' . a:extra . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
+  let l:seq = '<Leader>' . a:extra . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
+  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i')
 endfunction
 
 " ***
@@ -252,8 +256,9 @@ endfunction
 function! s:map_shift_only_punctuation_replace_normal_under(keych, delim) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
-  exe 'silent! nunmap <Leader><Leader>' . a:keych
-  exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n
+  let l:seq = '<Leader><Leader>' . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n)
 endfunction
 
 " :help function-argument
@@ -261,8 +266,9 @@ endfunction
 function! s:map_shift_only_punctuation_replace_normal_hilow(keych, delim) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
-  exe 'silent! nunmap <Leader><Leader>' . a:keych
-  exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
+  let l:seq = '<Leader><Leader>' . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n)
 endfunction
 
 " ***
@@ -270,15 +276,17 @@ endfunction
 function! s:map_shift_only_punctuation_replace_insert_under(keych, delim) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
-  exe 'silent! iunmap <Leader><Leader>' . a:keych
-  exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i'
+  let l:seq = '<Leader><Leader>' . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
+  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i')
 endfunction
 
 function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
-  exe 'silent! iunmap <Leader><Leader>' . a:keych
-  exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
+  let l:seq = '<Leader><Leader>' . a:keych
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
+  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i')
 endfunction
 
 " ***
@@ -334,11 +342,13 @@ endfunction
 function! s:map_lower_or_upper_punctuation(punc) abort
   call g:embrace#reSecTions#EchomCallerMsg('punc: ' . a:punc)
 
-  exe 'silent! nunmap <Leader>'   . a:punc
-  exe 'silent! nunmap <Leader>\|' . a:punc
-  "
-  exe 'nnoremap <Leader>'   . a:punc . ' ' . s:yank_put_replace_n . a:punc . s:up_n
-  exe 'nnoremap <Leader>\|' . a:punc . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n
+  let l:seq = '<Leader>' . a:punc
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:up_n)
+
+  let l:seq = '<Leader>\|' . a:punc
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n)
 endfunction
 
 " (((((((((((((((((((((((((((((((((((
@@ -347,19 +357,21 @@ endfunction
 function! s:map_insider_punctuation(lpunc, rpunc) abort
   call g:embrace#reSecTions#EchomCallerMsg('lpunc:rpunc: ' . a:lpunc . ':' . a:rpunc)
 
-  exe 'silent! nunmap <Leader>' . a:lpunc . a:rpunc
-  "
-  exe 'nnoremap <Leader>' . a:lpunc . a:rpunc . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>'
+  let l:seq = '<Leader>' . a:lpunc . a:rpunc
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>')
 endfunction
 
 function! s:map_doubled_punctuation(dpunc) abort
   call g:embrace#reSecTions#EchomCallerMsg('dpunc: ' . a:dpunc)
 
-  exe 'silent! nunmap <Leader>'   . a:dpunc . a:dpunc
-  exe 'silent! nunmap <Leader>\|' . a:dpunc . a:dpunc
-  "
-  exe 'nnoremap <Leader>'   . a:dpunc . a:dpunc . ' ' . s:yank_put_replace_n . a:dpunc . '<UP>'
-  exe 'nnoremap <Leader>\|' . a:dpunc . a:dpunc . ' ' . s:yank_put_replace_n . a:dpunc . 'yykP' . '<DOWN>'
+  let l:seq = '<Leader>' . a:dpunc . a:dpunc
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . '<UP>')
+
+  let l:seq = '<Leader>\|' . a:dpunc . a:dpunc
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
+  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . 'yykP' . '<DOWN>')
 endfunction
 
 " -------------------------------------------------------------------
@@ -375,17 +387,16 @@ function! s:map_special_keys() abort
   "   =======
   "   SECTION
   "   =======
-  "
-  silent! nunmap <Leader>=
-  silent! nunmap <Leader>+
-  silent! nunmap <Leader>\|+
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>=', 'n')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>+', 'n')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|+', 'n')
   nnoremap <Leader>= yyp<C-Q>$r=<UP>
   nnoremap <Leader>+ yyp<C-Q>$r=yykP<DOWN>
   nnoremap <Leader>\|+ yyp<C-Q>$r=yykP<DOWN>
   "
-  silent! iunmap <Leader>=
-  silent! iunmap <Leader>+
-  silent! iunmap <Leader>\|+
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>=', 'i')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>+', 'i')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|+', 'i')
   inoremap <Leader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
   inoremap <Leader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   inoremap <Leader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
@@ -407,25 +418,56 @@ function! s:map_special_keys() abort
   "     =================
   "     header got longer
   "     =================
-  silent! nunmap <Leader><Leader>=
-  silent! nunmap <Leader><Leader>+
+  call g:embrace#reSecTions#AlertIfMapped('<Leader><Leader>=', 'n')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader><Leader>+', 'n')
   nnoremap <Leader><Leader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
   nnoremap <Leader><Leader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
   "
-  silent! iunmap <Leader><Leader>=
-  silent! iunmap <Leader><Leader>+
+  call g:embrace#reSecTions#AlertIfMapped('<Leader><Leader>=', 'i')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader><Leader>+', 'i')
   inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
   inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
 
   " The pipe character is not sent to map_lower_or_upper_punctuation
   " because it needs to be escaped.
-  silent! nunmap <Leader>\|
-  silent! nunmap <Leader>\|\|
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|', 'n')
+  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|\|', 'n')
   nnoremap <Leader>\| yyp<C-Q>$r\|<UP>
   nnoremap <Leader>\|\| yyp<C-Q>$r\|yykP<DOWN>
 endfunction
 
 " -------------------------------------------------------------------
+
+function! g:embrace#reSecTions#AlertIfMapped(what, mode) abort
+  if get(g:, 'vim_restfold_alert_disable', 0)
+
+    return
+  endif
+
+  " Note that we delimit pipes \| for the map calls, but not for maparg.
+  " - E.g., this returns empty string:
+  "     maparg('<Leader>\|1', 'n')
+  "   But this returns the \|1 map.
+  "     maparg('<Leader>|1', 'n')
+  let l:what = substitute(a:what, '\\|', '|', 'g')
+
+  " The long way:
+  "   let l:curr_map = ''
+  "   redir => l:curr_map
+  "   execute a:mode .. 'map ' .. a:what
+  "   redir END
+  "   let l:curr_map = substitute(l:curr_map, "^\n", '', '')
+
+  let l:curr_map = maparg(l:what, a:mode)
+
+  if l:curr_map == ''
+
+    return
+  endif
+
+  echom 'ALERT: vim-reSTfold replaced existing ' .. a:mode .. '_' .. l:what .. ' map'
+    \ .. ': ' .. l:curr_map
+endfunction
 
 " :h ...
 function! g:embrace#reSecTions#EchomCallerMsg(msg, ...) abort
@@ -462,6 +504,12 @@ function! g:embrace#reSecTions#EchomCallerMsg(msg, ...) abort
   for l:index in range(1, a:0)
     echom get(a:, l:index)
   endfor
+endfunction
+
+function! s:ExeAndEchom(command) abort
+  if s:trace | echom a:command | endif
+
+  exe a:command
 endfunction
 
 " -------------------------------------------------------------------
