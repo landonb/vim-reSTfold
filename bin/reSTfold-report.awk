@@ -1,8 +1,8 @@
 #!/usr/bin/env awk -f
 # vim:tw=0:ts=2:sw=2:et:norl:ft=awk
-# Author: Landon Bouma (landonb &#x40; retrosoft &#x2E; com)
-# Project: https://github.com/landonb/dubs_restfold#💤
-# License: MIT
+# Author: Landon Bouma <https://tallybark.com/>
+# Project: https://github.com/landonb/vim-reSTfold#🙏
+# License: GPLv3
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 

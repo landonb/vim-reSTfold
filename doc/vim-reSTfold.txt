@@ -1,6 +1,6 @@
 *vim-reSTfold.txt*	For Vim version 7.4.	Last change: 2018 Dec 07
 
-reST Document Folding~
+reST Document Folding 🙏~
 
 RESTRUCTUREDTEXT DOC FOLDER			*vim-reSTfold*
 
