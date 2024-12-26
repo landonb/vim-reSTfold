@@ -207,108 +207,108 @@ let s:up_n = '<UP>'
 let s:yank_up_putbefore_down_n = 'yykP<DOWN>'
 
 let s:delete_line_above_n = '<UP>dd'
-let s:delete_line_below_n = '<DOWN>dd<UP>'
+let s:delete_line_under_n = '<DOWN>dd<UP>'
 
 " -------------------------------------------------------------------
 
-function! s:map_shift_only_punctuation_install_below_normal(keych, delim) abort
-  "echom "map_shift_only_punctuation_install_below_normal: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_addline_normal_under(keych, delim) abort
+  "echom "map_shift_only_punctuation_addline_normal_under: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! nunmap <Leader>' . a:keych
   exe 'nnoremap <Leader>' . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:up_n
 endfunction
 
-function! s:map_shift_only_punctuation_install_aboth_normal(keych, delim, extra) abort
-  "echom "shift-install-aboth-normal: keych:delim: " . a:keych . ':' . a:delim . ':' . a:extra
+function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, extra) abort
+  "echom "map_shift_only_punctuation_addline_normal_hilow: keych:delim: " . a:keych . ':' . a:delim . ':' . a:extra
   exe 'silent! nunmap <Leader>' . a:extra . a:keych
   exe 'nnoremap <Leader>' . a:extra . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_install_below_insert(keych, delim) abort
-  "echom "map_shift_only_punctuation_install_below_insert: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_addline_insert_under(keych, delim) abort
+  "echom "map_shift_only_punctuation_addline_insert_under: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader>' . a:keych
   " MAYBE/2019-02-09: Use function, and restore cursor position. For now, goes to first character of line.
   exe 'inoremap <Leader>' . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i'
 endfunction
 
-function! s:map_shift_only_punctuation_install_aboth_insert(keych, delim, extra) abort
-  "echom "map_shift_only_punctuation_install_aboth_insert: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, extra) abort
+  "echom "map_shift_only_punctuation_addline_insert_hilow: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader>' . a:extra . a:keych
   exe 'inoremap <Leader>' . a:extra . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_replace_below_normal(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_below_normal: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_replace_normal_under(keych, delim) abort
+  "echom "map_shift_only_punctuation_replace_normal_under: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! nunmap <Leader><Leader>' . a:keych
-  exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:up_n
+  exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n
 endfunction
 
 " :help function-argument
 
-function! s:map_shift_only_punctuation_replace_aboth_normal(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_aboth_normal: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_replace_normal_hilow(keych, delim) abort
+  "echom "map_shift_only_punctuation_replace_normal_hilow: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! nunmap <Leader><Leader>' . a:keych
-  exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_above_n . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
+  exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_replace_below_insert(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_below_insert: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_replace_insert_under(keych, delim) abort
+  "echom "map_shift_only_punctuation_replace_insert_under: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader><Leader>' . a:keych
-  exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:up_n . 'i'
+  exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i'
 endfunction
 
-function! s:map_shift_only_punctuation_replace_aboth_insert(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_aboth_insert: keych:delim: " . a:keych . ':' . a:delim
+function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim) abort
+  "echom "map_shift_only_punctuation_replace_insert_hilow: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader><Leader>' . a:keych
-  exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
+  exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
 endfunction
 
 " ***
 
 function! s:map_shift_only_punctuation_addtext_maps(knum, punc) abort
   "echom "map_shift_only_punctuation_addtext_maps: knum:punc: " . a:knum . ':' . a:punc
-  call s:map_shift_only_punctuation_install_below_normal(a:knum, a:punc)
+  call s:map_shift_only_punctuation_addline_normal_under(a:knum, a:punc)
 
-  call s:map_shift_only_punctuation_install_aboth_normal(a:punc, a:punc, '')
-  call s:map_shift_only_punctuation_replace_below_normal(a:knum, a:punc)
-  call s:map_shift_only_punctuation_replace_aboth_normal(a:punc, a:punc)
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, '')
+  call s:map_shift_only_punctuation_replace_normal_under(a:knum, a:punc)
+  call s:map_shift_only_punctuation_replace_normal_hilow(a:punc, a:punc)
   " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_install_aboth_normal(a:knum, a:punc, '\|')
-  call s:map_shift_only_punctuation_install_aboth_normal(a:punc, a:punc, '\|')
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:knum, a:punc, '\|')
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, '\|')
   "
-  call s:map_shift_only_punctuation_install_below_insert(a:knum, a:punc)
-  call s:map_shift_only_punctuation_install_aboth_insert(a:punc, a:punc, '')
-  call s:map_shift_only_punctuation_replace_below_insert(a:knum, a:punc)
-  call s:map_shift_only_punctuation_replace_aboth_insert(a:punc, a:punc)
+  call s:map_shift_only_punctuation_addline_insert_under(a:knum, a:punc)
+  call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, '')
+  call s:map_shift_only_punctuation_replace_insert_under(a:knum, a:punc)
+  call s:map_shift_only_punctuation_replace_insert_hilow(a:punc, a:punc)
   " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_install_aboth_insert(a:knum, a:punc, '\|')
-  call s:map_shift_only_punctuation_install_aboth_insert(a:punc, a:punc, '\|')
+  call s:map_shift_only_punctuation_addline_insert_hilow(a:knum, a:punc, '\|')
+  call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, '\|')
 endfunction
 
 " ***
 
 function! s:map_lower_only_punctuation_addtext_maps(lower, upper) abort
   "echom "map_lower_only_punctuation_addtext_maps: lower:upper: " . a:lower . ':' . a:upper
-  call s:map_shift_only_punctuation_install_below_normal(a:lower, a:lower)
-  call s:map_shift_only_punctuation_install_aboth_normal(a:upper, a:lower, '')
-  call s:map_shift_only_punctuation_replace_below_normal(a:lower, a:lower)
-  call s:map_shift_only_punctuation_replace_aboth_normal(a:upper, a:lower)
+  call s:map_shift_only_punctuation_addline_normal_under(a:lower, a:lower)
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, '')
+  call s:map_shift_only_punctuation_replace_normal_under(a:lower, a:lower)
+  call s:map_shift_only_punctuation_replace_normal_hilow(a:upper, a:lower)
   " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_install_aboth_normal(a:lower, a:lower, '\|')
-  call s:map_shift_only_punctuation_install_aboth_normal(a:upper, a:lower, '\|')
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:lower, a:lower, '\|')
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, '\|')
   "
-  call s:map_shift_only_punctuation_install_below_insert(a:lower, a:lower)
-  call s:map_shift_only_punctuation_install_aboth_insert(a:upper, a:lower, '')
-  call s:map_shift_only_punctuation_replace_below_insert(a:lower, a:lower)
-  call s:map_shift_only_punctuation_replace_aboth_insert(a:upper, a:lower)
+  call s:map_shift_only_punctuation_addline_insert_under(a:lower, a:lower)
+  call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, '')
+  call s:map_shift_only_punctuation_replace_insert_under(a:lower, a:lower)
+  call s:map_shift_only_punctuation_replace_insert_hilow(a:upper, a:lower)
   " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_install_aboth_insert(a:lower, a:lower, '\|')
-  call s:map_shift_only_punctuation_install_aboth_insert(a:upper, a:lower, '\|')
+  call s:map_shift_only_punctuation_addline_insert_hilow(a:lower, a:lower, '\|')
+  call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, '\|')
 endfunction
 
 " ***
