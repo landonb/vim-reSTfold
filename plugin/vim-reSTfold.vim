@@ -21,7 +21,7 @@ let g:loaded_restfold_vim_restfold = 1
 
 " -------------------------------------------------------------------
 
-if get(g:, 'loaded_reSTfold_disable', 0)
+if get(g:, 'vim_restfold_disable', 0)
 
   finish
 endif
