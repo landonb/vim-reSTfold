@@ -341,7 +341,7 @@ function! s:map_doubled_punctuation(dpunc) abort
   exe 'nnoremap <Leader>\|' . a:dpunc . a:dpunc . ' ' . s:yank_put_replace_n . a:dpunc . 'yykP' . '<DOWN>'
 endfunction
 
-" ***
+" -------------------------------------------------------------------
 
 function! s:map_special_keys() abort
   " We don't use '+' as a section delimiter because the
@@ -402,7 +402,7 @@ function! s:map_special_keys() abort
   nnoremap <Leader>\|\| yyp<C-Q>$r\|yykP<DOWN>
 endfunction
 
-" ***
+" -------------------------------------------------------------------
 
 " USAGE: Pass your own lists if you don't want the defaults.
 " - BWARE: This fcn. doesn't make any attempt to validate any
