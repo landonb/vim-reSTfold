@@ -35,7 +35,7 @@ endif
 
 " Enable syntax highlighting
 " ------------------------------------------------------
-" Syntax is enabled by default in Windows, but not in Linux.
+" Syntax is enabled by default on Windows, but not on Linux.
 
 syntax enable
 
