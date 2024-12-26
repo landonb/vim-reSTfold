@@ -615,12 +615,12 @@ function! g:embrace#reSecTions#CreateMaps(
   else
     let l:number_punc = [
       \ ['1', '!', '*', 'rst'],
-      \ ['2', '@', '*', 'rst'],
-      \ ['3', '#', '*', 'rst'],
-      \ ['4', '$', '*', 'rst'],
-      \ ['5', '%', '*', 'rst'],
-      \ ['6', '^', '*', 'rst'],
-      \ ['7', '&', '*', 'rst'],
+      \ ['2', '@', '*', '*'],
+      \ ['3', '#', '*', '*'],
+      \ ['4', '$', 'rst', 'rst'],
+      \ ['5', '%', 'rst', 'rst'],
+      \ ['6', '^', '*', '*'],
+      \ ['7', '&', 'rst', 'rst'],
       \ ['8', '*', '*', 'rst'],
       \ ]
   endif
@@ -653,7 +653,7 @@ function! g:embrace#reSecTions#CreateMaps(
     let l:simple_punc = [
       \ ['`', 'rst'],
       \ ['~', 'rst'],
-      \ ['\', 'rst'],
+      \ ['\', ''],
       \ [';', 'rst'],
       \ [':', 'rst'],
       \ [',', 'rst'],
@@ -664,6 +664,11 @@ function! g:embrace#reSecTions#CreateMaps(
       \ ]
   endif
 
+  " Omit ] to not take <Leader>] which might be a popular leader-leader2
+  " choice for other plugins, e.g., vim-easymotion. Not that we should
+  " talk, we take a *lot* of leader prefixes — and though both <Leader>
+  " and <Leader2> are configurable, assume the user has not changed
+  " them, and avoid obvious <Leader><Leader2> sequences.
   if type(a:insider_punc) == v:t_list
     let l:insider_punc = a:insider_punc
   else
@@ -671,12 +676,12 @@ function! g:embrace#reSecTions#CreateMaps(
       \ ['(', ')', 'rst'],
       \ [')', '(', 'rst'],
       \ ['[', ']', 'rst'],
-      \ [']', '[', 'rst'],
+      \ [']', '[', ''],
       \ ['{', '}', 'rst'],
       \ ['}', '{', 'rst'],
       \ ['<', '>', 'rst'],
       \ ['>', '<', 'rst'],
-      \ ['\', '/', 'rst'],
+      \ ['\', '/', ''],
       \ ['/', '\', 'rst'],
       \ ]
   endif
@@ -688,12 +693,12 @@ function! g:embrace#reSecTions#CreateMaps(
       \ ['(', 'rst'],
       \ [')', 'rst'],
       \ ['[', 'rst'],
-      \ [']', 'rst'],
+      \ [']', ''],
       \ ['{', 'rst'],
       \ ['}', 'rst'],
       \ ['<', 'rst'],
       \ ['>', 'rst'],
-      \ ['\', 'rst'],
+      \ ['\', ''],
       \ ['/', 'rst'],
       \ ]
   endif
