@@ -209,16 +209,23 @@ let s:yank_up_putbefore_down_n = 'yykP<DOWN>'
 let s:delete_line_above_n = '<UP>dd'
 let s:delete_line_under_n = '<DOWN>dd<UP>'
 
+" ***
+
+" Set nonzero to enable `echom` trace.
+let s:trace = 0
+
 " -------------------------------------------------------------------
 
 function! s:map_shift_only_punctuation_addline_normal_under(keych, delim) abort
-  "echom "map_shift_only_punctuation_addline_normal_under: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
+
   exe 'silent! nunmap <Leader>' . a:keych
   exe 'nnoremap <Leader>' . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:up_n
 endfunction
 
 function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, extra) abort
-  "echom "map_shift_only_punctuation_addline_normal_hilow: keych:delim: " . a:keych . ':' . a:delim . ':' . a:extra
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
+
   exe 'silent! nunmap <Leader>' . a:extra . a:keych
   exe 'nnoremap <Leader>' . a:extra . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
 endfunction
@@ -226,14 +233,16 @@ endfunction
 " ***
 
 function! s:map_shift_only_punctuation_addline_insert_under(keych, delim) abort
-  "echom "map_shift_only_punctuation_addline_insert_under: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
+
   exe 'silent! iunmap <Leader>' . a:keych
   " MAYBE/2019-02-09: Use function, and restore cursor position. For now, goes to first character of line.
   exe 'inoremap <Leader>' . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i'
 endfunction
 
 function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, extra) abort
-  "echom "map_shift_only_punctuation_addline_insert_hilow: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
+
   exe 'silent! iunmap <Leader>' . a:extra . a:keych
   exe 'inoremap <Leader>' . a:extra . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
 endfunction
@@ -241,7 +250,8 @@ endfunction
 " ***
 
 function! s:map_shift_only_punctuation_replace_normal_under(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_normal_under: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
+
   exe 'silent! nunmap <Leader><Leader>' . a:keych
   exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n
 endfunction
@@ -249,7 +259,8 @@ endfunction
 " :help function-argument
 
 function! s:map_shift_only_punctuation_replace_normal_hilow(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_normal_hilow: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
+
   exe 'silent! nunmap <Leader><Leader>' . a:keych
   exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
 endfunction
@@ -257,13 +268,15 @@ endfunction
 " ***
 
 function! s:map_shift_only_punctuation_replace_insert_under(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_insert_under: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
+
   exe 'silent! iunmap <Leader><Leader>' . a:keych
   exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i'
 endfunction
 
 function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim) abort
-  "echom "map_shift_only_punctuation_replace_insert_hilow: keych:delim: " . a:keych . ':' . a:delim
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
+
   exe 'silent! iunmap <Leader><Leader>' . a:keych
   exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
 endfunction
@@ -271,9 +284,9 @@ endfunction
 " ***
 
 function! s:map_shift_only_punctuation_addtext_maps(knum, punc) abort
-  "echom "map_shift_only_punctuation_addtext_maps: knum:punc: " . a:knum . ':' . a:punc
-  call s:map_shift_only_punctuation_addline_normal_under(a:knum, a:punc)
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:knum . ':' . a:punc)
 
+  call s:map_shift_only_punctuation_addline_normal_under(a:knum, a:punc)
   call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, '')
   call s:map_shift_only_punctuation_replace_normal_under(a:knum, a:punc)
   call s:map_shift_only_punctuation_replace_normal_hilow(a:punc, a:punc)
@@ -288,12 +301,15 @@ function! s:map_shift_only_punctuation_addtext_maps(knum, punc) abort
   " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
   call s:map_shift_only_punctuation_addline_insert_hilow(a:knum, a:punc, '\|')
   call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, '\|')
+
+  if s:trace | echom ' ' | endif
 endfunction
 
 " ***
 
 function! s:map_lower_only_punctuation_addtext_maps(lower, upper) abort
-  "echom "map_lower_only_punctuation_addtext_maps: lower:upper: " . a:lower . ':' . a:upper
+  call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:lower . ':' . a:upper)
+
   call s:map_shift_only_punctuation_addline_normal_under(a:lower, a:lower)
   call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, '')
   call s:map_shift_only_punctuation_replace_normal_under(a:lower, a:lower)
@@ -309,12 +325,15 @@ function! s:map_lower_only_punctuation_addtext_maps(lower, upper) abort
   " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
   call s:map_shift_only_punctuation_addline_insert_hilow(a:lower, a:lower, '\|')
   call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, '\|')
+
+  if s:trace | echom ' ' | endif
 endfunction
 
 " ***
 
 function! s:map_lower_or_upper_punctuation(punc) abort
-  "echom "punc: " . a:punc
+  call g:embrace#reSecTions#EchomCallerMsg('punc: ' . a:punc)
+
   exe 'silent! nunmap <Leader>'   . a:punc
   exe 'silent! nunmap <Leader>\|' . a:punc
   "
@@ -322,18 +341,20 @@ function! s:map_lower_or_upper_punctuation(punc) abort
   exe 'nnoremap <Leader>\|' . a:punc . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n
 endfunction
 
+" (((((((((((((((((((((((((((((((((((
+" Inside Inside Inside The Delimiters
+" )))))))))))))))))))))))))))))))))))
 function! s:map_insider_punctuation(lpunc, rpunc) abort
-  " (((((((((((((((((((((((((((((((((((
-  " Inside Inside Inside The Delimiters
-  " )))))))))))))))))))))))))))))))))))
-  "echom "lpunc:rpunc: " . a:lpunc . ':' . a:rpunc
+  call g:embrace#reSecTions#EchomCallerMsg('lpunc:rpunc: ' . a:lpunc . ':' . a:rpunc)
+
   exe 'silent! nunmap <Leader>' . a:lpunc . a:rpunc
   "
   exe 'nnoremap <Leader>' . a:lpunc . a:rpunc . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>'
 endfunction
 
 function! s:map_doubled_punctuation(dpunc) abort
-  "echom "dpunc: " . a:dpunc
+  call g:embrace#reSecTions#EchomCallerMsg('dpunc: ' . a:dpunc)
+
   exe 'silent! nunmap <Leader>'   . a:dpunc . a:dpunc
   exe 'silent! nunmap <Leader>\|' . a:dpunc . a:dpunc
   "
@@ -344,6 +365,8 @@ endfunction
 " -------------------------------------------------------------------
 
 function! s:map_special_keys() abort
+  call g:embrace#reSecTions#EchomCallerMsg('keychs: \= \+ \|+ \\= \\+ \| \||')
+
   " We don't use '+' as a section delimiter because the
   "   reST syntax parser sees that as a table delimiter.
   " Instead, map <Leader>= to under-section with equal signs
@@ -400,6 +423,45 @@ function! s:map_special_keys() abort
   silent! nunmap <Leader>\|\|
   nnoremap <Leader>\| yyp<C-Q>$r\|<UP>
   nnoremap <Leader>\|\| yyp<C-Q>$r\|yykP<DOWN>
+endfunction
+
+" -------------------------------------------------------------------
+
+" :h ...
+function! g:embrace#reSecTions#EchomCallerMsg(msg, ...) abort
+  if !s:trace
+
+    return
+  endif
+
+  " THANX to https://vi.stackexchange.com/users/1800/vanlaser
+  "   https://vi.stackexchange.com/a/5503
+  " https://vi.stackexchange.com/questions/5501/
+  "   is-there-a-way-to-get-the-name-of-the-current-function-in-vim-script
+  " - REFER: expand('<sfile>') returns, e.g.,
+  "     "function embrace#reSecTions#AlertIfMapped"
+  "  echo substitute(expand('<sfile>'), '.*\(\.\.\|\s\)', '', '')
+  "
+  " Or better yet, get caller's fcn. name so callers don't have to pass.
+  " - expand('<stack>') returns, e.g.,
+  "     {this-fcn-name}[{lnum}]..{callers-fcn-name}[{lnum}]{..etc.}
+  let l:f_stack = expand('<stack>')
+  let l:calls = split(l:f_stack, '\[\d\+\]\.\.')
+  if len(l:calls) >= 2
+    let l:f_name = l:calls[-2]
+  else
+    let l:f_name = l:calls[0]
+  endif
+
+  let l:f_name = substitute(l:f_name, '^function ', '', '')
+  let l:f_name = substitute(l:f_name, '^<SNR>\d\+_', '', '')
+  let l:f_name = substitute(l:f_name, '\[\d\+\]$', '', '')
+
+  echom l:f_name .. ': ' .. a:msg
+
+  for l:index in range(1, a:0)
+    echom get(a:, l:index)
+  endfor
 endfunction
 
 " -------------------------------------------------------------------
