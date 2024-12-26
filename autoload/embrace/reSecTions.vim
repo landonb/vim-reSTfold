@@ -213,6 +213,10 @@ let s:delete_line_under_n = '<DOWN>dd<UP>'
 
 " Set nonzero to enable `echom` trace.
 let s:trace = 0
+" For all messages, set 1:
+"  let s:trace = 1
+" For only the `map` command echo, set 2:
+"  let s:trace = 2
 
 " -------------------------------------------------------------------
 
@@ -532,8 +536,8 @@ function! g:embrace#reSecTions#AlertIfMapped(what, mode, ftypes) abort
 endfunction
 
 " :h ...
-function! g:embrace#reSecTions#EchomCallerMsg(msg, ...) abort
-  if !s:trace
+function! g:embrace#reSecTions#EchomCallerMsg(msg, level = 1) abort
+  if !s:trace || s:trace > a:level
 
     return
   endif
@@ -576,7 +580,7 @@ function! s:MapAndEchom(command, ftypes) abort
       \ .. substitute(a:command, 'noremap', 'noremap <buffer>', '')
   endif
 
-  if s:trace | echom l:command | endif
+  if s:trace >= 2 | echom l:command | endif
 
   exe l:command
 endfunction
