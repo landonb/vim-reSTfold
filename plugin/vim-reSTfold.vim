@@ -1,6 +1,6 @@
 " vim:tw=0:ts=2:sw=2:et:norl
 " Author: Landon Bouma <https://tallybark.com/>
-" Project: https://github.com/embrace-vim/vim-better-file-changed-prompt#🗯
+" Project: https://github.com/landonb/vim-reSTfold#🙏
 " License: GPLv3 | Copyright © 2018-2022, 2024 Landon Bouma.
 
 " -------------------------------------------------------------------------
