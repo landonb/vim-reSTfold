@@ -4,89 +4,196 @@
 " License: GPLv3 | Copyright © 2018-2022, 2024 Landon Bouma.
 " Summary: Quickly insert reST heading underlines and overlines
 
-" ------------------------------------------
-" About:
+" -------------------------------------------------------------------
 
-" These mappings make reStructered Text-style section headers.
+" ABOUT:
+"
+" The command maps installed below make reStructered Text-style
+" section header borders.
 "
 "   E.g., write a header:
 "
 "     My Awesome Section Header
 "
-"   and then switch to normal mode and type \#
-"   (first a backslash, then shift-3), and your
-"   text transforms to:
+"   and then switch to normal mode and type <Leader>#,
+"   e.g., \#, and your text transforms to:
 "
 "     #########################
 "     My Awesome Section Header
 "     #########################
 
-" HINT: To test:
-"   unlet g:plugin_edit_juice_resections_vim
-"   Then press <F9> to reload script.
+" -------------------------------------------------------------------
 
-if exists("g:plugin_edit_juice_resections_vim") || &cp
-  " 2019-02-08: This script is now reloadable; you
-  " can comment out the `finish` and hit <F9> to see!
-  " MAYBE/2019-02-08: Can/Should we remove the `finish`?
-  "finish
-  :
-endif
-let g:plugin_edit_juice_resections_vim = 1
+" PRIVY: CXREF:
+" ~/.kit/docs/source/the_knowledge/Markup__reST.rst
 
-" -------------------------------------------------------------------------
-" 2017-03-28: [lb] now tired of manually setting up reST header decoration.
-" -------------------------------------------------------------------------
+" -------------------------------------------------------------------
 
-" The section delimiter hierarchy I commonly use in reST documents:
-"    ###################
-"    ===================
-"    -------------------
-"    ^^^^^^^^^^^^^^^^^^^
-"    ~~~~~~~~~~~~~~~~~~~
-"    '''''''''''''''''''
-"    :::::::::::::::::::
-
-" I.e.,: ``### === --- ^^^ ~~~ ''' :::``
-
-" Acceptable adornments (14 total):
-"   - = ~ ` : ' " ~ ^ _ * + # < >
-" Ones I don't normally use (7):
-"   ` " _ * + < >
-" 2017-12-08: Actually, all punctuation is acceptable!
-"   And now that Dubs Vim rst.vim supports 'em all, so
-"   we we!
-" The Forgotten Punctuation
-"   $ % & ( ) [ ] { } | \ ; : , . / ?
+" HSTRY/2017-03-28: [lb] I grew tired of manually setting up reST
+" header decoration, and I made this plugin.
 "
-
-" Hints about the motion, yank, and put commands used below.
+" - Here's the section delimiter hierarchy I commonly uses in reST docs:
 "
-" With a little help from:
+"    @@@@@@@@@@@@@@@@@@@  <-- Single Document title
+"    ###################  <-- Top-level sections
+"    ===================  <-- Sub-sections
+"    -------------------  <-- Sub-sub-sections
+"    ^^^^^^^^^^^^^^^^^^^  <-- Rarely used, but would be next
+"    ~~~~~~~~~~~~~~~~~~~  <-- Then this perhaps
+"    '''''''''''''''''''  <-- And I don't think I've ever
+"    :::::::::::::::::::  <--   made it this far
+"
+" REFER: Author's reST § delim. hier.: `@@@ ### === --- ^^^ ~~~ ''' :::`
+"
+" - Here's punctuation you might consider for section outlines
+"   that is centered vertically in the character line (ordered
+"   roughly by most-pixels-per-character-to-least, if a fuller
+"   look conveys a more prominent heading level):
+"
+"     @ # & $ % {} [] () \ / | = ? ! <> ~ - :
+"
+"   - Note that `+` is omitted because it's highlighted by the
+"     rstTableLines highlight.
+"
+" - Here's punctuation you might consider, but it's not centered
+"   vertically, so it might look weird if used over and under:
+"
+"     ; ^ _ " ' . ` , *
+"
+"   - E.g., tilde looks fine as an underline:
+"
+"       Section Title
+"       ^^^^^^^^^^^^^
+"
+"     But when an overline is added, the title is not visually
+"     centered, e.g.:
+"
+"       ^^^^^^^^^^^^^
+"       Section Title
+"       ^^^^^^^^^^^^^
+"
+" Per Sphinx docs:
+"
+" - "Normally, there are no heading levels assigned to certain characters
+"    as the structure is determined from the succession of headings.
+"    However, this convention is used in Python Developer’s Guide for
+"    documenting which you may follow:"
+"
+"   - # with overline, for parts
+"
+"   - * with overline, for chapters
+"
+"   - = for sections
+"
+"   - - for subsections
+"
+"   - ^ for subsubsections
+"
+" REFER: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#sections
+"
+" Per reST ref:
+"
+" - "The following are all valid section title adornment characters:"
+"
+"     ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
+"
+" - "Some characters are more suitable than others. The following are recommended:"
+"
+"     = - ` : . ' " ~ ^ _ * + #
+"
+" REFER: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#sections
+"
+" This plugin supports adorning sections with any punctuation character
+" (unless you config it to do less).
+
+" -------------------------------------------------------------------
+
+" USAGE:
+"
+" For the ornament characters that occupy their key on the number
+" row of on an American English keyboard, you can add delimiters
+" to a new line below, or to new lines above and below using the
+" <Leader>{char} maps:
+"
+" - Map <Leader>{char} to underline using the indicated header character.
+"
+" - Map <Leader>{CHAR} to underline and overline using said character.
+"
+" - E.g., <Leader>3 underlines with pound symbols,
+"     and <Leader># under- and overlines with 'em.
+"
+" For all the characters, and not just those you access with a
+" Shift-number keypress, you can use double-leader instead.
+"
+" - Note this *does not add* new lines but overwrites what's
+"   above and/or below.
+"
+" - E.g., use double-leader-char to underline:
+"
+"     <Leader><Leader>{char}
+"
+"   and use leader-shift-leader-char to add both:
+"
+"     <Leader><Shift-Leader>{char}
+"
+" - The double-leader maps are useful if you want to *replace*
+"   existing ornamenation.
+"
+"   - E.g., if a title looks like this:
+"
+"       =============
+"       Section Title
+"       =============
+"
+"     If you place you cursor on the title like
+"     and press <Leader><Leader>#, you'll get this:
+"
+"       #############
+"       Section Title
+"       #############
+"
+" Details:
+"
+" - The commands work regardless of leading whitespace (though in
+"   practice your section titles won't have leading whitespace, but
+"   it might be helpful if you have something in a blockquote).
+"
+" - The commands all work from normal mode in all files.
+"
+"   - They also all work from insert mode for reST files.
+"
+"   - But only a few of them work from insert mode for other
+"     file types.
+"
+"     - E.g., if you write Vim |regexp|, you might type \*
+"       often enough that it'd be annoying if that dumped
+"       over- and underlines on your code.
+
+" -------------------------------------------------------------------
+
+" Some hints about the motion, yank, and put commands used below.
+"
+" REFER: With a little help from:
 "
 "   http://vim.wikia.com/wiki/Underline_using_dashes_automatically
 "
-" HINT: Ctrl-Q is the CTRL-V-alternative, since Ctrl-V is paste.
+" REFER: Ctrl-Q is the CTRL-V-alternative, since Ctrl-V is paste
+"        if you fly with mswin.vim.
+"
 "        Ctrl-Q starts a blockwise Visual selection.
-"       $ selects to the end of the line.
-"       r starts a replace,
-"        and the last character is the replacement character.
-"       Oh, and you know yyp, right?
-"        y is a yank, and yy is a yank line, and p is a put.
+"
+"        $ selects to the end of the line.
+"
+"        r starts a replace, and the last character
+"          is the replacement character.
+"
+"        Oh, and you know yyp, right?
+"          y starts a yank, yy yanks the line, and p is put.
+"
 "       And then yykP: k moves up a line, and P puts above.
 "
-" HINT: Replace selected: Select text, then <C-O>rX
-"   where X is the replacement character.
-"
-" For the populate ornament characters, and those that occupy
-" their key along on an American English keyboard:
-"   Map <Leader>{char} to underline using the indicated header character.
-"   Map <Leader>{CHAR} to underline and overline using said character.
-" For all ornament characters, you can
-"   <leader>-<leader>-{char}
-" or
-"   <leader>-<shift-leader>-{char}
-" to select the underline or underline/overline character.
+" SAVVY: To replace selected: Select text and type <C-O>rX
+"        where X is the replacement character.
 
 " ***
 
