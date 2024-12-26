@@ -216,171 +216,195 @@ let s:trace = 0
 
 " -------------------------------------------------------------------
 
-function! s:map_shift_only_punctuation_addline_normal_under(keych, delim) abort
+function! s:map_shift_only_punctuation_addline_normal_under(keych, delim, ftypes) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
   let l:seq = s:leader . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:up_n)
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:up_n, a:ftypes)
 endfunction
 
-function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, extra) abort
+function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, ftypes, extra) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
   let l:seq = s:leader . a:extra . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n)
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n, a:ftypes)
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_addline_insert_under(keych, delim) abort
+function! s:map_shift_only_punctuation_addline_insert_under(keych, delim, ftypes) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim)
 
   let l:seq = s:leader . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " MAYBE/2019-02-09: Use function, and restore cursor position. For now, goes to first character of line.
-  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i')
+  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i', a:ftypes)
 endfunction
 
-function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, extra) abort
+function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, ftypes, extra) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
   let l:seq = s:leader . a:extra . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
-  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
+  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i', a:ftypes)
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_replace_normal_under(keych, delim, extra = s:leader) abort
+function! s:map_shift_only_punctuation_replace_normal_under(keych, delim, ftypes, extra = s:leader) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
   let l:seq = s:leader . a:extra . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n)
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n, a:ftypes)
 endfunction
 
 " :help function-argument
 
-function! s:map_shift_only_punctuation_replace_normal_hilow(keych, delim, extra = s:leader) abort
+function! s:map_shift_only_punctuation_replace_normal_hilow(keych, delim, ftypes, extra = s:leader) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
   let l:seq = s:leader . a:extra . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n)
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n, a:ftypes)
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_replace_insert_under(keych, delim, extra = s:leader) abort
+function! s:map_shift_only_punctuation_replace_insert_under(keych, delim, ftypes, extra = s:leader) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
   let l:seq = s:leader . a:extra . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " ALTLY: Same outcome, but without leaving insert mode, e.g.:
   "   inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i')
+  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i', a:ftypes)
 endfunction
 
-function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim, extra = s:leader) abort
+function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim, ftypes, extra = s:leader) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:keych . ':' . a:delim . ':' . a:extra)
 
   let l:seq = s:leader . a:extra . a:keych
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " ALTLY: Same outcome, but without leaving insert mode, e.g.:
   "   inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
-  call s:ExeAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i')
+  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i', a:ftypes)
 endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_addtext_maps(knum, punc) abort
+function! s:map_shift_only_punctuation_addtext_maps(knum, punc, n_fts, i_fts) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:knum . ':' . a:punc)
 
-  call s:map_shift_only_punctuation_addline_normal_under(a:knum, a:punc)
-  call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, '')
-  call s:map_shift_only_punctuation_replace_normal_under(a:knum, a:punc)
-  call s:map_shift_only_punctuation_replace_normal_hilow(a:punc, a:punc)
-  " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_addline_normal_hilow(a:knum, a:punc, '\|')
-  call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, '\|')
-  "
-  call s:map_shift_only_punctuation_addline_insert_under(a:knum, a:punc)
-  call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, '')
-  call s:map_shift_only_punctuation_replace_insert_under(a:knum, a:punc)
-  call s:map_shift_only_punctuation_replace_insert_hilow(a:punc, a:punc)
-  " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_addline_insert_hilow(a:knum, a:punc, '\|')
-  call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, '\|')
+  if a:n_fts != ''
+    call s:map_shift_only_punctuation_addline_normal_under(a:knum, a:punc, a:n_fts)
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, a:n_fts, '')
+    call s:map_shift_only_punctuation_replace_normal_under(a:knum, a:punc, a:n_fts)
+    call s:map_shift_only_punctuation_replace_normal_hilow(a:punc, a:punc, a:n_fts)
+    " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:knum, a:punc, a:n_fts, s:leader_two)
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:punc, a:punc, a:n_fts, s:leader_two)
+  endif
+  
+  if a:i_fts != ''
+    call s:map_shift_only_punctuation_addline_insert_under(a:knum, a:punc, a:i_fts)
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, a:i_fts, '')
+    call s:map_shift_only_punctuation_replace_insert_under(a:knum, a:punc, a:i_fts)
+    call s:map_shift_only_punctuation_replace_insert_hilow(a:punc, a:punc, a:i_fts)
+    " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:knum, a:punc, a:i_fts, s:leader_two)
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:punc, a:punc, a:i_fts, s:leader_two)
+  endif
 
   if s:trace | echom ' ' | endif
 endfunction
 
 " ***
 
-function! s:map_lower_only_punctuation_addtext_maps(lower, upper) abort
+" Only called for '-' (see l:reverse_punc = [['-', '_']])
+function! s:map_lower_only_punctuation_addtext_maps(lower, upper, n_fts, i_fts) abort
   call g:embrace#reSecTions#EchomCallerMsg('keych:delim: ' . a:lower . ':' . a:upper)
 
-  call s:map_shift_only_punctuation_addline_normal_under(a:lower, a:lower)
-  call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, '')
-  call s:map_shift_only_punctuation_replace_normal_under(a:lower, a:lower)
-  call s:map_shift_only_punctuation_replace_normal_hilow(a:upper, a:lower)
-  " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_addline_normal_hilow(a:lower, a:lower, '\|')
-  call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, '\|')
-  "
-  call s:map_shift_only_punctuation_addline_insert_under(a:lower, a:lower)
-  call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, '')
-  call s:map_shift_only_punctuation_replace_insert_under(a:lower, a:lower)
-  call s:map_shift_only_punctuation_replace_insert_hilow(a:upper, a:lower)
-  " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
-  call s:map_shift_only_punctuation_addline_insert_hilow(a:lower, a:lower, '\|')
-  call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, '\|')
+  if a:n_fts != ''
+    call s:map_shift_only_punctuation_addline_normal_under(a:lower, a:lower, a:n_fts)
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, a:n_fts, '')
+    call s:map_shift_only_punctuation_replace_normal_under(a:lower, a:lower, a:n_fts)
+    call s:map_shift_only_punctuation_replace_normal_hilow(a:upper, a:lower, a:n_fts)
+    " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:lower, a:lower, a:n_fts, s:leader_two)
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:upper, a:lower, a:n_fts, s:leader_two)
+  endif
+
+  if a:i_fts != ''
+    call s:map_shift_only_punctuation_addline_insert_under(a:lower, a:lower, a:i_fts)
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, a:i_fts, '')
+    call s:map_shift_only_punctuation_replace_insert_under(a:lower, a:lower, a:i_fts)
+    call s:map_shift_only_punctuation_replace_insert_hilow(a:upper, a:lower, a:i_fts)
+    " The leader-pipe maps are redundant but included for parity with, e.g., ``\|;``.
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:lower, a:lower, a:i_fts, s:leader_two)
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:upper, a:lower, a:i_fts, s:leader_two)
+  endif
 
   if s:trace | echom ' ' | endif
 endfunction
 
 " ***
 
-function! s:map_lower_or_upper_punctuation(punc) abort
+function! s:map_lower_or_upper_punctuation(punc, ftypes) abort
   call g:embrace#reSecTions#EchomCallerMsg('punc: ' . a:punc)
 
+  if a:ftypes == ''
+
+    return
+  endif
+
   let l:seq = s:leader . a:punc
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:up_n)
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:up_n, a:ftypes)
 
   let l:seq = s:leader . s:leader_two . a:punc
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n)
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n, a:ftypes)
 endfunction
 
 " (((((((((((((((((((((((((((((((((((
 " Inside Inside Inside The Delimiters
 " )))))))))))))))))))))))))))))))))))
-function! s:map_insider_punctuation(lpunc, rpunc) abort
+function! s:map_insider_punctuation(lpunc, rpunc, ftypes) abort
   call g:embrace#reSecTions#EchomCallerMsg('lpunc:rpunc: ' . a:lpunc . ':' . a:rpunc)
 
+  if a:ftypes == ''
+
+    return
+  endif
+
   let l:seq = s:leader . a:lpunc . a:rpunc
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>', a:ftypes)
 endfunction
 
-function! s:map_doubled_punctuation(dpunc) abort
+function! s:map_doubled_punctuation(dpunc, ftypes) abort
   call g:embrace#reSecTions#EchomCallerMsg('dpunc: ' . a:dpunc)
 
+  if a:ftypes == ''
+
+    return
+  endif
+
   let l:seq = s:leader . a:dpunc . a:dpunc
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . '<UP>')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . '<UP>', a:ftypes)
 
   let l:seq = s:leader . s:leader_two . a:dpunc . a:dpunc
-  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n')
-  call s:ExeAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . 'yykP' . '<DOWN>')
+  call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
+  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . 'yykP' . '<DOWN>', a:ftypes)
 endfunction
 
 " -------------------------------------------------------------------
 
-function! s:map_special_key_ten_ways_to_equal() abort
+function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*', i_fts = '*') abort
   call g:embrace#reSecTions#EchomCallerMsg('keyseqs: \= \+ \|+ \\= \\+')
 
   " We don't use '+' as a section delimiter because the
@@ -391,25 +415,29 @@ function! s:map_special_key_ten_ways_to_equal() abort
   "   =======
   "   SECTION
   "   =======
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>=', 'n')
-  call s:map_shift_only_punctuation_addline_normal_under('=', '=')
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>+', 'n')
-  call s:map_shift_only_punctuation_addline_normal_hilow('+', '=', '')
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|+', 'n')
-  call s:map_shift_only_punctuation_replace_normal_hilow('+', '=', s:leader_two)
-  " nnoremap <Leader>= yyp<C-Q>$r=<UP>
-  " nnoremap <Leader>+ yyp<C-Q>$r=yykP<DOWN>
-  " nnoremap <Leader>\|+ yyp<C-Q>$r=yykP<DOWN>
-  "
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>=', 'i')
-  call s:map_shift_only_punctuation_addline_insert_under('=', '=')
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>+', 'i')
-  call s:map_shift_only_punctuation_addline_insert_hilow('+', '=', '')
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|+', 'i')
-  call s:map_shift_only_punctuation_replace_insert_hilow('+', '=', s:leader_two)
-  " inoremap <Leader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-  " inoremap <Leader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
-  " inoremap <Leader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+  if a:n_fts != ''
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:punc, 'n', a:n_fts)
+    call s:map_shift_only_punctuation_addline_normal_under(a:punc, a:punc, a:n_fts)
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:altk, 'n', a:n_fts)
+    call s:map_shift_only_punctuation_addline_normal_hilow(a:altk, a:punc, a:n_fts, '')
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:altk, 'n', a:n_fts)
+    call s:map_shift_only_punctuation_replace_normal_hilow(a:altk, a:punc, a:n_fts, s:leader_two)
+    " nnoremap <Leader>= yyp<C-Q>$r=<UP>
+    " nnoremap <Leader>+ yyp<C-Q>$r=yykP<DOWN>
+    " nnoremap <Leader>\|+ yyp<C-Q>$r=yykP<DOWN>
+  endif
+
+  if a:i_fts != ''
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:punc, 'i', a:i_fts)
+    call s:map_shift_only_punctuation_addline_insert_under(a:punc, a:punc, a:i_fts)
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:altk, 'i', a:i_fts)
+    call s:map_shift_only_punctuation_addline_insert_hilow(a:altk, a:punc, a:i_fts, '')
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:altk, 'i', a:i_fts)
+    call s:map_shift_only_punctuation_replace_insert_hilow(a:altk, a:punc, a:i_fts, s:leader_two)
+    " inoremap <Leader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+    " inoremap <Leader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+    " inoremap <Leader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+  endif
 
   " 2019-02-08: Whatever: I couldn't get -d | +d | normal k to work,
   " but that's okay, UP DOWN (LEFT RIGHT) also works! (The minus ``-``
@@ -428,40 +456,58 @@ function! s:map_special_key_ten_ways_to_equal() abort
   "     =================
   "     header got longer
   "     =================
-  call g:embrace#reSecTions#AlertIfMapped('<Leader><AltLeader>=', 'n')
-  call s:map_shift_only_punctuation_replace_normal_under('=', '=', s:leader)
-  call g:embrace#reSecTions#AlertIfMapped('<Leader><AltLeader>+', 'n')
-  call s:map_shift_only_punctuation_replace_normal_hilow('+', '=', s:leader)
-  " nnoremap <Leader><Leader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
-  " nnoremap <Leader><Leader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
-  "
-  call g:embrace#reSecTions#AlertIfMapped('<Leader><AltLeader>=', 'i')
-  call s:map_shift_only_punctuation_replace_insert_under('=', '=', s:leader)
-  call g:embrace#reSecTions#AlertIfMapped('<Leader><AltLeader>+', 'i')
-  call s:map_shift_only_punctuation_replace_insert_hilow('+', '=', s:leader)
-  " inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-  " inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+  if a:n_fts != ''
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:punc, 'n', a:n_fts)
+    call s:map_shift_only_punctuation_replace_normal_under(a:punc, a:punc, a:n_fts, s:leader)
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:altk, 'n', a:n_fts)
+    call s:map_shift_only_punctuation_replace_normal_hilow(a:altk, a:punc, a:n_fts, s:leader)
+    " nnoremap <Leader><Leader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
+    " nnoremap <Leader><Leader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
+  endif
+
+  if a:i_fts != ''
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:punc, 'i', a:i_fts)
+    call s:map_shift_only_punctuation_replace_insert_under(a:punc, a:punc, a:i_fts, s:leader)
+    call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:altk, 'i', a:i_fts)
+    call s:map_shift_only_punctuation_replace_insert_hilow(a:altk, a:punc, a:i_fts, s:leader)
+    " inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+    " inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+  endif
 endfunction
 
 " ***
 
-function! s:map_special_key_pipe_and_double_pipe() abort
+function! s:map_special_key_pipe_and_double_pipe(keyc = '\|', punc = '\|', n_fts = '*') abort
   call g:embrace#reSecTions#EchomCallerMsg('keyseqs: \| \||')
 
   " The pipe character is not sent to map_lower_or_upper_punctuation
   " because it needs to be escaped.
-  call g:embrace#reSecTions#AlertIfMapped('<Leader>\|', 'n')
-  call s:map_shift_only_punctuation_addline_normal_under('\|', '\|')
-  call g:embrace#reSecTions#AlertIfMapped('<Leader><AltLeader>\|', 'n')
-  call s:map_shift_only_punctuation_addline_normal_hilow('\|', '\|', s:leader_two)
+  call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:keyc, 'n', a:n_fts)
+  call s:map_shift_only_punctuation_addline_normal_under(a:keyc, a:punc, a:n_fts)
+  call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:keyc, 'n', a:n_fts)
+  call s:map_shift_only_punctuation_addline_normal_hilow(a:keyc, a:punc, a:n_fts, s:leader_two)
   " nnoremap <Leader>\| yyp<C-Q>$r\|<UP>
   " nnoremap <Leader>\|\| yyp<C-Q>$r\|yykP<DOWN>
 endfunction
 
 " -------------------------------------------------------------------
 
-function! g:embrace#reSecTions#AlertIfMapped(what, mode) abort
+function! g:embrace#reSecTions#AlertIfMapped(what, mode, ftypes) abort
   if get(g:, 'vim_restfold_alert_disable', 0)
+
+    return
+  endif
+
+  if a:ftypes != '*'
+    " MAYBE: Use redir to check if `au FileType {ftypes}` have map.
+    " - Unless there's an easier way?
+    "
+    " E.g.:
+    "   let l:curr_map = ''
+    "   redir => l:curr_map
+    "   execute a:mode .. 'map ' .. a:what
+    "   redir END
+    "   let l:curr_map = substitute(l:curr_map, "^\n", '', '')
 
     return
   endif
@@ -473,12 +519,6 @@ function! g:embrace#reSecTions#AlertIfMapped(what, mode) abort
   "     maparg('<Leader>|1', 'n')
   let l:what = substitute(a:what, '\\|', '|', 'g')
 
-  " The long way:
-  "   let l:curr_map = ''
-  "   redir => l:curr_map
-  "   execute a:mode .. 'map ' .. a:what
-  "   redir END
-  "   let l:curr_map = substitute(l:curr_map, "^\n", '', '')
 
   let l:curr_map = maparg(l:what, a:mode)
 
@@ -528,10 +568,17 @@ function! g:embrace#reSecTions#EchomCallerMsg(msg, ...) abort
   endfor
 endfunction
 
-function! s:ExeAndEchom(command) abort
-  if s:trace | echom a:command | endif
+function! s:MapAndEchom(command, ftypes) abort
+  if a:ftypes == '*'
+    let l:command = a:command
+  else
+    let l:command = 'autocmd Filetype ' .. a:ftypes .. ' '
+      \ .. substitute(a:command, 'noremap', 'noremap <buffer>', '')
+  endif
 
-  exe a:command
+  if s:trace | echom l:command | endif
+
+  exe l:command
 endfunction
 
 " -------------------------------------------------------------------
@@ -563,16 +610,25 @@ function! g:embrace#reSecTions#CreateMaps(
     let l:number_punc = a:number_punc
   else
     let l:number_punc = [
-      \ ['1', '!'],
-      \ ['2', '@'],
-      \ ['3', '#'],
-      \ ['4', '$'],
-      \ ['5', '%'],
-      \ ['6', '^'],
-      \ ['7', '&'],
-      \ ['8', '*'],
+      \ ['1', '!', '*', 'rst'],
+      \ ['2', '@', '*', 'rst'],
+      \ ['3', '#', '*', 'rst'],
+      \ ['4', '$', '*', 'rst'],
+      \ ['5', '%', '*', 'rst'],
+      \ ['6', '^', '*', 'rst'],
+      \ ['7', '&', '*', 'rst'],
+      \ ['8', '*', '*', 'rst'],
       \ ]
   endif
+  "       ┃    ┃    ┃     ┗━━ Insert mode FileType
+  "       ┃    ┃    ┃           Set '*' for all filetypes (normal nmap/imap)
+  "       ┃    ┃    ┃           Set '{ft},{ft}' for specific filetypes
+  "       ┃    ┃    ┃           Set '' to disable the map
+  "       ┃    ┃    ┗━━━━━━━━ Normal mode FileType
+  "       ┃    ┗━━━━━━━━━━━━━ Section delimiter to paint
+  "       ┃                     Mapped at <Leader>{punct} etc.
+  "       ┗━━━━━━━━━━━━━━━━━━ Lowercase key sequence user can use
+  "                             Mapped at <Leader>{number} etc.
 
   " 2017-12-18: Skip underscore. It is not vertically symmetric,
   "   so looks odd, and I'd prefer to be able to Shift-``-`` to
@@ -580,8 +636,10 @@ function! g:embrace#reSecTions#CreateMaps(
   if type(a:reverse_punc) == v:t_list
     let l:reverse_punc = a:reverse_punc
   else
+    " Reverse because this inserts '-' when "lowercase" '-' pressed
+    " (unlike, e.g., inserting '#' when "lowercase" '3' is pressed).
     let l:reverse_punc = [
-      \ ['-', '_'],
+      \ ['-', '_', '*', 'rst'],
       \ ]
   endif
 
@@ -589,7 +647,16 @@ function! g:embrace#reSecTions#CreateMaps(
     let l:simple_punc = a:simple_punc
   else
     let l:simple_punc = [
-      \ '`', '~', '\', ';', ':', ',', '.', '?', "'", '"',
+      \ ['`', 'rst'],
+      \ ['~', 'rst'],
+      \ ['\', 'rst'],
+      \ [';', 'rst'],
+      \ [':', 'rst'],
+      \ [',', 'rst'],
+      \ ['.', 'rst'],
+      \ ['?', 'rst'],
+      \ ["'", 'rst'],
+      \ ['"', 'rst'],
       \ ]
   endif
 
@@ -597,11 +664,16 @@ function! g:embrace#reSecTions#CreateMaps(
     let l:insider_punc = a:insider_punc
   else
     let l:insider_punc = [
-      \ ['(', ')'], [')', '('],
-      \ ['[', ']'], [']', '['],
-      \ ['{', '}'], ['}', '{'],
-      \ ['<', '>'], ['>', '<'],
-      \ ['\', '/'], ['/', '\'],
+      \ ['(', ')', 'rst'],
+      \ [')', '(', 'rst'],
+      \ ['[', ']', 'rst'],
+      \ [']', '[', 'rst'],
+      \ ['{', '}', 'rst'],
+      \ ['}', '{', 'rst'],
+      \ ['<', '>', 'rst'],
+      \ ['>', '<', 'rst'],
+      \ ['\', '/', 'rst'],
+      \ ['/', '\', 'rst'],
       \ ]
   endif
 
@@ -609,40 +681,67 @@ function! g:embrace#reSecTions#CreateMaps(
     let l:double_punc = a:double_punc
   else
     let l:double_punc = [
-      \ '(', ')', '[', ']', '{', '}', '<', '>', '\', '/',
+      \ ['(', 'rst'],
+      \ [')', 'rst'],
+      \ ['[', 'rst'],
+      \ [']', 'rst'],
+      \ ['{', 'rst'],
+      \ ['}', 'rst'],
+      \ ['<', 'rst'],
+      \ ['>', 'rst'],
+      \ ['\', 'rst'],
+      \ ['/', 'rst'],
       \ ]
   endif
 
-  for [l:knum, l:punc, l:modes] in l:number_punc
-    call s:map_shift_only_punctuation_addtext_maps(l:knum, l:punc, l:modes)
-  endfor
-
-  for [l:lower, l:upper] in l:reverse_punc
-    call s:map_lower_only_punctuation_addtext_maps(l:lower, l:upper)
-  endfor
-
-  for l:punc in l:simple_punc
-    call s:map_lower_or_upper_punctuation(l:punc)
-  endfor
-
-  for [l:lpunc, l:rpunc] in l:insider_punc
-    call s:map_insider_punctuation(l:lpunc, l:rpunc)
-  endfor
-
-  for l:dunc in l:double_punc
-    call s:map_doubled_punctuation(l:dunc)
-  endfor
-
-  " Use equal_punc = [] to disable the ten `=` maps.
-  " - Note here '0' similar to other args, and means
-  "   do the default thing.
-  if type(a:equal_punc) == 0
-    call s:map_special_key_ten_ways_to_equal()
+  if type(a:equal_punc) == v:t_list
+    let l:equal_punc = a:equal_punc
+  else
+    let l:equal_punc = [
+      \ ['=', '+', '*', '*'],
+      \ ]
   endif
 
-  " Use pipe_punc = [] to disable the `\|` and `\||` maps.
-  if type(a:pipe_punc) == 0
-    call s:map_special_key_pipe_and_double_pipe()
+  if type(a:pipe_punc) == v:t_list
+    let l:pipe_punc = a:pipe_punc
+  else
+    let l:pipe_punc = [
+      \ ['\|', '\|', 'rst'],
+      \ ]
   endif
+
+  " ***
+
+  augroup vim-reSTfold
+    au!
+
+    for [l:knum, l:punc, l:n_fts, l:i_fts] in l:number_punc
+      call s:map_shift_only_punctuation_addtext_maps(l:knum, l:punc, l:n_fts, l:i_fts)
+    endfor
+
+    for [l:lower, l:upper, l:n_fts, l:i_fts] in l:reverse_punc
+      call s:map_lower_only_punctuation_addtext_maps(l:lower, l:upper, l:n_fts, l:i_fts)
+    endfor
+
+    for [l:punc, l:n_fts] in l:simple_punc
+      call s:map_lower_or_upper_punctuation(l:punc, l:n_fts)
+    endfor
+
+    for [l:lpunc, l:rpunc, l:n_fts] in l:insider_punc
+      call s:map_insider_punctuation(l:lpunc, l:rpunc, l:n_fts)
+    endfor
+
+    for [l:dpunc, l:n_fts] in l:double_punc
+      call s:map_doubled_punctuation(l:dpunc, l:n_fts)
+    endfor
+
+    for [l:punc, l:altk, l:n_fts, l:i_fts] in l:equal_punc
+      call s:map_special_key_ten_ways_to_equal(l:punc, l:altk, l:n_fts, l:i_fts)
+    endfor
+
+    for [l:keyc, l:punc, l:n_fts] in l:pipe_punc
+      call s:map_special_key_pipe_and_double_pipe(l:keyc, l:punc, l:n_fts)
+    endfor
+  augroup END
 endfunction
 
