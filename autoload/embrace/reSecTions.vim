@@ -380,8 +380,8 @@ endfunction
 
 " -------------------------------------------------------------------
 
-function! s:map_special_keys() abort
-  call g:embrace#reSecTions#EchomCallerMsg('keychs: \= \+ \|+ \\= \\+ \| \||')
+function! s:map_special_key_ten_ways_to_equal() abort
+  call g:embrace#reSecTions#EchomCallerMsg('keyseqs: \= \+ \|+ \\= \\+')
 
   " We don't use '+' as a section delimiter because the
   "   reST syntax parser sees that as a table delimiter.
@@ -441,6 +441,12 @@ function! s:map_special_keys() abort
   call s:map_shift_only_punctuation_replace_insert_hilow('+', '=', '<Leader>')
   " inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
   " inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+endfunction
+
+" ***
+
+function! s:map_special_key_pipe_and_double_pipe() abort
+  call g:embrace#reSecTions#EchomCallerMsg('keyseqs: \| \||')
 
   " The pipe character is not sent to map_lower_or_upper_punctuation
   " because it needs to be escaped.
@@ -543,6 +549,8 @@ function! g:embrace#reSecTions#CreateMaps(
   \ simple_punc = 0,
   \ insider_punc = 0,
   \ double_punc = 0,
+  \ equal_punc = 0,
+  \ pipe_punc = 0,
 \) abort
   if type(a:number_punc) == v:t_list
     let l:number_punc = a:number_punc
@@ -618,6 +626,16 @@ function! g:embrace#reSecTions#CreateMaps(
     call s:map_doubled_punctuation(l:dunc)
   endfor
 
-  call s:map_special_keys()
+  " Use equal_punc = [] to disable the ten `=` maps.
+  " - Note here '0' similar to other args, and means
+  "   do the default thing.
+  if type(a:equal_punc) == 0
+    call s:map_special_key_ten_ways_to_equal()
+  endif
+
+  " Use pipe_punc = [] to disable the `\|` and `\||` maps.
+  if type(a:pipe_punc) == 0
+    call s:map_special_key_pipe_and_double_pipe()
+  endif
 endfunction
 
