@@ -404,37 +404,76 @@ endfunction
 
 " ***
 
-function! g:embrace#reSecTions#CreateMaps() abort
-  let l:number_punc = [
-    \ ['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'],
-    \ ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'],
-    \ ]
+" USAGE: Pass your own lists if you don't want the defaults.
+" - BWARE: This fcn. doesn't make any attempt to validate any
+"   list passed as an argument (it just fails).
+" - If you want to opt-out of maps for a paricular list, pass
+"   an empty array. If you pass something other than an array,
+"   then this fcn. uses its default.
+
+function! g:embrace#reSecTions#CreateMaps(
+  \ number_punc = 0,
+  \ reverse_punc = 0,
+  \ simple_punc = 0,
+  \ insider_punc = 0,
+  \ double_punc = 0,
+\) abort
+  if type(a:number_punc) == v:t_list
+    let l:number_punc = a:number_punc
+  else
+    let l:number_punc = [
+      \ ['1', '!'],
+      \ ['2', '@'],
+      \ ['3', '#'],
+      \ ['4', '$'],
+      \ ['5', '%'],
+      \ ['6', '^'],
+      \ ['7', '&'],
+      \ ['8', '*'],
+      \ ]
+  endif
 
   " 2017-12-18: Skip underscore. It is not vertically symmetric,
   "   so looks odd, and I'd prefer to be able to Shift-``-`` to
   "   get an upper and lower dash boundary.
-  let l:reverse_punc = [
-    \ ['-', '_'],
-    \ ]
+  if type(a:reverse_punc) == v:t_list
+    let l:reverse_punc = a:reverse_punc
+  else
+    let l:reverse_punc = [
+      \ ['-', '_'],
+      \ ]
+  endif
 
-  let l:simple_punc = [
-    \ '`', '~', '\', ';', ':', ',', '.', '?', "'", '"',
-    \ ]
+  if type(a:simple_punc) == v:t_list
+    let l:simple_punc = a:simple_punc
+  else
+    let l:simple_punc = [
+      \ '`', '~', '\', ';', ':', ',', '.', '?', "'", '"',
+      \ ]
+  endif
 
-  let l:insider_punc = [
-    \ ['(', ')'], [')', '('],
-    \ ['[', ']'], [']', '['],
-    \ ['{', '}'], ['}', '{'],
-    \ ['<', '>'], ['>', '<'],
-    \ ['\', '/'], ['/', '\'],
-    \ ]
+  if type(a:insider_punc) == v:t_list
+    let l:insider_punc = a:insider_punc
+  else
+    let l:insider_punc = [
+      \ ['(', ')'], [')', '('],
+      \ ['[', ']'], [']', '['],
+      \ ['{', '}'], ['}', '{'],
+      \ ['<', '>'], ['>', '<'],
+      \ ['\', '/'], ['/', '\'],
+      \ ]
+  endif
 
-  let l:double_punc = [
-    \ '(', ')', '[', ']', '{', '}', '<', '>', '\', '/',
-    \ ]
+  if type(a:double_punc) == v:t_list
+    let l:double_punc = a:double_punc
+  else
+    let l:double_punc = [
+      \ '(', ')', '[', ']', '{', '}', '<', '>', '\', '/',
+      \ ]
+  endif
 
-  for [l:knum, l:punc] in l:number_punc
-    call s:map_shift_only_punctuation_addtext_maps(l:knum, l:punc)
+  for [l:knum, l:punc, l:modes] in l:number_punc
+    call s:map_shift_only_punctuation_addtext_maps(l:knum, l:punc, l:modes)
   endfor
 
   for [l:lower, l:upper] in l:reverse_punc
