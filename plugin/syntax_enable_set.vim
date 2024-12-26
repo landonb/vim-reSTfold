@@ -4,10 +4,30 @@
 " License: GPLv3 | Copyright © 2018-2022, 2024 Landon Bouma.
 " Summary: Vim syntax highlights enablement.
 
-if exists("g:loaded_reSTfold_syntax_enable_set") || &cp
+" -------------------------------------------------------------------
+
+" GUARD: Press <F9> to reload this plugin (or :source it).
+" - Via: https://github.com/embrace-vim/vim-source-reloader#↩️
+
+if expand('%:p') ==# expand('<sfile>:p')
+  unlet! g:loaded_restfold_syntax_enable_set
+endif
+
+if exists('g:loaded_restfold_syntax_enable_set') || &cp
+
   finish
 endif
-let g:loaded_reSTfold_syntax_enable_set = 1
+
+let g:loaded_restfold_syntax_enable_set = 1
+
+" -------------------------------------------------------------------
+
+if get(g:, 'vim_restfold_disable', 0)
+
+  finish
+endif
+
+" -------------------------------------------------------------------
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Syntax enable
