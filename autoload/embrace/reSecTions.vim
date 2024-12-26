@@ -211,13 +211,13 @@ let s:delete_line_below_n = '<DOWN>dd<UP>'
 
 " -------------------------------------------------------------------
 
-function! s:map_shift_only_punctuation_install_below_normal(keych, delim)
+function! s:map_shift_only_punctuation_install_below_normal(keych, delim) abort
   "echom "map_shift_only_punctuation_install_below_normal: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! nunmap <Leader>' . a:keych
   exe 'nnoremap <Leader>' . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:up_n
 endfunction
 
-function! s:map_shift_only_punctuation_install_aboth_normal(keych, delim, extra)
+function! s:map_shift_only_punctuation_install_aboth_normal(keych, delim, extra) abort
   "echom "shift-install-aboth-normal: keych:delim: " . a:keych . ':' . a:delim . ':' . a:extra
   exe 'silent! nunmap <Leader>' . a:extra . a:keych
   exe 'nnoremap <Leader>' . a:extra . a:keych . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
@@ -225,14 +225,14 @@ endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_install_below_insert(keych, delim)
+function! s:map_shift_only_punctuation_install_below_insert(keych, delim) abort
   "echom "map_shift_only_punctuation_install_below_insert: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader>' . a:keych
   " MAYBE/2019-02-09: Use function, and restore cursor position. For now, goes to first character of line.
   exe 'inoremap <Leader>' . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i'
 endfunction
 
-function! s:map_shift_only_punctuation_install_aboth_insert(keych, delim, extra)
+function! s:map_shift_only_punctuation_install_aboth_insert(keych, delim, extra) abort
   "echom "map_shift_only_punctuation_install_aboth_insert: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader>' . a:extra . a:keych
   exe 'inoremap <Leader>' . a:extra . a:keych . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
@@ -240,7 +240,7 @@ endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_replace_below_normal(keych, delim)
+function! s:map_shift_only_punctuation_replace_below_normal(keych, delim) abort
   "echom "map_shift_only_punctuation_replace_below_normal: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! nunmap <Leader><Leader>' . a:keych
   exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:up_n
@@ -248,7 +248,7 @@ endfunction
 
 " :help function-argument
 
-function! s:map_shift_only_punctuation_replace_aboth_normal(keych, delim)
+function! s:map_shift_only_punctuation_replace_aboth_normal(keych, delim) abort
   "echom "map_shift_only_punctuation_replace_aboth_normal: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! nunmap <Leader><Leader>' . a:keych
   exe 'nnoremap <Leader><Leader>' . a:keych . ' ' . s:delete_line_above_n . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n
@@ -256,13 +256,13 @@ endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_replace_below_insert(keych, delim)
+function! s:map_shift_only_punctuation_replace_below_insert(keych, delim) abort
   "echom "map_shift_only_punctuation_replace_below_insert: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader><Leader>' . a:keych
   exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:up_n . 'i'
 endfunction
 
-function! s:map_shift_only_punctuation_replace_aboth_insert(keych, delim)
+function! s:map_shift_only_punctuation_replace_aboth_insert(keych, delim) abort
   "echom "map_shift_only_punctuation_replace_aboth_insert: keych:delim: " . a:keych . ':' . a:delim
   exe 'silent! iunmap <Leader><Leader>' . a:keych
   exe 'inoremap <Leader><Leader>' . a:keych . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_below_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i'
@@ -270,9 +270,10 @@ endfunction
 
 " ***
 
-function! s:map_shift_only_punctuation_addtext_maps(knum, punc)
+function! s:map_shift_only_punctuation_addtext_maps(knum, punc) abort
   "echom "map_shift_only_punctuation_addtext_maps: knum:punc: " . a:knum . ':' . a:punc
   call s:map_shift_only_punctuation_install_below_normal(a:knum, a:punc)
+
   call s:map_shift_only_punctuation_install_aboth_normal(a:punc, a:punc, '')
   call s:map_shift_only_punctuation_replace_below_normal(a:knum, a:punc)
   call s:map_shift_only_punctuation_replace_aboth_normal(a:punc, a:punc)
@@ -291,7 +292,7 @@ endfunction
 
 " ***
 
-function! s:map_lower_only_punctuation_addtext_maps(lower, upper)
+function! s:map_lower_only_punctuation_addtext_maps(lower, upper) abort
   "echom "map_lower_only_punctuation_addtext_maps: lower:upper: " . a:lower . ':' . a:upper
   call s:map_shift_only_punctuation_install_below_normal(a:lower, a:lower)
   call s:map_shift_only_punctuation_install_aboth_normal(a:upper, a:lower, '')
@@ -312,7 +313,7 @@ endfunction
 
 " ***
 
-function! s:map_lower_or_upper_punctuation(punc)
+function! s:map_lower_or_upper_punctuation(punc) abort
   "echom "punc: " . a:punc
   exe 'silent! nunmap <Leader>'   . a:punc
   exe 'silent! nunmap <Leader>\|' . a:punc
@@ -321,7 +322,7 @@ function! s:map_lower_or_upper_punctuation(punc)
   exe 'nnoremap <Leader>\|' . a:punc . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n
 endfunction
 
-function! s:map_insider_punctuation(lpunc, rpunc)
+function! s:map_insider_punctuation(lpunc, rpunc) abort
   " (((((((((((((((((((((((((((((((((((
   " Inside Inside Inside The Delimiters
   " )))))))))))))))))))))))))))))))))))
@@ -331,7 +332,7 @@ function! s:map_insider_punctuation(lpunc, rpunc)
   exe 'nnoremap <Leader>' . a:lpunc . a:rpunc . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>'
 endfunction
 
-function! s:map_doubled_punctuation(dpunc)
+function! s:map_doubled_punctuation(dpunc) abort
   "echom "dpunc: " . a:dpunc
   exe 'silent! nunmap <Leader>'   . a:dpunc . a:dpunc
   exe 'silent! nunmap <Leader>\|' . a:dpunc . a:dpunc
@@ -342,7 +343,7 @@ endfunction
 
 " ***
 
-function! s:map_special_keys()
+function! s:map_special_keys() abort
   " We don't use '+' as a section delimiter because the
   "   reST syntax parser sees that as a table delimiter.
   " Instead, map <Leader>= to under-section with equal signs
