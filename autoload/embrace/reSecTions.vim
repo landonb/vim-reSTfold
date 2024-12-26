@@ -102,7 +102,7 @@ let s:yank_up_putbefore_down_n = 'yykP<DOWN>'
 let s:delete_line_above_n = '<UP>dd'
 let s:delete_line_below_n = '<DOWN>dd<UP>'
 
-" ***
+" -------------------------------------------------------------------
 
 function! s:map_shift_only_punctuation_install_below_normal(keych, delim)
   "echom "map_shift_only_punctuation_install_below_normal: keych:delim: " . a:keych . ':' . a:delim

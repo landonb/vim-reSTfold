@@ -39,7 +39,7 @@
 "
 "   to see all the options you can set.
 
-" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
+" -------------------------------------------------------------------
 
 " GUARD: Press <F9> to reload this plugin (or :source it).
 " - Via: https://github.com/embrace-vim/vim-source-reloader#↩️
@@ -62,7 +62,7 @@ endif
 
 let g:loaded_restfold_after_ftplugin_rst = 1
 
-" ################################################################# "
+" -------------------------------------------------------------------
 
 let s:DEBUG_TRACE = 0
 " Set DEBUG_TRACE to 1 for :message blather.
