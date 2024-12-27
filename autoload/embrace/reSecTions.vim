@@ -29,6 +29,24 @@
 
 " -------------------------------------------------------------------
 
+" DEVEL:
+
+" Set nonzero to enable `echom` trace.
+let s:trace = 0
+" For all messages, set 1:
+"  let s:trace = 1
+" For only the `map` command echo, set 2:
+"  let s:trace = 2
+
+" DEVEL: After editing this file:
+" - :source the plugin/ to reload all the maps,
+"   possibly on your host at:
+"     ~/.vim/pack/landonb/start/vim-reSTfold/plugin/vim-reSTfold.vim
+"   or call the main function below:
+"     call g:embrace#reSecTions#CreateMaps()
+
+" -------------------------------------------------------------------
+
 " HSTRY/2017-03-28: [lb] I grew tired of manually setting up reST
 " header decoration, and I made this plugin.
 "
@@ -208,15 +226,6 @@ let s:yank_up_putbefore_down_n = 'yykP<DOWN>'
 
 let s:delete_line_above_n = '<UP>dd'
 let s:delete_line_under_n = '<DOWN>dd<UP>'
-
-" ***
-
-" Set nonzero to enable `echom` trace.
-let s:trace = 0
-" For all messages, set 1:
-"  let s:trace = 1
-" For only the `map` command echo, set 2:
-"  let s:trace = 2
 
 " -------------------------------------------------------------------
 
