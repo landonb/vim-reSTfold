@@ -716,7 +716,7 @@ function! g:embrace#reSecTions#CreateMaps(
     let l:equal_punc = a:equal_punc
   else
     let l:equal_punc = [
-      \ ['=', '+', '*', '*'],
+      \ ['=', '+', '*', 'rst'],
       \ ]
   endif
 
