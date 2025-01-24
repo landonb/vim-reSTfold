@@ -1112,7 +1112,7 @@ function! s:CreateMaps()
 
     " Wire <S-F5> to recalculating and collapsing folds,
     " and scrolling buffer window to the top. Aka *reload*.
-    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <S-F5> :call ReSTFolderUpdateFolds(1)<CR>
+    autocmd BufEnter,BufRead *.rst nnoremap <silent><buffer> <S-F5> :call ReSTFolderUpdateFolds(1)<CR>
     autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <S-F5> <C-O>:call ReSTFolderUpdateFolds(1)<CR>
 
     " Wire <F5> to recalculating folds (aka *refresh*), without
@@ -1125,7 +1125,7 @@ function! s:CreateMaps()
     "   but I think Vim needs us to set foldexpr again (or
     "   maybe foldmethod or foldtext) so that it bothers
     "   calling ReSTfoldFoldLevel for the recomputed levels.
-    autocmd BufEnter,BufRead *.rst noremap <silent><buffer> <F5> :call ReSTFolderUpdateFolds(0)<CR>
+    autocmd BufEnter,BufRead *.rst nnoremap <silent><buffer> <F5> :call ReSTFolderUpdateFolds(0)<CR>
     autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <F5> <C-O>:call ReSTFolderUpdateFolds(0)<CR>
 
     " Wire <Ctrl-Up> and <Ctrl-Down> to transposing fold with the fold above and the fold below.
