@@ -349,6 +349,17 @@ well with this plugin to help you take notes in Vim:
   Useful for adding a visual separation to your notes without
   using a reST section heading.
 
+Other note-taking-related plugins
+=================================
+
+Other note-taking and personal CMS type plugins:
+
+- *Neorg is an all-encompassing tool based around structured note taking,
+  project and task management, time tracking, slideshows, writing typeset
+  documents and much more.*
+
+  https://github.com/nvim-neorg/neorg
+
 Installation
 ============
 
