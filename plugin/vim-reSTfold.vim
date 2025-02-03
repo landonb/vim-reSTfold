@@ -29,6 +29,6 @@ endif
 " -------------------------------------------------------------------
 
 " CXREF:
-" ~/.vim/pack/embrace-vim/start/vim-reSTfold/autoload/embrace/reSecTions.vim
+" ~/.kit/nvim/embrace-vim/start/vim-reSTfold/autoload/embrace/reSecTions.vim
 call g:embrace#reSecTions#CreateMaps()
 
