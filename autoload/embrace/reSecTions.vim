@@ -428,6 +428,11 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
   "   =======
   "   SECTION
   "   =======
+  "
+  " Creates essentially these three maps:
+  "   nnoremap <LocalLeader>= yyp<C-Q>$r=<UP>
+  "   nnoremap <LocalLeader>+ yyp<C-Q>$r=yykP<DOWN>
+  "   nnoremap <LocalLeader>\|+ yyp<C-Q>$r=yykP<DOWN>
   if a:n_fts != ''
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:punc, 'n', a:n_fts)
     call s:map_shift_only_punctuation_addline_normal_under(a:punc, a:punc, a:n_fts)
@@ -435,11 +440,12 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
     call s:map_shift_only_punctuation_addline_normal_hilow(a:altk, a:punc, a:n_fts, '')
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:altk, 'n', a:n_fts)
     call s:map_shift_only_punctuation_replace_normal_hilow(a:altk, a:punc, a:n_fts, s:leader_two)
-    " nnoremap <LocalLeader>= yyp<C-Q>$r=<UP>
-    " nnoremap <LocalLeader>+ yyp<C-Q>$r=yykP<DOWN>
-    " nnoremap <LocalLeader>\|+ yyp<C-Q>$r=yykP<DOWN>
   endif
 
+  " Creates essentially these three maps:
+  "   inoremap <LocalLeader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+  "   inoremap <LocalLeader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+  "   inoremap <LocalLeader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   if a:i_fts != ''
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:punc, 'i', a:i_fts)
     call s:map_shift_only_punctuation_addline_insert_under(a:punc, a:punc, a:i_fts)
@@ -447,9 +453,6 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
     call s:map_shift_only_punctuation_addline_insert_hilow(a:altk, a:punc, a:i_fts, '')
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:altk, 'i', a:i_fts)
     call s:map_shift_only_punctuation_replace_insert_hilow(a:altk, a:punc, a:i_fts, s:leader_two)
-    " inoremap <LocalLeader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-    " inoremap <LocalLeader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
-    " inoremap <LocalLeader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   endif
 
   " 2019-02-08: Whatever: I couldn't get -d | +d | normal k to work,
@@ -469,22 +472,25 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
   "     =================
   "     header got longer
   "     =================
+  "
+  " Creates essentially these three maps:
+  "   nnoremap <LocalLeader><LocalLeader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
+  "   nnoremap <LocalLeader><LocalLeader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
   if a:n_fts != ''
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:punc, 'n', a:n_fts)
     call s:map_shift_only_punctuation_replace_normal_under(a:punc, a:punc, a:n_fts, s:leader)
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:altk, 'n', a:n_fts)
     call s:map_shift_only_punctuation_replace_normal_hilow(a:altk, a:punc, a:n_fts, s:leader)
-    " nnoremap <LocalLeader><LocalLeader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
-    " nnoremap <LocalLeader><LocalLeader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
   endif
 
+  " Creates essentially these three maps:
+  "   inoremap <LocalLeader><LocalLeader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+  "   inoremap <LocalLeader><LocalLeader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   if a:i_fts != ''
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:punc, 'i', a:i_fts)
     call s:map_shift_only_punctuation_replace_insert_under(a:punc, a:punc, a:i_fts, s:leader)
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:altk, 'i', a:i_fts)
     call s:map_shift_only_punctuation_replace_insert_hilow(a:altk, a:punc, a:i_fts, s:leader)
-    " inoremap <LocalLeader><LocalLeader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-    " inoremap <LocalLeader><LocalLeader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   endif
 endfunction
 
@@ -495,12 +501,13 @@ function! s:map_special_key_pipe_and_double_pipe(keyc = '\|', punc = '\|', n_fts
 
   " The pipe character is not sent to map_lower_or_upper_punctuation
   " because it needs to be escaped.
+  " Creates essentially these three maps:
+  "   nnoremap <LocalLeader>\| yyp<C-Q>$r\|<UP>
+  "   nnoremap <LocalLeader>\|\| yyp<C-Q>$r\|yykP<DOWN>
   call g:embrace#reSecTions#AlertIfMapped(s:leader .. a:keyc, 'n', a:n_fts)
   call s:map_shift_only_punctuation_addline_normal_under(a:keyc, a:punc, a:n_fts)
   call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:keyc, 'n', a:n_fts)
   call s:map_shift_only_punctuation_addline_normal_hilow(a:keyc, a:punc, a:n_fts, s:leader_two)
-  " nnoremap <LocalLeader>\| yyp<C-Q>$r\|<UP>
-  " nnoremap <LocalLeader>\|\| yyp<C-Q>$r\|yykP<DOWN>
 endfunction
 
 " -------------------------------------------------------------------
