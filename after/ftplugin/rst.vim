@@ -1150,7 +1150,10 @@ function! s:CreateMaps()
 endfunction
 
 if !exists("g:restfold_create_default_mappings") || g:restfold_create_default_mappings
-  call s:CreateMaps()
+  " It's preferred, well, insisted, that users explicitly enable in Neovim.
+  if !has('nvim')
+    call s:CreateMaps()
+  endif
 endif
 
 " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
