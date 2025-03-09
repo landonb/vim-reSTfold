@@ -960,28 +960,28 @@ function! s:TruncatePrefixedLine(level_prefix_and_line, tail_and_count, line_pip
     return ''
   endif
 
-  " NOTE: Use strcharpart, not strpart, to truncate at a display width,
+  " SAVVY: Use strcharpart, not strpart, to truncate at a display width,
   " and not at a byte count. The latter is dangerous and could chop a
   " Unicode in half, leaving phantom control bytes. E.g., consider the
   " 3-character string 'X' followed by a Tab followed by a 4-byte Unicode:
-  "   echo strlen('X	🦅')            " 6
-  "   echo strpart('X	🦅', 0, 4)      " 'X	<f0><9f>'  -- 4 is middle of 🦅
-  "   echo strdisplaywidth('X	🦅')    " 6  -- 6 when tabstop=4 (Tab counts as 3)
-  "   echo strwidth('X	🦅')          " 4  -- Counts tab as 1 (tabstop ignored)
-  "   echo strchars('X	🦅')          " 3  -- Number of characters
-  "   echo strcharpart('X	🦅', 0, 3)  " 'X	🦅'
-  "   echo strcharpart('X	🦅', 0, 2)  " 'X	'
+  "   echo strlen('X	🐔')            " 6
+  "   echo strpart('X	🐔', 0, 4)      " 'X	<f0><9f>'  -- 4 is middle of 🐔
+  "   echo strdisplaywidth('X	🐔')    " 6  -- 6 when tabstop=4 (Tab counts as 3)
+  "   echo strwidth('X	🐔')          " 4  -- Counts tab as 1 (tabstop ignored)
+  "   echo strchars('X	🐔')          " 3  -- Number of characters
+  "   echo strcharpart('X	🐔', 0, 3)  " 'X^I🐔'
+  "   echo strcharpart('X	🐔', 0, 2)  " 'X^I'
   " Note also difference between the strdisplaywidth/strwidth/strchars,
   " and that the target width is akin to strwidth(), but that strcharpart()
   " operates on strchars()-esque character indices. This means that the call
   " to strcharpart might not truncate to the desired width, and, in fact,
   " the call might not affect the string at all! E.g., consider again our
-  " feathered friend as the title, but two of them, e.g., '🦅🦅'. The display
+  " feathered friend as the title, but two of them, e.g., '🐔🐔'. The display
   " width is 4 (what strwidth/strdisplaywidth says), but strchars is 2. If
   " the user narrowed the window pane so that 3 characters were available,
-  " we'd call strcharpart('🦅🦅', 0, 3), which does not affect the string,
+  " we'd call strcharpart('🐔🐔', 0, 3), which does not affect the string,
   " which is only 2 characters long. Even adding one more does nothing, as
-  " strcharpart('🦅🦅', 0, 2) is still the length of the string!
+  " strcharpart('🐔🐔', 0, 2) is still the length of the string!
   " - Because we don't know the positions of the extra wide characters,
   "   I don't think there's a deterministic approach to calculating the
   "   character to truncate at. So we'll have to take an iterative approach.
