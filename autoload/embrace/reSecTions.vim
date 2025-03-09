@@ -15,7 +15,7 @@
 "
 "     My Awesome Section Header
 "
-"   and then switch to normal mode and type <Leader>#,
+"   and then switch to normal mode and type <LocalLeader>#,
 "   e.g., \#, and your text transforms to:
 "
 "     #########################
@@ -131,14 +131,14 @@ let s:trace = 0
 " For the ornament characters that occupy their key on the number
 " row of on an American English keyboard, you can add delimiters
 " to a new line below, or to new lines above and below using the
-" <Leader>{char} maps:
+" <LocalLeader>{char} maps:
 "
-" - Map <Leader>{char} to underline using the indicated header character.
+" - Map <LocalLeader>{char} to underline using the indicated header character.
 "
-" - Map <Leader>{CHAR} to underline and overline using said character.
+" - Map <LocalLeader>{CHAR} to underline and overline using said character.
 "
-" - E.g., <Leader>3 underlines with pound symbols,
-"     and <Leader># under- and overlines with 'em.
+" - E.g., <LocalLeader>3 underlines with pound symbols,
+"     and <LocalLeader># under- and overlines with 'em.
 "
 " For all the characters, and not just those you access with a
 " Shift-number keypress, you can use double-leader instead.
@@ -148,11 +148,11 @@ let s:trace = 0
 "
 " - E.g., use double-leader-char to underline:
 "
-"     <Leader><Leader>{char}
+"     <LocalLeader><LocalLeader>{char}
 "
 "   and use leader-shift-leader-char to add both:
 "
-"     <Leader><Shift-Leader>{char}
+"     <LocalLeader><Shift-LocalLeader>{char}
 "
 " - The double-leader maps are useful if you want to *replace*
 "   existing ornamenation.
@@ -164,7 +164,7 @@ let s:trace = 0
 "       =============
 "
 "     If you place you cursor on the title like
-"     and press <Leader><Leader>#, you'll get this:
+"     and press <LocalLeader><LocalLeader>#, you'll get this:
 "
 "       #############
 "       Section Title
@@ -292,7 +292,7 @@ function! s:map_shift_only_punctuation_replace_insert_under(keych, delim, ftypes
   let l:seq = s:leader . a:extra . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " ALTLY: Same outcome, but without leaving insert mode, e.g.:
-  "   inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+  "   inoremap <LocalLeader><LocalLeader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
   call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i', a:ftypes)
 endfunction
 
@@ -302,7 +302,7 @@ function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim, ftypes
   let l:seq = s:leader . a:extra . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " ALTLY: Same outcome, but without leaving insert mode, e.g.:
-  "   inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+  "   inoremap <LocalLeader><LocalLeader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i', a:ftypes)
 endfunction
 
@@ -422,8 +422,8 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
 
   " We don't use '+' as a section delimiter because the
   "   reST syntax parser sees that as a table delimiter.
-  " Instead, map <Leader>= to under-section with equal signs
-  "   and then map <Leader>+ to over-under-section with equals.
+  " Instead, map <LocalLeader>= to under-section with equal signs
+  "   and then map <LocalLeader>+ to over-under-section with equals.
   "
   "   =======
   "   SECTION
@@ -435,9 +435,9 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
     call s:map_shift_only_punctuation_addline_normal_hilow(a:altk, a:punc, a:n_fts, '')
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:altk, 'n', a:n_fts)
     call s:map_shift_only_punctuation_replace_normal_hilow(a:altk, a:punc, a:n_fts, s:leader_two)
-    " nnoremap <Leader>= yyp<C-Q>$r=<UP>
-    " nnoremap <Leader>+ yyp<C-Q>$r=yykP<DOWN>
-    " nnoremap <Leader>\|+ yyp<C-Q>$r=yykP<DOWN>
+    " nnoremap <LocalLeader>= yyp<C-Q>$r=<UP>
+    " nnoremap <LocalLeader>+ yyp<C-Q>$r=yykP<DOWN>
+    " nnoremap <LocalLeader>\|+ yyp<C-Q>$r=yykP<DOWN>
   endif
 
   if a:i_fts != ''
@@ -447,9 +447,9 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
     call s:map_shift_only_punctuation_addline_insert_hilow(a:altk, a:punc, a:i_fts, '')
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:altk, 'i', a:i_fts)
     call s:map_shift_only_punctuation_replace_insert_hilow(a:altk, a:punc, a:i_fts, s:leader_two)
-    " inoremap <Leader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-    " inoremap <Leader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
-    " inoremap <Leader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+    " inoremap <LocalLeader>= <C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+    " inoremap <LocalLeader>+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+    " inoremap <LocalLeader>\|+ <C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   endif
 
   " 2019-02-08: Whatever: I couldn't get -d | +d | normal k to work,
@@ -474,8 +474,8 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
     call s:map_shift_only_punctuation_replace_normal_under(a:punc, a:punc, a:n_fts, s:leader)
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:altk, 'n', a:n_fts)
     call s:map_shift_only_punctuation_replace_normal_hilow(a:altk, a:punc, a:n_fts, s:leader)
-    " nnoremap <Leader><Leader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
-    " nnoremap <Leader><Leader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
+    " nnoremap <LocalLeader><LocalLeader>= <DOWN>dd<UP>yyp<C-Q>$r=<UP>
+    " nnoremap <LocalLeader><LocalLeader>+ <UP>dd<DOWN>dd<UP>yyp<C-Q>$r=yykP<DOWN>
   endif
 
   if a:i_fts != ''
@@ -483,8 +483,8 @@ function! s:map_special_key_ten_ways_to_equal(punc = '=', altk = '+', n_fts = '*
     call s:map_shift_only_punctuation_replace_insert_under(a:punc, a:punc, a:i_fts, s:leader)
     call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader .. a:altk, 'i', a:i_fts)
     call s:map_shift_only_punctuation_replace_insert_hilow(a:altk, a:punc, a:i_fts, s:leader)
-    " inoremap <Leader><Leader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-    " inoremap <Leader><Leader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
+    " inoremap <LocalLeader><LocalLeader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
+    " inoremap <LocalLeader><LocalLeader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
   endif
 endfunction
 
@@ -499,8 +499,8 @@ function! s:map_special_key_pipe_and_double_pipe(keyc = '\|', punc = '\|', n_fts
   call s:map_shift_only_punctuation_addline_normal_under(a:keyc, a:punc, a:n_fts)
   call g:embrace#reSecTions#AlertIfMapped(s:leader .. s:leader_two .. a:keyc, 'n', a:n_fts)
   call s:map_shift_only_punctuation_addline_normal_hilow(a:keyc, a:punc, a:n_fts, s:leader_two)
-  " nnoremap <Leader>\| yyp<C-Q>$r\|<UP>
-  " nnoremap <Leader>\|\| yyp<C-Q>$r\|yykP<DOWN>
+  " nnoremap <LocalLeader>\| yyp<C-Q>$r\|<UP>
+  " nnoremap <LocalLeader>\|\| yyp<C-Q>$r\|yykP<DOWN>
 endfunction
 
 " -------------------------------------------------------------------
@@ -527,9 +527,9 @@ function! g:embrace#reSecTions#AlertIfMapped(what, mode, ftypes) abort
 
   " Note that we delimit pipes \| for the map calls, but not for maparg.
   " - E.g., this returns empty string:
-  "     maparg('<Leader>\|1', 'n')
+  "     maparg('<LocalLeader>\|1', 'n')
   "   But this returns the \|1 map.
-  "     maparg('<Leader>|1', 'n')
+  "     maparg('<LocalLeader>|1', 'n')
   let l:what = substitute(a:what, '\\|', '|', 'g')
 
 
@@ -639,9 +639,9 @@ function! g:embrace#reSecTions#CreateMaps(
   "       ┃    ┃    ┃           Set '' to disable the map
   "       ┃    ┃    ┗━━━━━━━━ Normal mode FileType
   "       ┃    ┗━━━━━━━━━━━━━ Section delimiter to paint
-  "       ┃                     Mapped at <Leader>{punct} etc.
+  "       ┃                     Mapped at <LocalLeader>{punct} etc.
   "       ┗━━━━━━━━━━━━━━━━━━ Lowercase key sequence user can use
-  "                             Mapped at <Leader>{number} etc.
+  "                             Mapped at <LocalLeader>{number} etc.
 
   " 2017-12-18: Skip underscore. It is not vertically symmetric,
   "   so looks odd, and I'd prefer to be able to Shift-``-`` to
@@ -673,11 +673,11 @@ function! g:embrace#reSecTions#CreateMaps(
       \ ]
   endif
 
-  " Omit ] to not take <Leader>] which might be a popular leader-leader2
+  " Omit ] to not take <LocalLeader>] which might be a popular leader-leader2
   " choice for other plugins, e.g., vim-easymotion. Not that we should
-  " talk, we take a *lot* of leader prefixes — and though both <Leader>
+  " talk, we take a *lot* of leader prefixes — and though both <LocalLeader>
   " and <Leader2> are configurable, assume the user has not changed
-  " them, and avoid obvious <Leader><Leader2> sequences.
+  " them, and avoid obvious <LocalLeader><Leader2> sequences.
   if type(a:insider_punc) == v:t_list
     let l:insider_punc = a:insider_punc
   else
