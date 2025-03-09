@@ -650,14 +650,14 @@ function! g:embrace#reSecTions#CreateMaps(
   "       ┗━━━━━━━━━━━━━━━━━━ Lowercase key sequence user can use
   "                             Mapped at <LocalLeader>{number} etc.
 
-  " 2017-12-18: Skip underscore. It is not vertically symmetric,
-  "   so looks odd, and I'd prefer to be able to Shift-``-`` to
-  "   get an upper and lower dash boundary.
+  " 2017-12-18: Skip underscore. It is not vertically symmetric, so looks
+  " odd, and I'd prefer to be able to <LocalLeader>Shift-`-` to get an
+  " upper and lower dash boundary.
   if type(a:reverse_punc) == v:t_list
     let l:reverse_punc = a:reverse_punc
   else
-    " Reverse because this inserts '-' when "lowercase" '-' pressed
-    " (unlike, e.g., inserting '#' when "lowercase" '3' is pressed).
+    " Reverse because this inserts '-' when (lowercase) '-' pressed
+    " (unlike, e.g., inserting '#' when (lowercase) '3' is pressed).
     let l:reverse_punc = [
       \ ['-', '_', '*', 'rst'],
       \ ]
@@ -681,13 +681,16 @@ function! g:embrace#reSecTions#CreateMaps(
   endif
 
   " Omit ] to not take <LocalLeader>] which might be a popular leader-leader2
-  " choice for other plugins, e.g., vim-easymotion. Not that we should
-  " talk, we take a *lot* of leader prefixes — and though both <LocalLeader>
-  " and <Leader2> are configurable, assume the user has not changed
-  " them, and avoid obvious <LocalLeader><Leader2> sequences.
+  " choice for other plugins, e.g., a user might create vim-easymotion maps
+  " under \]. (Not that we should talk, we take a *lot* of localleader combos —
+  " and though both <LocalLeader> and <Leader2> are configurable (via
+  " a:leader_key and a:leader_two), assume the user has not changed them, and
+  " avoid obvious <LocalLeader><Leader2> sequences.)
   if type(a:insider_punc) == v:t_list
     let l:insider_punc = a:insider_punc
   else
+    " USAGE: Set ftype non-empty to enable those maps.
+    " - E.g., in list below, <LocalLeader>[] enabled, but not <LocalLeader>][
     let l:insider_punc = [
       \ ['(', ')', 'rst'],
       \ [')', '(', 'rst'],

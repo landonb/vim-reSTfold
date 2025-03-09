@@ -1115,9 +1115,14 @@ function! s:CreateMaps()
     autocmd BufEnter,BufRead *.rst nnoremap <silent><buffer> <S-F5> :call ReSTFolderUpdateFolds(1)<CR>
     autocmd BufEnter,BufRead *.rst inoremap <silent><buffer> <S-F5> <C-O>:call ReSTFolderUpdateFolds(1)<CR>
 
-    " Wire <F5> to recalculating folds (aka *refresh*), without
-    " expanding or collapsing folds, and without scrolling. If
-    " called before <S-F5>, behaves like <S-F5> the first time.
+    " Wire <F5> to recalculating folds.
+    " - Used to refresh fold caclulations, as opposed to
+    "   automatically doing so, which can be slow.
+    " - The first time <F5> is used, if called before <S-F5>, it
+    "   behaves like <S-F5> — collapses all folds and `gg`'s the
+    "   cursor to the top of the buffer.
+    " - Afterwards, <F5> collapses all folds except the current
+    "   fold.
     " - Note that I tried two 'simpler' approaches:
     "     ... <F5> :let b:RESTFOLD_SCANNER_LOOKUP = []<CR>
     "   and
