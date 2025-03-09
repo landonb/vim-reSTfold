@@ -234,7 +234,7 @@ function! s:map_shift_only_punctuation_addline_normal_under(keych, delim, ftypes
 
   let l:seq = s:leader . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:up_n, a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:yank_put_replace_n .. a:delim .. s:up_n, a:ftypes, 'Draw rst under-border: ' .. a:delim)
 endfunction
 
 function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, ftypes, extra) abort
@@ -242,7 +242,7 @@ function! s:map_shift_only_punctuation_addline_normal_hilow(keych, delim, ftypes
 
   let l:seq = s:leader . a:extra . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n, a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:yank_put_replace_n .. a:delim .. s:yank_up_putbefore_down_n, a:ftypes, 'Draw rst double-border: ' .. a:delim)
 endfunction
 
 " ***
@@ -253,7 +253,7 @@ function! s:map_shift_only_punctuation_addline_insert_under(keych, delim, ftypes
   let l:seq = s:leader . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " MAYBE/2019-02-09: Use function, and restore cursor position. For now, goes to first character of line.
-  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:up_n . 'i', a:ftypes)
+  call s:MapAndEchom('i', l:seq, '<ESC>' .. s:yank_put_replace_n .. a:delim .. s:up_n .. 'i', a:ftypes, 'Draw rst under-border: ' .. a:delim)
 endfunction
 
 function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, ftypes, extra) abort
@@ -261,7 +261,7 @@ function! s:map_shift_only_punctuation_addline_insert_hilow(keych, delim, ftypes
 
   let l:seq = s:leader . a:extra . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
-  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i', a:ftypes)
+  call s:MapAndEchom('i', l:seq, '<ESC>' .. s:yank_put_replace_n .. a:delim .. s:yank_up_putbefore_down_n .. 'i', a:ftypes, 'Draw rst double-border: ' .. a:delim)
 endfunction
 
 " ***
@@ -271,7 +271,7 @@ function! s:map_shift_only_punctuation_replace_normal_under(keych, delim, ftypes
 
   let l:seq = s:leader . a:extra . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n, a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:delete_line_under_n .. s:yank_put_replace_n .. a:delim .. s:up_n, a:ftypes, 'Replace rst under-border: ' .. a:delim)
 endfunction
 
 " :help function-argument
@@ -281,7 +281,7 @@ function! s:map_shift_only_punctuation_replace_normal_hilow(keych, delim, ftypes
 
   let l:seq = s:leader . a:extra . a:keych
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n, a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:delete_line_above_n .. s:delete_line_under_n .. s:yank_put_replace_n .. a:delim .. s:yank_up_putbefore_down_n, a:ftypes, 'Replace rst double-border: ' .. a:delim)
 endfunction
 
 " ***
@@ -293,7 +293,7 @@ function! s:map_shift_only_punctuation_replace_insert_under(keych, delim, ftypes
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " ALTLY: Same outcome, but without leaving insert mode, e.g.:
   "   inoremap <LocalLeader><LocalLeader>= <DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<UP>
-  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:up_n . 'i', a:ftypes)
+  call s:MapAndEchom('i', l:seq, '<ESC>' .. s:delete_line_under_n .. s:yank_put_replace_n .. a:delim .. s:up_n .. 'i', a:ftypes, 'Replace rst under-border: ' .. a:delim)
 endfunction
 
 function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim, ftypes, extra = s:leader) abort
@@ -303,7 +303,7 @@ function! s:map_shift_only_punctuation_replace_insert_hilow(keych, delim, ftypes
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'i', a:ftypes)
   " ALTLY: Same outcome, but without leaving insert mode, e.g.:
   "   inoremap <LocalLeader><LocalLeader>+ <UP><C-O>dd<DOWN><C-O>dd<UP><C-O>yy<C-O>p<C-O><C-Q>$r=<C-O>yy<C-O>k<C-O>P<DOWN>
-  call s:MapAndEchom('inoremap ' . l:seq . ' ' . '<ESC>' . s:delete_line_above_n . s:delete_line_under_n . s:yank_put_replace_n . a:delim . s:yank_up_putbefore_down_n . 'i', a:ftypes)
+  call s:MapAndEchom('i', l:seq, '<ESC>' .. s:delete_line_above_n .. s:delete_line_under_n .. s:yank_put_replace_n .. a:delim .. s:yank_up_putbefore_down_n .. 'i', a:ftypes, 'Replace rst double-border: ' .. a:delim)
 endfunction
 
 " ***
@@ -375,11 +375,11 @@ function! s:map_lower_or_upper_punctuation(punc, ftypes) abort
 
   let l:seq = s:leader . a:punc
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:up_n, a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:yank_put_replace_n .. a:punc .. s:up_n, a:ftypes, 'Draw rst under-border: ' .. a:punc)
 
   let l:seq = s:leader . s:leader_two . a:punc
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:punc . s:yank_up_putbefore_down_n, a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:yank_put_replace_n .. a:punc .. s:yank_up_putbefore_down_n, a:ftypes, 'Draw rst double-border: ' .. a:punc)
 endfunction
 
 " (((((((((((((((((((((((((((((((((((
@@ -395,7 +395,7 @@ function! s:map_insider_punctuation(lpunc, rpunc, ftypes) abort
 
   let l:seq = s:leader . a:lpunc . a:rpunc
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' yyP<C-Q>$r' . a:lpunc . '<DOWN>yyp<C-Q>$r' . a:rpunc . '<UP>', a:ftypes)
+  call s:MapAndEchom('n', l:seq, 'yyP<C-Q>$r' .. a:lpunc .. '<DOWN>yyp<C-Q>$r' .. a:rpunc .. '<UP>', a:ftypes, 'Draw rst double-border: ' .. a:lpunc .. a:rpunc)
 endfunction
 
 function! s:map_doubled_punctuation(dpunc, ftypes) abort
@@ -408,11 +408,11 @@ function! s:map_doubled_punctuation(dpunc, ftypes) abort
 
   let l:seq = s:leader . a:dpunc . a:dpunc
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . '<UP>', a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:yank_put_replace_n .. a:dpunc .. '<UP>', a:ftypes, 'Draw rst under-border: ' .. a:dpunc)
 
   let l:seq = s:leader . s:leader_two . a:dpunc . a:dpunc
   call g:embrace#reSecTions#AlertIfMapped(l:seq, 'n', a:ftypes)
-  call s:MapAndEchom('nnoremap ' . l:seq . ' ' . s:yank_put_replace_n . a:dpunc . 'yykP' . '<DOWN>', a:ftypes)
+  call s:MapAndEchom('n', l:seq, s:yank_put_replace_n .. a:dpunc .. 'yykP' .. '<DOWN>', a:ftypes, 'Draw rst double-border: ' .. a:dpunc)
 endfunction
 
 " -------------------------------------------------------------------
@@ -588,17 +588,36 @@ function! g:embrace#reSecTions#EchomCallerMsg(msg, level = 1) abort
   endfor
 endfunction
 
-function! s:MapAndEchom(command, ftypes) abort
-  if a:ftypes == '*'
-    let l:command = a:command
+" If Neovim, use vim.keymap.set (so we can set desc), or fallback ex command in Vim.
+function! s:MapAndEchom(mode, lhs, rhs, ftypes, desc = 'reSecTions') abort
+  let l:command = ''
+  if has('nvim')
+    let l:buffer_map = a:ftypes == '*' ? 'false' : 'true'
+    let l:command = 'lua vim.keymap.set('
+      \ .. '"' .. a:mode .. '", "'
+      \ .. s:escapeInput(a:lhs) .. '", "'
+      \ .. s:escapeInput(a:rhs) .. '",'
+      \ .. '{ noremap = true, buffer = ' .. l:buffer_map
+      \ .. ', desc = "' .. s:escapeInput(a:desc) .. '"})'
   else
-    let l:command = 'autocmd Filetype ' .. a:ftypes .. ' '
-      \ .. substitute(a:command, 'noremap', 'noremap <buffer>', '')
+    let l:buffer_map = a:ftypes == '*' ? '' : '<buffer> '
+    let l:command = a:mode .. 'noremap ' .. l:buffer_map .. a:lhs .. ' ' .. a:rhs
+  endif
+
+  if a:ftypes != '*'
+    let l:command = 'autocmd Filetype ' .. a:ftypes .. ' ' .. l:command
   endif
 
   if s:trace >= 2 | echom l:command | endif
 
   exe l:command
+endfunction
+
+function! s:escapeInput(input) abort
+  let l:escaped = a:input
+  let l:escaped = substitute(l:escaped, "\\", "\\\\\\", "g")
+  let l:escaped = substitute(l:escaped, "\"", "\\\\\"", "g")
+  return l:escaped
 endfunction
 
 " -------------------------------------------------------------------
