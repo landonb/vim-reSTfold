@@ -604,7 +604,7 @@ endfunction
 "   then this fcn. uses its default.
 
 function! g:embrace#reSecTions#CreateMaps(
-  \ leader_key = '<Leader>',
+  \ leader_key = '<LocalLeader>',
   \ leader_two = '\|',
   \ number_punc = 0,
   \ reverse_punc = 0,
