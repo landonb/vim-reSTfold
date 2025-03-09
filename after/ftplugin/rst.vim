@@ -560,6 +560,9 @@ endfunction
 
 " Move the entity under the cursor up a line.
 function! ReSTFolderMoveUp()
+  " Move cursor to the first column.
+  normal |
+
   let l:lineno = line('.')
   if l:lineno == 1
     return
@@ -596,6 +599,9 @@ endfunction
 
 " Move the entity under the cursor down a line.
 function! ReSTFolderMoveFoldDown()
+  " Move cursor to the first column.
+  normal |
+
   let l:fc = foldclosed('.')
   if l:fc == -1
     execute "normal! \<C-e>"
@@ -1138,8 +1144,8 @@ function! s:CreateMaps()
     "   but not after an Undo.
     "   - MAYBE/2021-02-14: FTREQ: Recompute fold levels after Undo,
     "     or after undoing Ctrl-Up or Ctrl-Down, if easy to determine.
-    autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Up>   \|:silent call ReSTFolderMoveUp()<CR>
-    autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> \|:silent call ReSTFolderMoveFoldDown()<CR>
+    autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Up>   :silent call ReSTFolderMoveUp()<CR>
+    autocmd BufEnter,BufRead *.rst nnoremap <buffer> <silent> <C-Down> :silent call ReSTFolderMoveFoldDown()<CR>
   augroup END
 endfunction
 
