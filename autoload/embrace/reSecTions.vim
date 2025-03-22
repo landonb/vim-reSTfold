@@ -596,7 +596,7 @@ function! s:MapAndEchom(mode, lhs, rhs, ftypes, desc = 'reSecTions') abort
     let l:command = 'lua vim.keymap.set('
       \ .. '"' .. a:mode .. '", "'
       \ .. s:escapeInput(a:lhs) .. '", "'
-      \ .. s:escapeInput(a:rhs) .. '",'
+      \ .. s:escapeInput(a:rhs) .. '", '
       \ .. '{ noremap = true, buffer = ' .. l:buffer_map
       \ .. ', desc = "' .. s:escapeInput(a:desc) .. '"})'
   else
