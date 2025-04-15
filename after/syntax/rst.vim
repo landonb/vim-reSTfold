@@ -120,7 +120,7 @@ function! s:reSTfold_Apply_Highlights()
   "             because it's interpreted as rstTableLines.
 
   " 2021-10-14: On second thought, disable spell checking.
-  " - For one, some rules will be superceded:
+  " - For one, some rules will be superseded:
   "   - AcronymNoSpell, e.g., 'ABCs' is under-squiggled as misspelled.
   "   - Code blocks, e.g., ``fooBar``.
   " - The under-squiggle makes the title more difficult to read.
