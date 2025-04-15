@@ -693,7 +693,7 @@ function! g:embrace#reSecTions#CreateMaps(
       \ [':', 'rst'],
       \ [',', 'rst'],
       \ ['.', 'rst'],
-      \ ['?', 'rst'],
+      \ ['?', ''],
       \ ["'", 'rst'],
       \ ['"', 'rst'],
       \ ]
